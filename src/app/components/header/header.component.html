@@ -1,0 +1,62 @@
+<header class="header">
+  <div class="header-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <a href="/" class="logo-link">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="bi bi-boxes"></i>
+          </div>
+          <span class="logo-text">IASSCMS</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
+      <ul class="nav-links">
+        <li *ngFor="let link of navLinks">
+          <a href="{{link.url}}" class="nav-link">
+            <i class="bi bi-{{link.icon}} nav-icon"></i>
+            <span>{{link.name}}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Right Section with Actions -->
+    <div class="header-actions">
+      <button class="action-button search-button" aria-label="Search">
+        <i class="bi bi-search"></i>
+      </button>
+      <button class="action-button notifications-button" aria-label="Notifications">
+        <i class="bi bi-bell"></i>
+        <span class="notification-badge">3</span>
+      </button>
+      <div class="user-profile">
+        <button class="profile-button" aria-label="User profile">
+          <div class="avatar">
+            <span>JS</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+      <i class="bi" [ngClass]="isMobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" [ngClass]="{'mobile-nav-open': isMobileMenuOpen}">
+    <ul class="mobile-nav-links">
+      <li *ngFor="let link of navLinks">
+        <a href="{{link.url}}" class="mobile-nav-link">
+          <i class="bi bi-{{link.icon}} nav-icon"></i>
+          <span>{{link.name}}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
