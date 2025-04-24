@@ -25,7 +25,7 @@ interface Slide {
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
         animate(
-          '800ms ease-out',
+          '900ms ease-out',
           style({ opacity: 1, transform: 'translateY(0)' })
         ),
       ]),
@@ -35,28 +35,29 @@ interface Slide {
 export class HeroSliderComponent implements OnInit, OnDestroy {
   slides: Slide[] = [
     {
-      image: 'assets/images/image1.jpg',
-      title: 'Supply Chain Solutions',
-      subtitle:
-        'Optimize your supply chain with our advanced management system',
-      cta: 'Learn More',
-      ctaLink: '/solutions',
+      image: 'assets/images/spices-bg.jpg',
+
+      title: 'Fresh Spices from Farm to Kitchen',
+      subtitle: 'Discover authentic flavor with premium handpicked spices sourced directly from trusted growers.',
+      cta: 'Shop Now',
+      ctaLink: '/products',
     },
     {
-      image: 'assets/images/image2.jpg',
-      title: 'Real-Time Tracking',
-      subtitle: 'Monitor your inventory and shipments with precision',
-      cta: 'See Features',
-      ctaLink: '/features',
+      image: 'assets/images/spices-bg1.jpg',
+      title: 'Signature Spice Blends',
+      subtitle: 'Perfectly crafted blends to elevate your cooking curated by culinary experts.',
+      cta: 'Explore Blends',
+      ctaLink: '/blends',
     },
     {
-      image: 'assets/images/image3.webp',
-      title: 'Data-Driven Insights',
-      subtitle: 'Make informed decisions with our analytics platform',
-      cta: 'Get Started',
-      ctaLink: '/signup',
-    },
+      image: 'assets/images/spices-bg3.jpg',
+      title: 'Partner With Us as a Supplier',
+      subtitle: 'Join our global network and grow your reach in the world of gourmet spices.',
+      cta: 'Become a Supplier',
+      ctaLink: '/join/supplier',
+    }
   ];
+  ;
 
   activeSlide = 0;
   private readonly SLIDE_INTERVAL = 5000; // 5 seconds
