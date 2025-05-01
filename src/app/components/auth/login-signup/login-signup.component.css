@@ -4,11 +4,6 @@
   box-sizing: border-box;
 } */
 
-body,
-input {
-  font-family: "Poppins", sans-serif;
-}
-
 .auth-container {
   position: relative;
   width: 100vw;
@@ -64,7 +59,7 @@ form.sign-up-form {
 
 .title {
   font-size: 2.2rem;
-  color: #444;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
@@ -72,7 +67,7 @@ form.sign-up-form {
   max-width: 380px;
   width: 100%;
   height: 55px;
-  background-color: #f0f0f0;
+  background-color: #fef9c3;
   margin: 10px 0;
   border-radius: 55px;
   display: grid;
@@ -84,7 +79,7 @@ form.sign-up-form {
 .input-field i {
   text-align: center;
   line-height: 55px;
-  color: #acacac;
+  color: #fde68a;
   font-size: 1.1rem;
   transition: 0.5s;
 }
@@ -95,7 +90,7 @@ form.sign-up-form {
   border: none;
   line-height: 1;
   font-size: 1.1rem;
-  color: #333;
+  color: #7f1d1d;
 }
 
 .input-field input::placeholder {
@@ -110,7 +105,7 @@ form.sign-up-form {
   outline: none;
   border-radius: 49px;
   cursor: pointer;
-  background-color: #1e6c8d;
+  background-color: #d97706;
   color: #fff;
   text-transform: uppercase;
   font-weight: 600;
@@ -119,13 +114,14 @@ form.sign-up-form {
 }
 
 .btn:hover {
-  background-color: rgb(13, 30, 59);
+  background-color: #7f1d1d;
 }
 
 .btn.transparent {
   margin: 0;
   background: none;
-  border: 2px solid #fff;
+  border: 2px solid #facc15;
+  color: #facc15;
   width: 130px;
   height: 41px;
   font-weight: 600;
@@ -227,7 +223,7 @@ form.sign-up-form {
   top: -10%;
   right: 40%;
   transform: translateY(-40%);
-  background-image: linear-gradient(-45deg, #000000 0%, #04befe 100%);
+  background-image: linear-gradient(-45deg, #7f1d1d, #facc15);
   transition: 1.8s ease-in-out;
   border-radius: 50%;
   z-index: 6;

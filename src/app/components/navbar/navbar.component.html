@@ -1,0 +1,140 @@
+<header
+  class="fixed top-0 w-full z-50 bg-white/50 backdrop-blur-3xl shadow-sm border-b border-white/30"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center py-4">
+      <!-- Logo -->
+      <div class="text-2xl font-bold font-serif text-gray-800" [routerLink]="'/home'" style="cursor: pointer;">SpiceStore</div>
+
+      <!-- Hamburger Menu (Mobile) -->
+      <div class="md:hidden">
+        <button (click)="isMobileMenuOpen = !isMobileMenuOpen" class="text-2xl">
+          ☰
+        </button>
+      </div>
+
+      <!-- Navigation (Desktop) -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a
+          [routerLink]="'/products'"
+          routerLinkActive="text-yellow-600"
+          class="text-base font-medium text-gray-800 hover:text-yellow-600"
+          >Our Products</a
+        >
+        <a
+          [routerLink]="'/about'"
+          routerLinkActive="text-yellow-600"
+          class="text-base font-medium text-gray-800 hover:text-yellow-600"
+          >About Us</a
+        >
+
+        <div class="relative group inline-block">
+          <button
+            class="text-base font-medium text-gray-800 hover:text-yellow-600 flex items-center gap-1 peer"
+          >
+            More Links
+            <span class="text-sm">▼</span>
+          </button>
+
+          <div
+            class="invisible opacity-0 absolute top-full left-1/2 -translate-x-1/2 mt-2 flex-col gap-4 w-[300px] z-50 p-6 bg-white/60 backdrop-blur-md border border-white/30 shadow-xl rounded-xl transition-all duration-200 ease-in-out peer-hover:visible peer-hover:opacity-100 group-hover:visible group-hover:opacity-100 hover:visible hover:opacity-100"
+            style="transform: translateZ(0)"
+          >
+            <h4 class="text-gray-900 text-sm mb-2 font-extrabold leading-tight">
+              Explore More
+            </h4>
+            <ul class="space-y-1 text-sm text-gray-700">
+              <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
+                <a
+                  [routerLink]="'/products/info'"
+                  routerLinkActive="text-yellow-600"
+                  class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600 "
+                >
+                  <b>Product Info</b><br />
+                  <span class="text-gray-500"
+                    >Discover our latest offerings and updates.</span
+                  >
+                </a>
+              </li>
+              <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
+                <a
+                  [routerLink]="'/vendors'"
+                  routerLinkActive="text-yellow-600"
+                  class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
+                >
+                  <b>Vendor Info</b><br />
+                  <span class="text-gray-500"
+                    >Join our network of trusted vendors today.</span
+                  >
+                </a>
+              </li>
+              <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
+                <a
+                  [routerLink]="'/suppliers'"
+                  routerLinkActive="text-yellow-600"
+                  class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
+                >
+                  <b>Supplier Info</b><br />
+                  <span class="text-gray-500"
+                    >Become a supplier and grow with us.</span
+                  >
+                </a>
+              </li>
+              <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md p-3 hover:bg-white">
+                <a
+                  [routerLink]="'/contact'"
+                  routerLinkActive="text-yellow-600"
+                  class="block p-0 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
+                >
+                  <b>Contact Us</b><br />
+                  <span class="text-gray-500"
+                    >Get in touch for inquiries and support.</span
+                  >
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Buttons (Desktop Only) -->
+      <div class="hidden md:flex gap-3">
+        <button
+          [routerLink]="'/auth'"
+          class="px-4 py-1 border border-yellow-800 text-yellow-800 rounded font-semibold hover:bg-yellow-50 hover:cursor-pointer"
+        >
+          Join
+        </button>
+        <button
+          [routerLink]="'/learn'"
+          class="px-4 py-1 bg-gradient-to-r from-red-500 to-yellow-600 text-white rounded font-semibold hover:opacity-90 hover:cursor-pointer"
+        >
+          Learn
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMobileMenuOpen" class="md:hidden pb-4">
+      <a [routerLink]="'/products'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Our Products</a>
+      <a [routerLink]="'/about'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">About Us</a>
+      <a [routerLink]="'/products/info'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Product Info</a>
+      <a [routerLink]="'/vendors'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Vendor Info</a>
+      <a [routerLink]="'/suppliers'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Supplier Info</a>
+      <a [routerLink]="'/contact'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Contact Us</a>
+      
+      <button
+      routerLink="/auth"
+        class="block w-full py-2 border border-yellow-800 text-yellow-800 rounded font-semibold hover:bg-yellow-50 mt-2"
+      >
+        Join
+      </button>
+      <button
+      routerLink="/learn"
+        class="block w-full py-2 bg-gradient-to-r from-red-500 to-yellow-600 text-white rounded font-semibold hover:opacity-90 mt-2 "
+      >
+        Learn
+      </button>
+    </div>
+  </div>
+</header>

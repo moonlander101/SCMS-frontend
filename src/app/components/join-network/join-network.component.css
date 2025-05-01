@@ -1,0 +1,118 @@
+/* Large yellow circle in top-left */
+section::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(252,211,77) 0%, rgba(251,191,36,0.05) 70%);
+  top: -100px;
+  left: -100px;
+  z-index: 0;
+}
+
+/* Medium orange circle in bottom-right */
+section::after {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249,115,22) 0%, rgba(253,186,116,0.05) 70%);
+  bottom: -50px;
+  right: -50px;
+  z-index: 0;
+}
+
+/* Additional small circle near center */
+.max-w-7xl::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 157, 11, 0.8) 0%, rgba(251,191,36,0.03) 70%);
+  top: 40%;
+  left: 45%;
+  z-index: 0;
+}
+
+/* Make sure content stays above the circles */
+.max-w-7xl {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure cards have background so circles don't show through */
+.p-6 {
+  background-color: white;
+  position: relative;
+  z-index: 1;
+}
+
+section::before {
+  /* existing styles */
+  animation: float1 15s ease-in-out infinite;
+}
+
+section::after {
+  /* existing styles */
+  animation: float2 18s ease-in-out infinite 2s;
+}
+
+.max-w-7xl::before {
+  /* existing styles */
+  animation: float3 12s ease-in-out infinite 1s;
+}
+
+/* For much wider movement range */
+@keyframes float1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(80px, -60px) rotate(8deg);
+  }
+  50% {
+    transform: translate(120px, 40px) rotate(12deg);
+  }
+  75% {
+    transform: translate(40px, 100px) rotate(5deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(-100px, 70px) rotate(-10deg);
+  }
+  50% {
+    transform: translate(-60px, -40px) rotate(-15deg);
+  }
+  75% {
+    transform: translate(-120px, -80px) rotate(-8deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes float3 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  33% {
+    transform: translate(-80px, -100px) rotate(-12deg);
+  }
+  66% {
+    transform: translate(100px, -50px) rotate(15deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}

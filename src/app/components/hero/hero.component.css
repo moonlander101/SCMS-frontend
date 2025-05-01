@@ -1,4 +1,4 @@
-:host {
+/* :host {
   display: block;
   position: relative;
   height: 100vh;
@@ -139,7 +139,9 @@
 .dot-indicator:not(.active):hover {
   background-color: rgba(255, 255, 255, 0.6);
 }
+ */
 
+ 
 .cta-button {
   position: relative;
   display: inline-block;
