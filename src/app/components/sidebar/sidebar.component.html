@@ -1,0 +1,17 @@
+<!-- sidebar.component.html -->
+<div class="h-screen w-64 bg-white shadow-lg transition-all duration-300 ease-in-out" [hidden]="isClosed()">
+  <div class="px-6 py-4 border-b border-gray-200 flex">
+    <h2 class="text-xl font-semibold text-gray-800">Navigation</h2>
+  </div>
+  <nav class="mt-6">
+    <ul>
+      @for (tab of tabs; track tab.label) {
+        <li class="px-6 py-3 hover:bg-gray-100 transition-colors duration-200">
+          <a [routerLink]="tab.route" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            {{ tab.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+</div>
