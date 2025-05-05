@@ -1,0 +1,12 @@
+.forecast-container {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  
+  /* Keep content above decorations */
+  form, .text-center, .bg-white, .grid, table, h2, h3, h4 {
+    position: relative;
+    z-index: 1;
+  }
+  
