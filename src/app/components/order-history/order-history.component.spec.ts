@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SupplierDashboard } from './supplier.component';
+import { OrderHistoryComponent } from './order-history.component';
 
-describe('SupplierDashboard', () => {
-  let component: SupplierDashboard;
-  let fixture: ComponentFixture<SupplierDashboard>;
+describe('OrderHistoryComponent', () => {
+  let component: OrderHistoryComponent;
+  let fixture: ComponentFixture<OrderHistoryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SupplierDashboard],
+      imports: [OrderHistoryComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SupplierDashboard);
+    fixture = TestBed.createComponent(OrderHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

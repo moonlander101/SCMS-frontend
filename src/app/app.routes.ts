@@ -4,7 +4,11 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { SupplierComponent } from './components/supplier/supplier.component';
+import { SupplierDashboard } from './components/supplier/supplier.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
+import { OrderHistoryComponent } from './components/order-history/order-history.component';
+import { ProductManagementComponent } from './components/product-management/product-management.component';
+import { CurrentRequestsComponent } from './components/current-requests/current-requests.component';
 
 export const routes: Routes = [
   {
@@ -32,11 +36,13 @@ export const routes: Routes = [
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
-      // { path: 'orders', component: OrdersComponent },   // /dashboard/orders
-      // { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
+      { path: 'order-history', component: OrderHistoryComponent },   // /dashboard/orders
+      { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
+      { path: 'product-management', component: ProductManagementComponent}, // /dashboard/product-management
+      { path: 'current-requests', component: CurrentRequestsComponent }, // /dashboard/current-requests
       // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
       // { path: 'vendors', component: VendorsComponent },
-      { path: 'supplier', component: SupplierComponent }
+      { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
     ]
   },
   { path: '**', redirectTo: 'home' } // Handle 404/unknown routes
