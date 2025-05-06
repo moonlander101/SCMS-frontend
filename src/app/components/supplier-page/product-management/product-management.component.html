@@ -1,0 +1,88 @@
+<!-- Assumes parent layout provides header/footer -->
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold text-[#003545] mb-6">Manage Products</h2>
+  
+    <!-- Button to toggle Add Product Form -->
+    <div class="mb-6">
+      <button (click)="showAddForm = !showAddForm" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        {{ showAddForm ? 'Cancel Adding Product' : 'Add New Product' }}
+      </button>
+    </div>
+  
+    <!-- Add/Edit Product Form (Conditional Display) -->
+    <div *ngIf="showAddForm || editingProduct" class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6">
+      <h3 class="text-xl font-semibold mb-4 text-[#003545]">{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h3>
+      <!-- Use Angular Reactive Forms here -->
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+            <input type="text" formControlName="name" class="w-full p-2 border rounded border-slate-300">
+            <!-- Add validation messages -->
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+            <input type="text" formControlName="sku" class="w-full p-2 border rounded border-slate-300">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea formControlName="description" rows="3" class="w-full p-2 border rounded border-slate-300"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+            <input type="number" formControlName="price" class="w-full p-2 border rounded border-slate-300">
+          </div>
+           <!-- Add more fields as needed: Category, Lead Time, MOQ etc. -->
+        </div>
+        <div class="flex justify-end space-x-3">
+           <button type="button" (click)="cancelEdit()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+           <button type="submit" [disabled]="productForm.invalid" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50">
+               {{ editingProduct ? 'Update Product' : 'Save Product' }}
+           </button>
+        </div>
+      </form>
+      <!-- Success/Error Message Area -->
+       <div *ngIf="successMessage" class="mt-4 p-3 bg-green-100 text-green-700 rounded border border-green-300">
+          {{ successMessage }}
+       </div>
+       <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-100 text-red-700 rounded border border-red-300">
+          {{ errorMessage }}
+       </div>
+    </div>
+  
+  
+    <!-- List of Existing Products -->
+    <h3 class="text-xl font-semibold text-[#003545] mb-4">Your Product Catalogue</h3>
+    <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
+      <table class="w-full table-auto">
+         <thead class="bg-slate-100 text-left text-sm font-medium text-gray-600">
+          <tr>
+            <th class="px-4 py-3">Product Name</th>
+            <th class="px-4 py-3">SKU</th>
+            <th class="px-4 py-3">Unit Price</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+         <tbody class="text-gray-700">
+           <tr *ngFor="let product of products" class="border-b border-slate-200 hover:bg-slate-50">
+            <td class="px-4 py-3">{{ product.name }}</td>
+            <td class="px-4 py-3">{{ product.sku }}</td>
+            <td class="px-4 py-3">{{ product.price | currency }}</td>
+            <td class="px-4 py-3 space-x-2">
+                <button (click)="editProduct(product)" class="text-blue-600 hover:underline text-sm">Edit</button>
+                <button (click)="deleteProduct(product.id)" class="text-red-600 hover:underline text-sm">Delete</button>
+            </td>
+          </tr>
+           <tr *ngIf="!products || products.length === 0">
+            <td colspan="4" class="text-center px-4 py-6 text-gray-500">You haven't added any products yet.</td>
+          </tr>
+         </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Footer -->
+  <div class="mt-auto bg-gray-100 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+      © 2025 Supply Chain Management System. All rights reserved.
+    </div>
+  </div>
