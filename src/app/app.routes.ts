@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LoginSignupComponent } from './components/auth/login-signup/login-signup.component';
+import { LoginSignupComponent } from './components/auth-page/login-signup/login-signup.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
@@ -9,7 +9,7 @@ import { InventoryComponent } from './components/supplier-page/inventory/invento
 import { OrderHistoryComponent } from './components/supplier-page/order-history/order-history.component';
 import { ProductManagementComponent } from './components/supplier-page/product-management/product-management.component';
 import { CurrentRequestsComponent } from './components/supplier-page/current-requests/current-requests.component';
-import { ForecastComponent } from './components/forecast/forecast.component';
+import { ForecastComponent } from './components/admin-page/forecast/forecast.component';
 
 export const routes: Routes = [
   {

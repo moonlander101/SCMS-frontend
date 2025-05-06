@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { HeroSliderComponent } from '../../components/hero/hero.component';
-import { AboutUsComponent } from '../../components/about-us/about-us.component';
-import { FooterComponent } from '../../components/footer/footer.component';
-import { JoinNetworkComponent } from '../../components/join-network/join-network.component';
-import { ProductSectionComponent } from '../../components/product-section/product-section.component';
+import { NavbarComponent } from '../../components/home-page/navbar/navbar.component';
+import { HeroSliderComponent } from '../../components/home-page/hero/hero.component';
+import { AboutUsComponent } from '../../components/home-page/about-us/about-us.component';
+import { FooterComponent } from '../../components/home-page/footer/footer.component';
+import { JoinNetworkComponent } from '../../components/home-page/join-network/join-network.component';
+import { ProductSectionComponent } from '../../components/home-page/product-section/product-section.component';
 
 @Component({
     selector: 'app-auth-layout',
