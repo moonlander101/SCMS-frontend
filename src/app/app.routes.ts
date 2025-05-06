@@ -11,6 +11,9 @@ import { ProductManagementComponent } from './components/supplier-page/product-m
 import { CurrentRequestsComponent } from './components/supplier-page/current-requests/current-requests.component';
 import { ForecastComponent } from './components/admin-page/forecast/forecast.component';
 
+import { authGuard } from './gaurds/auth.guard'
+import { roleGuard } from './gaurds/role.guard';
+
 export const routes: Routes = [
   {
     path: '',
@@ -25,7 +28,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
