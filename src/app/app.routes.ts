@@ -13,6 +13,8 @@ import { ForecastComponent } from './components/admin-page/forecast/forecast.com
 
 import { authGuard } from './gaurds/auth.guard'
 import { roleGuard } from './gaurds/role.guard';
+import { VendorSignupComponent } from './components/auth-page/vendor-signup/vendor-signup.component';
+import { SupplierSignupComponent } from './components/auth-page/supplier-signup/supplier-signup.component';
 
 export const routes: Routes = [
   {
@@ -21,9 +23,14 @@ export const routes: Routes = [
     children: [{ path: '', redirectTo: 'home', pathMatch: 'full' }],
   },
   {
-    path: '',
+    path: 'auth',
     component: AuthLayoutComponent,
-    children: [{ path: 'auth', component: LoginSignupComponent }],
+    children: [
+      { path: 'vendor', component: VendorSignupComponent },
+      { path: 'supplier', component: SupplierSignupComponent },
+      { path: '', component: LoginSignupComponent },
+
+    ],
   },
   {
     path: 'dashboard',
@@ -43,7 +50,7 @@ export const routes: Routes = [
       { path: 'current-requests', component: CurrentRequestsComponent }, // /dashboard/current-requests
       // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
       // { path: 'vendors', component: VendorsComponent },
-      // { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+      { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
     ]
   },
   { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes
