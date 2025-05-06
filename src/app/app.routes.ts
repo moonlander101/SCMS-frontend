@@ -9,25 +9,18 @@ import { InventoryComponent } from './components/supplier-page/inventory/invento
 import { OrderHistoryComponent } from './components/supplier-page/order-history/order-history.component';
 import { ProductManagementComponent } from './components/supplier-page/product-management/product-management.component';
 import { CurrentRequestsComponent } from './components/supplier-page/current-requests/current-requests.component';
+import { ForecastComponent } from './components/forecast/forecast.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    children: [
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-      // Additional routes for your main layout
-    ]
+    children: [{ path: '', redirectTo: 'home', pathMatch: 'full' }],
   },
   {
     path: '',
     component: AuthLayoutComponent,
-    children: [
-      { path: 'auth', component: LoginSignupComponent }
-      // You can add more auth-related routes if needed:
-      // { path: 'forgot-password', component: ForgotPasswordComponent },
-      // { path: 'reset-password', component: ResetPasswordComponent }
-    ]
+    children: [{ path: 'auth', component: LoginSignupComponent }],
   },
   {
     path: 'dashboard',
@@ -36,6 +29,11 @@ export const routes: Routes = [
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
+      {
+        path: 'forecast',
+        component: ForecastComponent,
+        pathMatch: 'full',
+      },
       { path: 'order-history', component: OrderHistoryComponent },   // /dashboard/orders
       { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
       { path: 'product-management', component: ProductManagementComponent}, // /dashboard/product-management
@@ -45,5 +43,5 @@ export const routes: Routes = [
       // { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
     ]
   },
-  { path: '**', redirectTo: 'home' } // Handle 404/unknown routes
+  { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes
 ];
