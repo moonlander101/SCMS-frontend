@@ -18,7 +18,7 @@ interface Product {
   selector: 'app-product-management',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './product-management.component.html',
-  styleUrl: './product-management.component.css'
+  styleUrls: ['./product-management.component.css']
 })
 
 export class ProductManagementComponent implements OnInit {
