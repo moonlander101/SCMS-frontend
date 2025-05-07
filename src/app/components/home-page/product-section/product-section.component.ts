@@ -103,4 +103,15 @@ export class ProductSectionComponent {
     if (e.key === 'Escape') this.closeProductModal();
   };
   
+  addToCart(product: any) {
+    // Get existing cart items or initialize empty array
+    const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Add new product to cart
+    cartItems.push(product);
+    
+    // Save updated cart back to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }
+
 }

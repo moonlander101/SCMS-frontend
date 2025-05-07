@@ -102,6 +102,7 @@
           <div class="flex justify-between items-center mt-6">
             <button
               class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition font-medium"
+              (click)="addToCart(selectedProduct)"
             >
               Add to Cart
             </button>
@@ -110,7 +111,7 @@
               <div class="relative">
                 <select
                   class="appearance-none bg-white border border-gray-300 text-gray-800 rounded-md py-1.5 pl-3 pr-8 text-sm cursor-pointer hover:border-yellow-400 focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 focus:outline-none transition-all"
-                >
+                  >
                   <option value="1" class="py-2 px-4 hover:bg-yellow-50">
                     1
                   </option>

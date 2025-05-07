@@ -15,6 +15,12 @@ import { authGuard } from './gaurds/auth.guard'
 import { roleGuard } from './gaurds/role.guard';
 import { VendorSignupComponent } from './components/auth-page/vendor-signup/vendor-signup.component';
 import { SupplierSignupComponent } from './components/auth-page/supplier-signup/supplier-signup.component';
+import { VendorComponent } from './components/vendor-page/vender/vendor.component';
+import { ProductSectionComponent } from './components/home-page/product-section/product-section.component';
+import { CartComponent } from './components/vendor-page/cart/cart.component';
+import { OrderSummaryComponent } from './components/vendor-page/order-summary/order-summary.component';
+import { CartSummaryComponent } from './components/vendor-page/cart-summary/cart-summary.component';
+import { OrdersComponent } from './components/vendor-page/orders/orders.component';
 
 export const routes: Routes = [
   {
@@ -35,7 +41,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
@@ -51,6 +57,13 @@ export const routes: Routes = [
       // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
       // { path: 'vendors', component: VendorsComponent },
       { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+      { path: 'vendor', component: VendorComponent, pathMatch: 'full' },
+      { path: 'vendor/products', component: ProductSectionComponent, pathMatch: 'full' },
+      { path: 'vendor/cart', component: CartComponent, pathMatch: 'full' },
+      { path: 'vendor/orders/order-details/:id', component: OrderSummaryComponent, pathMatch: 'full' },
+      { path: 'vendor/cart-summery', component: CartSummaryComponent, pathMatch: 'full' },
+      { path: 'vendor/cart/cart-summery', component: CartSummaryComponent, pathMatch: 'full' },
+      { path: 'vendor/orders', component: OrdersComponent, pathMatch: 'full' },
     ]
   },
   { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes

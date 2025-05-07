@@ -1,0 +1,67 @@
+<div class="min-h-screen flex flex-col">
+  <!-- Gradient Header with Wave -->
+  <div class="relative">
+    <div class="absolute inset-0 bg-gradient-to-l from-red-500 to-yellow-500 h-[220px] sm:h-[240px] md:h-[260px]">
+      <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+        <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
+          <path
+            fill="#f8fafc"
+            fill-opacity="1"
+            d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Welcome Text -->
+    <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
+      <div class="text-center max-w-md mx-auto">
+        <div class="inline-block mb-1 px-3 py-1 rounded-full bg-[#1a759f]/20 text-blue-100 text-sm">
+          Vendor Ordering Flow
+        </div>
+        <h2 class="text-xl md:text-2xl font-medium text-blue-100 mt-2">Welcome back,</h2>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mt-1">{{ user.name }}</h1>
+        <p class="text-blue-100 mt-2 text-lg">{{ user.role }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow bg-slate-50">
+    <div class="container mx-auto px-4 py-6 md:py-8 mt-12 sm:mt-16 md:mt-20">
+
+      <h2 class="text-2xl font-semibold text-[#003545] mb-6">Order Process</h2>
+
+      <!-- Feature Flow Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Step 1 -->
+        <a routerLink="products" class="block p-6 bg-white rounded-lg shadow-md border border-slate-200 hover:shadow-lg transition-shadow duration-300 hover:cursor-pointer">
+          <h3 class="text-lg font-semibold text-[#005f73] mb-2">Browse Catalog</h3>
+          <p class="text-gray-600 text-sm">Explore available spices and products.</p>
+        </a>
+
+        <!-- Step 3 -->
+        <a routerLink="cart" class="block p-6 bg-white rounded-lg shadow-md border border-slate-200 hover:shadow-lg transition-shadow duration-300 hover:cursor-pointer">
+          <h3 class="text-lg font-semibold text-[#005f73] mb-2">Cart</h3>
+          <p class="text-gray-600 text-sm">Specify quantity and manage cart contents.</p>
+        </a>
+        <a routerLink="orders" class="block p-6 bg-white rounded-lg shadow-md border border-slate-200 hover:shadow-lg transition-shadow duration-300 hover:cursor-pointer">
+          <h3 class="text-lg font-semibold text-[#005f73] mb-2">Previous Orders</h3>
+          <p class="text-gray-600 text-sm">View your past orders and their statuses.</p>
+        </a>
+        <a routerLink="cart-summery" class="block p-6 bg-white rounded-lg shadow-md border border-slate-200 hover:shadow-lg transition-shadow duration-300 hover:cursor-pointer">
+          <h3 class="text-lg font-semibold text-[#005f73] mb-2">Cart Summary</h3>
+          <p class="text-gray-600 text-sm">View your cart details and manage items.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-auto bg-gray-100 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+      © 2025 Vendor Ordering System. All rights reserved.
+    </div>
+  </div>
+</div>

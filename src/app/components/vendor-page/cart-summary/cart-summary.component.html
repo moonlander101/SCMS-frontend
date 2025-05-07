@@ -1,0 +1,313 @@
+<div class="min-h-screen flex flex-col">
+    <!-- Gradient Header with Wave (Unchanged) -->
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-l from-red-500 to-yellow-500 h-[220px] sm:h-[240px] md:h-[260px]">
+        <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+          <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
+            <path
+              fill="#f8fafc"
+              fill-opacity="1"
+              d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+  
+      <!-- Header Text (Refined) -->
+      <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
+        <div class="text-center max-w-md mx-auto">
+          <div class="inline-block mb-1 px-4 py-1 rounded-full bg-white/20 text-white text-sm font-medium tracking-wide">
+            Cart Summary
+          </div>
+          <h2 class="text-xl md:text-2xl font-light text-white mt-3">Review your order,</h2>
+          <h1 class="text-3xl md:text-4xl font-bold text-white mt-1">{{ user.name }}</h1>
+          <p class="text-white/90 mt-2 text-lg font-light">Confirm your selections before purchase</p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Main Content (Updated) -->
+    <div class="flex-grow bg-gray-50">
+      <div class="container mx-auto px-6 py-12 max-w-6xl">
+        <!-- Checkout Steps -->
+        <div class="mb-12">
+          <div class="relative">
+            <!-- Progress Bar -->
+            <div class="h-2 bg-gray-200 rounded-full mb-8">
+              <div class="h-2 bg-blue-500 rounded-full" style="width: 66%"></div>
+            </div>
+            
+            <!-- Progress Steps -->
+            <div class="flex justify-between text-sm text-gray-600">
+              <div class="flex flex-col items-center text-blue-600 font-medium">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-blue-500 text-white">
+                  <span>✓</span>
+                </div>
+                <span>Cart</span>
+              </div>
+              <div class="flex flex-col items-center text-blue-600 font-medium">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-blue-500 text-white">
+                  <span>✓</span>
+                </div>
+                <span>Summary</span>
+              </div>
+              <div class="flex flex-col items-center text-gray-400">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-gray-200 text-gray-400">
+                  <span>3</span>
+                </div>
+                <span>Payment</span>
+              </div>
+              <div class="flex flex-col items-center text-gray-400">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-gray-200 text-gray-400">
+                  <span>4</span>
+                </div>
+                <span>Confirmation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Two-column layout for order summary -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Left column: Items -->
+          <div class="lg:col-span-2">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-3 border-b border-gray-200">Order Items</h2>
+            
+            <div *ngIf="cartItems.length > 0; else emptyCart">
+              <div *ngFor="let item of cartItems; let i = index" 
+                   class="bg-white rounded-lg shadow-sm p-5 border border-gray-100 mb-4 flex flex-col sm:flex-row">
+                <img [src]="item.image" alt="{{ item.name }}" 
+                     class="h-24 w-24 object-cover rounded mb-4 sm:mb-0 sm:mr-6" />
+                <div class="flex-grow">
+                  <div class="flex justify-between items-start">
+                    <h3 class="text-lg font-medium text-gray-800">{{ item.name }}</h3>
+                    <p class="text-gray-900 font-semibold">
+                      ${{ (item.price * item.quantity).toFixed(2) }}
+                    </p>
+                  </div>
+                  <p class="text-gray-500 text-sm mt-1">{{ item.description }}</p>
+                  <div class="flex items-center mt-4">
+                    <div class="flex items-center mr-6">
+                      <span class="text-gray-600 mr-3">Qty:</span>
+                      <div class="flex items-center border border-gray-300 rounded">
+                        <button 
+                          (click)="decreaseQuantity(i)" 
+                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">-</button>
+                        <span class="px-3 py-1 border-l border-r border-gray-300">{{ item.quantity }}</span>
+                        <button 
+                          (click)="increaseQuantity(i)" 
+                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">+</button>
+                      </div>
+                    </div>
+                    <button
+                      (click)="removeItem(i)"
+                      class="text-gray-500 hover:text-red-600 transition-colors text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mt-8">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Shipping Address</h3>
+              
+              <form [formGroup]="shippingForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <input 
+                      type="text" 
+                      formControlName="firstName"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <div *ngIf="shippingForm.get('firstName')?.invalid && shippingForm.get('firstName')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      First name is required
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <input 
+                      type="text" 
+                      formControlName="lastName"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <div *ngIf="shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      Last name is required
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <input 
+                    type="text" 
+                    formControlName="address"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                  <div *ngIf="shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched" 
+                       class="text-red-500 text-xs mt-1">
+                    Address is required
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <input 
+                      type="text" 
+                      formControlName="city"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <div *ngIf="shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      City is required
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <select 
+                      formControlName="country"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select Country</option>
+                      <option value="Sri Lanka">Sri Lanka</option>
+                      <option value="India">India</option>
+                      <option value="United States">United States</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                    </select>
+                    <div *ngIf="shippingForm.get('country')?.invalid && shippingForm.get('country')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      Country is required
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                    <input 
+                      type="text" 
+                      formControlName="postalCode"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <div *ngIf="shippingForm.get('postalCode')?.invalid && shippingForm.get('postalCode')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      Postal code is required
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    formControlName="phone"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                  <div *ngIf="shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched" 
+                       class="text-red-500 text-xs mt-1">
+                    Valid phone number is required
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+  
+          <!-- Right column: Summary -->
+          <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 sticky top-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+                Order Summary
+              </h3>
+              
+              <div *ngIf="cartItems.length > 0" class="space-y-4">
+                <div class="space-y-2">
+                  <p class="flex justify-between text-gray-600">
+                    <span>Subtotal ({{ getTotalItems() }} items):</span>
+                    <span>${{ getSubtotal() }}</span>
+                  </p>
+                  <p class="flex justify-between text-gray-600">
+                    <span>Shipping:</span>
+                    <span>${{ shippingCost.toFixed(2) }}</span>
+                  </p>
+                  <p class="flex justify-between text-gray-600">
+                    <span>Tax ({{ taxRate }}%):</span>
+                    <span>${{ calculateTax().toFixed(2) }}</span>
+                  </p>
+                </div>
+                
+                <!-- Discount Code -->
+                <div class="pt-3 pb-3 border-t border-b border-gray-100">
+                  <div class="flex items-center">
+                    <input 
+                      type="text" 
+                      placeholder="Discount code" 
+                      class="flex-grow p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      [(ngModel)]="discountCode"
+                    >
+                    <button 
+                      (click)="applyDiscount()"
+                      class="bg-gray-200 text-gray-800 hover:bg-gray-300 px-4 py-2 rounded-r-md transition"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  <div *ngIf="discountApplied" class="mt-2 text-sm text-green-600">
+                    Discount applied: -${{ discountAmount.toFixed(2) }}
+                  </div>
+                </div>
+                
+                <!-- Total -->
+                <div class="flex justify-between text-lg font-semibold text-gray-800 pt-2">
+                  <span>Total:</span>
+                  <span>${{ getTotal() }}</span>
+                </div>
+                
+                <!-- Checkout Button -->
+                <button 
+                  (click)="proceedToPayment()"
+                  [disabled]="!canProceed()"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Proceed to Payment
+                </button>
+                
+                <button 
+                  routerLink="/cart"
+                  class="w-full bg-transparent hover:bg-gray-100 text-gray-700 py-2 rounded-md transition mt-2 border border-gray-300"
+                >
+                  Return to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Empty Cart -->
+        <ng-template #emptyCart>
+          <div class="text-center py-16">
+            <div class="mb-6 text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <p class="text-gray-600 text-lg mb-6">Your cart is currently empty.</p>
+            <a
+              routerLink="/products"
+              class="inline-block bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-md transition"
+              >Browse Products</a
+            >
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  
+    <!-- Footer -->
+    <div class="mt-auto bg-gray-100 py-6">
+      <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+        © 2025 Vendor Ordering System. All rights reserved.
+      </div>
+    </div>
+  </div>
