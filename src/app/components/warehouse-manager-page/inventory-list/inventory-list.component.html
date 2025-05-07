@@ -1,0 +1,165 @@
+<div class="inventory-container">
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading inventory data...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-button" (click)="fetchInventory()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && inventory" class="inventory-data">
+    <!-- Warehouse header with key metrics -->
+    <div class="dashboard-header">
+      <div class="warehouse-info">
+        <h1>{{ inventory.warehouse_city }}</h1>
+        <div class="warehouse-status" [ngClass]="getStockLevelClass()">
+          {{
+            getStockLevelPercentage() < 30
+              ? "Low Stock"
+              : getStockLevelPercentage() < 70
+              ? "Adequate Stock"
+              : "Good Stock"
+          }}
+        </div>
+      </div>
+
+      <div class="metric-cards">
+        <div class="metric-card">
+          <div class="metric-value">
+            {{ inventory.current_stock_level | number : "1.0-0" }}
+          </div>
+          <div class="metric-label">Current Stock</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">
+            {{ inventory.warehouse_capacity | number : "1.0-0" }}
+          </div>
+          <div class="metric-label">Capacity</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Stock Level</div>
+          <div class="progress-bar">
+            <div
+              class="progress"
+              [style.width.%]="getStockLevelPercentage()"
+              [ngClass]="getStockLevelClass()"
+            >
+              <span>{{ getStockLevelPercentage().toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value date">
+            {{ inventory.last_restocked | date : "MMM d" }}
+          </div>
+          <div class="metric-label">Last Restocked</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard content with chart and table -->
+    <div class="dashboard-content">
+      <!-- Interactive pie chart without legend -->
+      <div class="chart-container">
+        <h2>Inventory by Category</h2>
+        <div class="chart-wrapper">
+          <div class="interactive-chart">
+            <!-- Donut chart with segments -->
+            <div class="donut-chart" [style.background]="pieChartGradient">
+              <!-- Create individual segment overlays for better hover detection -->
+              <div
+                *ngFor="let item of chartData"
+                class="chart-segment"
+                [style.--start-angle]="item.startAngle"
+                [style.--end-angle]="item.endAngle"
+                [style.--segment-color]="item.color"
+                (mouseenter)="onSegmentHover(item)"
+                (mouseleave)="onSegmentLeave()"
+              ></div>
+
+              <div class="inner-circle">
+                <div class="hover-info" *ngIf="hoverCategory">
+                  <div class="hover-category">{{ hoverCategory.category }}</div>
+                  <div class="hover-count">
+                    {{ hoverCategory.count | number : "1.0-0" }}
+                  </div>
+                  <div class="hover-percent">
+                    {{ hoverCategory.percentage.toFixed(1) }}%
+                  </div>
+                </div>
+                <div class="default-info" *ngIf="!hoverCategory">
+                  <div class="total-count">
+                    {{ getTotalCount() | number : "1.0-0" }}
+                  </div>
+                  <div class="total-label">Total Items</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern data table -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2>Inventory Items</h2>
+          <div class="table-actions">
+            <span class="item-count"
+              >{{ inventory.inventory_product_details.length }} items</span
+            >
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th (click)="sort('product_name')">
+                  Product Name
+                  <span [ngClass]="getSortIconClass('product_name')"></span>
+                </th>
+                <th (click)="sort('category')">
+                  Category
+                  <span [ngClass]="getSortIconClass('category')"></span>
+                </th>
+                <th (click)="sort('supplied_by')">
+                  Supplier
+                  <span [ngClass]="getSortIconClass('supplied_by')"></span>
+                </th>
+                <th (click)="sort('supplied_date')">
+                  Date
+                  <span [ngClass]="getSortIconClass('supplied_date')"></span>
+                </th>
+                <th (click)="sort('product_count')" class="right-align">
+                  Quantity
+                  <span [ngClass]="getSortIconClass('product_count')"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of inventory.inventory_product_details">
+                <td>{{ item.product_name }}</td>
+                <td>
+                  <span
+                    class="category-badge"
+                    [style.background-color]="getCategoryColor(item.category)"
+                  >
+                    {{ item.category }}
+                  </span>
+                </td>
+                <td>{{ item.supplied_by }}</td>
+                <td>{{ item.supplied_date | date : "MMM d, y" }}</td>
+                <td class="right-align">
+                  {{ item.product_count | number : "1.0-0" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

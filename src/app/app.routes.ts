@@ -11,10 +11,13 @@ import { ProductManagementComponent } from './components/supplier-page/product-m
 import { CurrentRequestsComponent } from './components/supplier-page/current-requests/current-requests.component';
 import { ForecastComponent } from './components/admin-page/forecast/forecast.component';
 
-import { authGuard } from './gaurds/auth.guard'
+import { authGuard } from './gaurds/auth.guard';
 import { roleGuard } from './gaurds/role.guard';
 import { VendorSignupComponent } from './components/auth-page/vendor-signup/vendor-signup.component';
 import { SupplierSignupComponent } from './components/auth-page/supplier-signup/supplier-signup.component';
+import { InventoryListComponent } from './components/warehouse-manager-page/inventory-list/inventory-list.component';
+import { SupplierReqComponent } from './components/warehouse-manager-page/supplier-req/supplier-req.component';
+import { TransactionsComponent } from './components/warehouse-manager-page/transactions/transactions.component';
 
 export const routes: Routes = [
   {
@@ -29,29 +32,40 @@ export const routes: Routes = [
       { path: 'vendor', component: VendorSignupComponent },
       { path: 'supplier', component: SupplierSignupComponent },
       { path: '', component: LoginSignupComponent },
-
     ],
   },
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
+      // Warehouse Manager routes
+      {
+        path: 'warehouse',
+        // canActivate: [roleGuard],
+        data: { roles: ['warehouse-manager'] },
+        children: [
+          { path: '', redirectTo: 'inventory', pathMatch: 'full' },
+          { path: 'inventory', component: InventoryListComponent },
+          { path: 'transactions', component: TransactionsComponent },
+          { path: 'supplier-requests', component: SupplierReqComponent },
+        ],
+      },
       {
         path: 'forecast',
         component: ForecastComponent,
         pathMatch: 'full',
       },
-      { path: 'order-history', component: OrderHistoryComponent },   // /dashboard/orders
+      { path: 'order-history', component: OrderHistoryComponent }, // /dashboard/orders
       { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
-      { path: 'product-management', component: ProductManagementComponent}, // /dashboard/product-management
+      { path: 'product-management', component: ProductManagementComponent }, // /dashboard/product-management
       { path: 'current-requests', component: CurrentRequestsComponent }, // /dashboard/current-requests
       // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
       // { path: 'vendors', component: VendorsComponent },
       { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
-    ]
+    ],
   },
   { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes
 ];
