@@ -18,6 +18,7 @@ import { SupplierSignupComponent } from './components/auth-page/supplier-signup/
 import { InventoryListComponent } from './components/warehouse-manager-page/inventory-list/inventory-list.component';
 import { SupplierReqComponent } from './components/warehouse-manager-page/supplier-req/supplier-req.component';
 import { TransactionsComponent } from './components/warehouse-manager-page/transactions/transactions.component';
+import { TruckTrackingComponent } from './components/warehouse-manager-page/truck-tracking/truck-tracking.component';
 
 export const routes: Routes = [
   {
@@ -51,6 +52,7 @@ export const routes: Routes = [
           { path: 'inventory', component: InventoryListComponent },
           { path: 'transactions', component: TransactionsComponent },
           { path: 'supplier-requests', component: SupplierReqComponent },
+          { path: 'truck-tracking', component: TruckTrackingComponent },
         ],
       },
       {
