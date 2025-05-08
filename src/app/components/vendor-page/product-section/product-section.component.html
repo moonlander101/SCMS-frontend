@@ -18,7 +18,7 @@
       <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
         <!-- Cart Icon - Inside header content -->
         <div class="absolute top-4 right-4 z-20">
-          <a routerLink="/cart" class="relative">
+          <a routerLink="/dashboard/vendor/cart" class="relative">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -47,16 +47,17 @@
     <!-- Filter Tabs -->
     <div class="flex justify-center flex-wrap gap-4 mb-12 mt-[45px] z-50">
       @for (category of categories; track category) {
-      <button
-        (click)="selectedCategory = category"
+        <button
+        (click)="selectedCategory = category.id"
         [ngClass]="{
-          'bg-[#f59e0b] text-white': selectedCategory === category,
-          'bg-[#f1f5f9] text-[#5f6c72]': selectedCategory !== category
+          'bg-[#f59e0b] text-white': selectedCategory === category.id,
+          'bg-[#f1f5f9] text-[#5f6c72]': selectedCategory !== category.id
         }"
         class="px-4 py-2 rounded-full font-medium transition hover:bg-[#d97706] hover:text-white"
       >
-        {{ category }}
+        {{ category.name }}
       </button>
+      
       }
     </div>
     
