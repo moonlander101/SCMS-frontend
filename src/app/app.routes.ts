@@ -20,6 +20,7 @@ import { SupplierReqComponent } from './components/warehouse-manager-page/suppli
 import { TransactionsComponent } from './components/warehouse-manager-page/transactions/transactions.component';
 import { TruckTrackingComponent } from './components/warehouse-manager-page/truck-tracking/truck-tracking.component';
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
+import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
 
 export const routes: Routes = [
   {
@@ -53,9 +54,12 @@ export const routes: Routes = [
           { path: 'inventory', component: InventoryListComponent },
           { path: 'transactions', component: TransactionsComponent },
           { path: 'supplier-requests', component: SupplierReqComponent },
-          { path: 'vendor-orders', component: VendorOrdersComponent },          
+          { path: 'vendor-orders', component: VendorOrdersComponent },
           { path: 'truck-tracking', component: TruckTrackingComponent },
-          
+          {
+            path: 'supplier-request-survey/:id',
+            component: SupplierReqSurveyComponent,
+          },
         ],
       },
       {

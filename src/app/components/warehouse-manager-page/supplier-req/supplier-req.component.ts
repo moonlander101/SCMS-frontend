@@ -129,9 +129,22 @@ export class SupplierReqComponent implements OnInit {
   }
 
   viewDetails(requestId: number): void {
-    // Navigate to details page
-    console.log(`Navigate to details for request ${requestId}`);
-    // this.router.navigate(['/supplier-req', requestId]);
+    // Navigate to the survey page with the request id
+    this.router.navigate([
+      '/dashboard/warehouse/supplier-request-survey',
+      requestId,
+    ]);
+  }
+
+  viewOrderDetails(requestId: number, event: Event): void {
+    // Prevent the row click from also triggering
+    event.stopPropagation();
+
+    // Navigate to the survey page with the request id
+    this.router.navigate([
+      '/dashboard/warehouse/supplier-request-survey',
+      requestId,
+    ]);
   }
 
   markAsCompleted(request: SupplierRequest, event: Event): void {
