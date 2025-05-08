@@ -1,107 +1,126 @@
 <div class="min-h-screen flex flex-col">
-    <!-- Gradient Header with Wave (Unchanged) -->
-    <div class="relative">
-      <div class="absolute inset-0 bg-gradient-to-l from-red-500 to-yellow-500 h-[220px] sm:h-[240px] md:h-[260px]">
-        <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
-          <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
-            <path
-              fill="#f8fafc"
-              fill-opacity="1"
-              d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
-            ></path>
-          </svg>
-        </div>
-      </div>
-  
-      <!-- Header Text (Refined) -->
-      <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
-        <div class="text-center max-w-md mx-auto">
-          <div class="inline-block mb-1 px-4 py-1 rounded-full bg-white/20 text-white text-sm font-medium tracking-wide">
-            Cart Summary
-          </div>
-          <h2 class="text-xl md:text-2xl font-light text-white mt-3">Review your order,</h2>
-          <h1 class="text-3xl md:text-4xl font-bold text-white mt-1">{{ user.name }}</h1>
-          <p class="text-white/90 mt-2 text-lg font-light">Confirm your selections before purchase</p>
-        </div>
+  <!-- Gradient Header with Wave -->
+  <div class="relative">
+    <div class="absolute inset-0 bg-gradient-to-l from-red-500 to-yellow-500 h-[220px] sm:h-[240px] md:h-[260px]">
+      <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+        <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
+          <path
+            fill="#f8fafc"
+            fill-opacity="1"
+            d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
+          ></path>
+        </svg>
       </div>
     </div>
-  
-    <!-- Main Content (Updated) -->
-    <div class="flex-grow bg-gray-50">
-      <div class="container mx-auto px-6 py-12 max-w-6xl">
-        <!-- Checkout Steps -->
-        <div class="mb-12">
-          <div class="relative">
-            <!-- Progress Bar -->
-            <div class="h-2 bg-gray-200 rounded-full mb-8">
-              <div class="h-2 bg-blue-500 rounded-full" style="width: 66%"></div>
+
+    <!-- Header Text -->
+    <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
+      <div class="text-center max-w-md mx-auto">
+        <div class="inline-block mb-1 px-4 py-1 rounded-full bg-white/20 text-blue-100 text-sm font-medium tracking-wide">
+          <span *ngIf="currentStep === 'summary'">Cart Summary</span>
+          <span *ngIf="currentStep === 'payment'">Payment</span>
+          <span *ngIf="currentStep === 'confirmation'">Order Confirmation</span>
+        </div>
+        <h2 class="text-xl md:text-2xl font-medium text-blue-100 mt-3">
+          <span *ngIf="currentStep === 'summary'">Review your order,</span>
+          <span *ngIf="currentStep === 'payment'">Almost done,</span>
+          <span *ngIf="currentStep === 'confirmation'">Thank you for your order,</span>
+        </h2>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mt-1">{{ user.name }}</h1>
+        <p class="text-blue-100 mt-2 text-lg">
+          <span *ngIf="currentStep === 'summary'">Confirm your selections before purchase</span>
+          <span *ngIf="currentStep === 'payment'">Secure checkout to complete your purchase</span>
+          <span *ngIf="currentStep === 'confirmation'">Your order has been successfully placed</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow bg-slate-50">
+    <div class="container mx-auto px-6 py-12 max-w-6xl">
+      <!-- Checkout Steps -->
+      <div class="mb-12">
+        <div class="relative">
+          <!-- Progress Bar -->
+          <div class="h-2 bg-gray-200 rounded-full mb-8">
+            <div class="h-2 rounded-full bg-[#005f73]" 
+                 [style.width]="currentStep === 'summary' ? '66%' : currentStep === 'payment' ? '85%' : '100%'"></div>
+          </div>
+          
+          <!-- Progress Steps -->
+          <div class="flex justify-between text-sm text-gray-600">
+            <div class="flex flex-col items-center" 
+                 [ngClass]="{'text-[#005f73] font-medium': currentStep === 'summary' || currentStep === 'payment' || currentStep === 'confirmation'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-[#005f73] text-white">
+                <span>✓</span>
+              </div>
+              <span>Cart</span>
             </div>
-            
-            <!-- Progress Steps -->
-            <div class="flex justify-between text-sm text-gray-600">
-              <div class="flex flex-col items-center text-blue-600 font-medium">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-blue-500 text-white">
-                  <span>✓</span>
-                </div>
-                <span>Cart</span>
+            <div class="flex flex-col items-center" 
+                 [ngClass]="{'text-[#005f73] font-medium': currentStep === 'summary' || currentStep === 'payment' || currentStep === 'confirmation'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-[#005f73] text-white">
+                <span>✓</span>
               </div>
-              <div class="flex flex-col items-center text-blue-600 font-medium">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-blue-500 text-white">
-                  <span>✓</span>
-                </div>
-                <span>Summary</span>
+              <span>Summary</span>
+            </div>
+            <div class="flex flex-col items-center" 
+                 [ngClass]="{'text-gray-400': currentStep === 'summary', 'text-[#005f73] font-medium': currentStep === 'payment' || currentStep === 'confirmation'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2" 
+                   [ngClass]="{'bg-gray-200 text-gray-400': currentStep === 'summary', 'bg-[#005f73] text-white': currentStep === 'payment' || currentStep === 'confirmation'}">
+                <span>3</span>
               </div>
-              <div class="flex flex-col items-center text-gray-400">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-gray-200 text-gray-400">
-                  <span>3</span>
-                </div>
-                <span>Payment</span>
+              <span>Payment</span>
+            </div>
+            <div class="flex flex-col items-center" 
+                 [ngClass]="{'text-gray-400': currentStep === 'summary' || currentStep === 'payment', 'text-[#005f73] font-medium': currentStep === 'confirmation'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2" 
+                   [ngClass]="{'bg-gray-200 text-gray-400': currentStep === 'summary' || currentStep === 'payment', 'bg-[#005f73] text-white': currentStep === 'confirmation'}">
+                <span>4</span>
               </div>
-              <div class="flex flex-col items-center text-gray-400">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-gray-200 text-gray-400">
-                  <span>4</span>
-                </div>
-                <span>Confirmation</span>
-              </div>
+              <span>Confirmation</span>
             </div>
           </div>
         </div>
-  
+      </div>
+
+      <!-- SUMMARY STEP -->
+      <div *ngIf="currentStep === 'summary'">
         <!-- Two-column layout for order summary -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Left column: Items -->
           <div class="lg:col-span-2">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-3 border-b border-gray-200">Order Items</h2>
+            <h2 class="text-xl font-semibold text-[#003545] mb-6 pb-3 border-b border-slate-200">Order Items</h2>
             
             <div *ngIf="cartItems.length > 0; else emptyCart">
               <div *ngFor="let item of cartItems; let i = index" 
-                   class="bg-white rounded-lg shadow-sm p-5 border border-gray-100 mb-4 flex flex-col sm:flex-row">
+                   class="bg-white rounded-lg shadow-sm p-5 border border-slate-200 mb-4 flex flex-col sm:flex-row">
                 <img [src]="item.image" alt="{{ item.name }}" 
                      class="h-24 w-24 object-cover rounded mb-4 sm:mb-0 sm:mr-6" />
                 <div class="flex-grow">
                   <div class="flex justify-between items-start">
-                    <h3 class="text-lg font-medium text-gray-800">{{ item.name }}</h3>
-                    <p class="text-gray-900 font-semibold">
+                    <h3 class="text-lg font-medium text-[#003545]">{{ item.name }}</h3>
+                    <p class="text-[#005f73] font-semibold">
                       ${{ (item.price * item.quantity).toFixed(2) }}
                     </p>
                   </div>
-                  <p class="text-gray-500 text-sm mt-1">{{ item.description }}</p>
+                  <p class="text-slate-500 text-sm mt-1">{{ item.description }}</p>
                   <div class="flex items-center mt-4">
                     <div class="flex items-center mr-6">
-                      <span class="text-gray-600 mr-3">Qty:</span>
-                      <div class="flex items-center border border-gray-300 rounded">
+                      <span class="text-slate-600 mr-3">Qty:</span>
+                      <div class="flex items-center border border-slate-300 rounded">
                         <button 
                           (click)="decreaseQuantity(i)" 
-                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">-</button>
-                        <span class="px-3 py-1 border-l border-r border-gray-300">{{ item.quantity }}</span>
+                          class="px-3 py-1 text-slate-600 hover:bg-slate-100">-</button>
+                        <span class="px-3 py-1 border-l border-r border-slate-300">{{ item.quantity }}</span>
                         <button 
                           (click)="increaseQuantity(i)" 
-                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">+</button>
+                          class="px-3 py-1 text-slate-600 hover:bg-slate-100">+</button>
                       </div>
                     </div>
                     <button
                       (click)="removeItem(i)"
-                      class="text-gray-500 hover:text-red-600 transition-colors text-sm font-medium"
+                      class="text-slate-500 hover:text-red-600 transition-colors text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -111,17 +130,17 @@
             </div>
             
             <!-- Shipping Address -->
-            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mt-8">
-              <h3 class="text-lg font-semibold text-gray-800 mb-4">Shipping Address</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-slate-200 mt-8">
+              <h3 class="text-lg font-semibold text-[#003545] mb-4">Shipping Address</h3>
               
               <form [formGroup]="shippingForm" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
                     <input 
                       type="text" 
                       formControlName="firstName"
-                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                     >
                     <div *ngIf="shippingForm.get('firstName')?.invalid && shippingForm.get('firstName')?.touched" 
                          class="text-red-500 text-xs mt-1">
@@ -129,11 +148,11 @@
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
                     <input 
                       type="text" 
                       formControlName="lastName"
-                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                     >
                     <div *ngIf="shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched" 
                          class="text-red-500 text-xs mt-1">
@@ -143,11 +162,11 @@
                 </div>
                 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
                   <input 
                     type="text" 
                     formControlName="address"
-                    class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                   >
                   <div *ngIf="shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched" 
                        class="text-red-500 text-xs mt-1">
@@ -157,11 +176,11 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">City</label>
                     <input 
                       type="text" 
                       formControlName="city"
-                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                     >
                     <div *ngIf="shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched" 
                          class="text-red-500 text-xs mt-1">
@@ -169,10 +188,10 @@
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Country</label>
                     <select 
                       formControlName="country"
-                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                     >
                       <option value="">Select Country</option>
                       <option value="Sri Lanka">Sri Lanka</option>
@@ -186,11 +205,11 @@
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Postal Code</label>
                     <input 
                       type="text" 
                       formControlName="postalCode"
-                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                     >
                     <div *ngIf="shippingForm.get('postalCode')?.invalid && shippingForm.get('postalCode')?.touched" 
                          class="text-red-500 text-xs mt-1">
@@ -200,11 +219,11 @@
                 </div>
                 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
                   <input 
                     type="tel" 
                     formControlName="phone"
-                    class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                   >
                   <div *ngIf="shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched" 
                        class="text-red-500 text-xs mt-1">
@@ -214,42 +233,42 @@
               </form>
             </div>
           </div>
-  
+
           <!-- Right column: Summary -->
           <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 sticky top-6">
-              <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 sticky top-6">
+              <h3 class="text-xl font-semibold text-[#003545] mb-4 pb-3 border-b border-slate-200">
                 Order Summary
               </h3>
               
               <div *ngIf="cartItems.length > 0" class="space-y-4">
                 <div class="space-y-2">
-                  <p class="flex justify-between text-gray-600">
+                  <p class="flex justify-between text-slate-600">
                     <span>Subtotal ({{ getTotalItems() }} items):</span>
                     <span>${{ getSubtotal() }}</span>
                   </p>
-                  <p class="flex justify-between text-gray-600">
+                  <p class="flex justify-between text-slate-600">
                     <span>Shipping:</span>
                     <span>${{ shippingCost.toFixed(2) }}</span>
                   </p>
-                  <p class="flex justify-between text-gray-600">
+                  <p class="flex justify-between text-slate-600">
                     <span>Tax ({{ taxRate }}%):</span>
                     <span>${{ calculateTax().toFixed(2) }}</span>
                   </p>
                 </div>
                 
                 <!-- Discount Code -->
-                <div class="pt-3 pb-3 border-t border-b border-gray-100">
+                <div class="pt-3 pb-3 border-t border-b border-slate-100">
                   <div class="flex items-center">
                     <input 
                       type="text" 
                       placeholder="Discount code" 
-                      class="flex-grow p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      class="flex-grow p-2 border border-slate-300 rounded-l-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
                       [(ngModel)]="discountCode"
                     >
                     <button 
                       (click)="applyDiscount()"
-                      class="bg-gray-200 text-gray-800 hover:bg-gray-300 px-4 py-2 rounded-r-md transition"
+                      class="bg-slate-200 text-slate-800 hover:bg-slate-300 px-4 py-2 rounded-r-md transition"
                     >
                       Apply
                     </button>
@@ -260,7 +279,7 @@
                 </div>
                 
                 <!-- Total -->
-                <div class="flex justify-between text-lg font-semibold text-gray-800 pt-2">
+                <div class="flex justify-between text-lg font-semibold text-[#003545] pt-2">
                   <span>Total:</span>
                   <span>${{ getTotal() }}</span>
                 </div>
@@ -269,45 +288,374 @@
                 <button 
                   (click)="proceedToPayment()"
                   [disabled]="!canProceed()"
-                  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full bg-[#005f73] hover:bg-[#003d4d] text-white py-3 rounded-md transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Proceed to Payment
                 </button>
                 
-                <button 
-                  routerLink="/cart"
-                  class="w-full bg-transparent hover:bg-gray-100 text-gray-700 py-2 rounded-md transition mt-2 border border-gray-300"
+                <a 
+                  routerLink="/dashboard/vendor/cart"
+                  class="block w-full text-center bg-transparent hover:bg-slate-100 text-slate-700 py-2 px-4 rounded-md transition-colors duration-200 mt-2 border border-slate-300"
                 >
                   Return to Cart
-                </button>
+                </a>
               </div>
             </div>
           </div>
         </div>
-  
+
         <!-- Empty Cart -->
         <ng-template #emptyCart>
           <div class="text-center py-16">
-            <div class="mb-6 text-gray-300">
+            <div class="mb-6 text-slate-300">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <p class="text-gray-600 text-lg mb-6">Your cart is currently empty.</p>
+            <p class="text-slate-600 text-lg mb-6">Your cart is currently empty.</p>
             <a
               routerLink="/products"
-              class="inline-block bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-md transition"
+              class="inline-block bg-[#005f73] hover:bg-[#003d4d] text-white px-6 py-3 rounded-md transition"
               >Browse Products</a
             >
           </div>
         </ng-template>
       </div>
-    </div>
-  
-    <!-- Footer -->
-    <div class="mt-auto bg-gray-100 py-6">
-      <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-        © 2025 Vendor Ordering System. All rights reserved.
+
+      <!-- PAYMENT STEP -->
+      <div *ngIf="currentStep === 'payment'">
+        <!-- Two-column layout for payment -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Left column: Payment Form -->
+          <div class="lg:col-span-2">
+            <h2 class="text-xl font-semibold text-[#003545] mb-6 pb-3 border-b border-slate-200">Payment Method</h2>
+            
+            <!-- Payment Method Selection -->
+            <div class="mb-6">
+              <div class="flex flex-wrap gap-4">
+                <div 
+                  *ngFor="let method of paymentMethods"
+                  (click)="selectPaymentMethod(method.id)"
+                  class="flex items-center p-4 border rounded-lg cursor-pointer transition-colors"
+                  [ngClass]="{'border-[#005f73] bg-[#e6f2f5]': selectedPaymentMethod === method.id, 'border-slate-200': selectedPaymentMethod !== method.id}"
+                >
+                  <img [src]="method.icon" alt="{{ method.name }}" class="h-8 mr-3">
+                  <span class="font-medium">{{ method.name }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Credit Card Form -->
+            <div *ngIf="selectedPaymentMethod === 'credit_card'" class="bg-white rounded-lg shadow-sm p-6 border border-slate-200 mb-6">
+              <form [formGroup]="paymentForm" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Card Holder Name</label>
+                  <input 
+                    type="text" 
+                    formControlName="cardholderName"
+                    class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73] placeholder:text-gray-300"
+                    placeholder="Name as it appears on card"
+                  >
+                  <div *ngIf="paymentForm.get('cardholderName')?.invalid && paymentForm.get('cardholderName')?.touched" 
+                       class="text-red-500 text-xs mt-1">
+                    Cardholder name is required
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
+                  <div class="relative">
+                    <input 
+                      type="text" 
+                      formControlName="cardNumber"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73] placeholder:text-gray-300"
+                      placeholder="•••• •••• •••• ••••"
+                      maxlength="19"
+                    >
+                    <div class="absolute right-3 top-2">
+                      <div class="flex">
+                        <img src="https://tse3.mm.bing.net/th/id/OIP.h7uRF1f38VswrbN8DhCF6AHaHa?cb=iwc1&rs=1&pid=ImgDetMain" alt="Visa" class="h-6 mr-1">
+                        <img src="https://res2.weblium.site/res/5cecdcb0a4bffb002318ea63/5ced18a93f59c300235d930c_optimized_1280_e1700x1014-210x125" alt="Mastercard" class="h-6 mr-1">
+                        <img src="https://th.bing.com/th/id/R.62958931772c61507b8b7aae803a56b9?rik=kkONAsHtAUHPOQ&pid=ImgRaw&r=0" alt="Amex" class="h-6">
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched" 
+                       class="text-red-500 text-xs mt-1">
+                    Enter a valid card number
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Expiration Date</label>
+                    <input 
+                      type="text" 
+                      formControlName="expiryDate"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73] placeholder:text-gray-300"
+                      placeholder="MM/YY"
+                      maxlength="5"
+                    >
+                    <div *ngIf="paymentForm.get('expiryDate')?.invalid && paymentForm.get('expiryDate')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      Enter a valid expiry date
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">CVV</label>
+                    <input 
+                      type="text" 
+                      formControlName="cvv"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73] placeholder:text-gray-300"
+                      placeholder="•••"
+                      maxlength="4"
+                    >
+                    <div *ngIf="paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched" 
+                         class="text-red-500 text-xs mt-1">
+                      Enter a valid CVV
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id="saveCard" 
+                    formControlName="saveCard"
+                    class="h-4 w-4 text-[#005f73] border-slate-300 rounded"
+                  >
+                  <label for="saveCard" class="ml-2 block text-sm text-slate-700">
+                    Save this card for future purchases
+                  </label>
+                </div>
+              </form>
+            </div>
+            
+            <!-- PayPal Form -->
+            <div *ngIf="selectedPaymentMethod === 'paypal'" class="bg-white rounded-lg shadow-sm p-6 border border-slate-200 mb-6 text-center">
+              <img src="https://logodix.com/logo/370282.jpg" alt="PayPal" class="h-12 mx-auto mb-4">
+              <p class="text-slate-600 mb-4">After clicking "Complete Order", you will be redirected to PayPal to complete your purchase securely.</p>
+              <div class="bg-slate-100 p-4 rounded-md inline-block">
+                <p class="text-slate-700 font-medium">Total: ${{ getTotal() }}</p>
+              </div>
+            </div>
+            
+            <!-- Other Payment Methods -->
+            <div *ngIf="selectedPaymentMethod !== 'credit_card' && selectedPaymentMethod !== 'paypal'" class="bg-white rounded-lg shadow-sm p-6 border border-slate-200 mb-6 text-center">
+              <img [src]="getSelectedPaymentMethod()?.icon" [alt]="getSelectedPaymentMethod()?.name" class="h-12 mx-auto mb-4">
+              <p class="text-slate-600 mb-4">After clicking "Complete Order", you'll be prompted to confirm payment.</p>
+              <div class="bg-slate-100 p-4 rounded-md inline-block">
+                <p class="text-slate-700 font-medium">Total: ${{ getTotal() }}</p>
+              </div>
+            </div>
+            
+            <!-- Billing Address -->
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-[#003545]">Billing Address</h3>
+                <div class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id="sameAsShipping" 
+                    [(ngModel)]="sameAsShipping"
+                    (change)="updateBillingAddress()"
+                    class="h-4 w-4 text-[#005f73] border-slate-300 rounded"
+                  >
+                  <label for="sameAsShipping" class="ml-2 block text-sm text-slate-700">
+                    Same as shipping address
+                  </label>
+                </div>
+              </div>
+              
+              <div *ngIf="!sameAsShipping">
+                <form [formGroup]="billingForm" class="space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+                      <input 
+                        type="text" 
+                        formControlName="firstName"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                      >
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+                      <input 
+                        type="text" 
+                        formControlName="lastName"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                      >
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                    <input 
+                      type="text" 
+                      formControlName="address"
+                      class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                    >
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1">City</label>
+                      <input 
+                        type="text" 
+                        formControlName="city"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                      >
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1">Country</label>
+                      <select 
+                        formControlName="country"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                      >
+                        <option value="">Select Country</option>
+                        <option value="Sri Lanka">Sri Lanka</option>
+                        <option value="India">India</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1">Postal Code</label>
+                      <input 
+                        type="text" 
+                        formControlName="postalCode"
+                        class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-[#005f73] focus:border-[#005f73]"
+                      >
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: Order Summary -->
+          <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 sticky top-6">
+              <h3 class="text-xl font-semibold text-[#003545] mb-4 pb-3 border-b border-slate-200">
+                Order Summary
+              </h3>
+              
+              <div class="space-y-4">
+                <div class="space-y-3">
+                  <div *ngFor="let item of cartItems" class="flex justify-between">
+                    <div class="flex items-center">
+                      <img [src]="item.image" alt="{{ item.name }}" class="h-12 w-12 object-cover rounded mr-3">
+                      <div>
+                        <p class="text-sm font-medium text-[#003545]">{{ item.name }}</p>
+                        <p class="text-xs text-slate-500">Qty: {{ item.quantity }}</p>
+                      </div>
+                    </div>
+                    <p class="text-[#005f73] font-medium text-sm">
+                      ${{ (item.price * item.quantity).toFixed(2) }}
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="pt-4 border-t border-slate-200 space-y-2">
+                  <p class="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span>${{ getSubtotal() }}</span>
+                  </p>
+                  <p class="flex justify-between text-slate-600">
+                    <span>Shipping:</span>
+                    <span>${{ shippingCost.toFixed(2) }}</span>
+                  </p>
+                  <p class="flex justify-between text-slate-600">
+                    <span>Tax:</span>
+                    <span>${{ calculateTax().toFixed(2) }}</span>
+                  </p>
+                  <div *ngIf="discountApplied" class="flex justify-between text-green-600">
+                    <span>Discount:</span>
+                    <span>-${{ discountAmount.toFixed(2) }}</span>
+                  </div>
+                </div>
+                
+                <div class="flex justify-between text-lg font-semibold text-[#003545] pt-2 border-t border-slate-200">
+                  <span>Total:</span>
+                  <span>${{ getTotal() }}</span>
+                </div>
+                
+                <button 
+                  (click)="completeOrder()"
+                  [disabled]="!canCompleteOrder()"
+                  class="w-full bg-[#005f73] hover:bg-[#003d4d] text-white py-3 rounded-md transition mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Complete Order
+                </button>
+                
+                <button 
+                  (click)="backToSummary()"
+                  class="w-full bg-transparent hover:bg-slate-100 text-slate-700 py-2 rounded-md transition mt-2 border border-slate-300"
+                >
+                  Back to Summary
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIRMATION STEP -->
+      <div *ngIf="currentStep === 'confirmation'" class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+          <div class="mb-6 text-green-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          <h2 class="text-2xl font-bold text-[#003545] mb-3">Order Confirmed!</h2>
+          <p class="text-slate-600 mb-6">Thank you for your purchase, {{ user.name }}. Your order has been received and is being processed.</p>
+          
+          <div class="bg-slate-50 rounded-lg p-6 mb-8 text-left">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-sm font-medium text-slate-500 mb-2">ORDER NUMBER</h3>
+                <p class="font-medium">{{ orderNumber }}</p>
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-slate-500 mb-2">DATE</h3>
+                <p class="font-medium">{{ orderDate | date:'mediumDate' }}</p>
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-slate-500 mb-2">TOTAL</h3>
+                <p class="font-medium">${{ getTotal() }}</p>
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-slate-500 mb-2">PAYMENT METHOD</h3>
+                <p class="font-medium">{{ getSelectedPaymentMethod()?.name }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a 
+              routerLink="/dashboard/vendor/products"
+              class="px-6 py-3 bg-[#005f73] hover:bg-[#003d4d] text-white rounded-md transition"
+            >
+              Continue Shopping
+            </a>
+            <a 
+              routerLink="/dashboard/vendor/orders/order-details/{{ orderNumber }}"
+              class="px-6 py-3 bg-transparent hover:bg-slate-100 text-slate-700 rounded-md transition border border-slate-300"
+            >
+              View Order Details
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Footer -->
+  <div class="mt-auto bg-slate-100 py-6">
+    <div class="container mx-auto px-4 text-center text-slate-500 text-sm">
+      © 2025 Vendor Ordering System. All rights reserved.
+    </div>
+  </div>
+</div>
