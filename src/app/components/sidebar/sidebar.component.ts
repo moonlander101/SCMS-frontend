@@ -68,6 +68,10 @@ export class SidebarComponent {
       route: '/dashboard/warehouse/truck-tracking',
     },
     {
+      label: 'Warehouse-Vendor Orders',
+      route: '/dashboard/warehouse/vendor-orders',
+    },
+    {
       label: 'Warehouse-Supplier Requests',
       route: '/dashboard/warehouse/supplier-requests',
     }
