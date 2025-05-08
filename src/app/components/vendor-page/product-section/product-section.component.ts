@@ -2,14 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-interface Product {
-  name: string;
-  subtitle: string;
-  price: number;
-  category: string;
-  image: string;
-}
+import { ProductService, Product, ApiProduct } from '../../../services/product.service';
 
 interface CartItem {
   name: string;
@@ -30,9 +23,29 @@ interface CartItem {
   templateUrl: './product-section.component.html',
   styleUrl: './product-section.component.css',
 })
+
+
+
+
+
 export class ProductSectionComponent implements OnInit, OnDestroy {
-  selectedCategory = 'All';
-  categories = ['All', 'Powders', 'Whole Spices', 'Blends'];
+  categories = [
+    { id: 'All', name: 'All' },
+    { id: 1, name: 'Powders' },
+    { id: 2, name: 'Whole Spices' },
+    { id: 3, name: 'Blends' }
+  ];
+  
+  
+  selectedCategory: string | number | 'All' = 'All'; // Default to 'All'
+
+  
+  categoryMap: { [key: number]: string } = {
+    1: 'Powders',
+    2: 'Whole Spices',
+    3: 'Blends',
+  };
+  
   selectedProduct: Product | null = null;
   selectedQuantity = 1;
   
@@ -40,73 +53,32 @@ export class ProductSectionComponent implements OnInit, OnDestroy {
   cartCount = signal(0);
   cartItems = signal<CartItem[]>([]);
 
-  products = [
-    {
-      name: 'Turmeric Powder',
-      subtitle: 'Organic • 200g',
-      price: 4.99,
-      category: 'Powders',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Garam Masala',
-      subtitle: 'Premium Blend • 150g',
-      price: 6.49,
-      category: 'Blends',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Cinnamon Sticks',
-      subtitle: 'Ceylon • 100g',
-      price: 3.99,
-      category: 'Whole Spices',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Chili Powder',
-      subtitle: 'Smoky Heat • 100g',
-      price: 2.99,
-      category: 'Powders',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Cloves',
-      subtitle: 'Whole • 50g',
-      price: 5.99,
-      category: 'Whole Spices',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Black Pepper',
-      subtitle: 'Tellicherry • 100g',
-      price: 4.49,
-      category: 'Whole Spices',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Cardamom Pods',
-      subtitle: 'Green • 75g',
-      price: 7.99,
-      category: 'Whole Spices',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-    {
-      name: 'Cumin Seeds',
-      subtitle: 'Whole • 150g',
-      price: 2.49,
-      category: 'Whole Spices',
-      image: 'assets/images/products/spices-bg1.jpg',
-    },
-  ];
+  products: Product[] = []; // Store products dynamically
 
-  constructor() {
+  constructor(private productService: ProductService) {
     this.loadCart();
+  }
+
+  ngOnInit(): void {
+    this.productService.getProducts().subscribe((products: ApiProduct[]) => {
+      this.products = products.map((product) => ({
+        name: product.product_name,
+        subtitle: 'Description',
+        price: +product.unit_price,
+        category: product.category, // keep as number
+        image: 'assets/images/products/spices-bg1.jpg',
+      }));
+    });
+    
+
+    // Handle keyboard events
+    window.addEventListener('keydown', this.handleKeydown);
   }
 
   get filteredProducts() {
     return this.selectedCategory === 'All'
       ? this.products
-      : this.products.filter((p) => p.category === this.selectedCategory);
+      : this.products.filter(product => product.category === this.selectedCategory);
   }
 
   updateQuantity(value: string) {
@@ -157,14 +129,10 @@ export class ProductSectionComponent implements OnInit, OnDestroy {
   }
 
   // Handle keyboard events
-  ngOnInit(): void {
-    window.addEventListener('keydown', this.handleKeydown);
-  }
-  
   ngOnDestroy(): void {
     window.removeEventListener('keydown', this.handleKeydown);
   }
-  
+
   handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') this.closeProductModal();
   };
