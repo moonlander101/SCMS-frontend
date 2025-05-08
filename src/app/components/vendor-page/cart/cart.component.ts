@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './cart.component.html',
 })
+
+
 export class CartComponent implements OnInit {
   user = {
     name: "Alice Fernando",
