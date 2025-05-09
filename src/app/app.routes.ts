@@ -21,6 +21,7 @@ import { TransactionsComponent } from './components/warehouse-manager-page/trans
 import { TruckTrackingComponent } from './components/warehouse-manager-page/truck-tracking/truck-tracking.component';
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
+import { DeliveryTableComponent } from './components/driver-page/current-delivery/delivery-table.component';
 
 export const routes: Routes = [
   {
@@ -113,6 +114,7 @@ export const routes: Routes = [
           { path : '', redirectTo: 'profile', pathMatch: 'full'},
           {path  : 'profile', component: ProfileComponent},
           // rest... (modify sidebar.ts as well)
+          { path : 'current', component: DeliveryTableComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' }
         ]
       },

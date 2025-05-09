@@ -1,0 +1,78 @@
+<!--* delivery-table.component.html *-->
+<div class="max-w-6xl mx-auto p-5 font-sans">
+  <h2 class="text-2xl font-bold text-gray-800 mb-2">Driver's Delivery Dashboard</h2>
+  <p class="text-gray-600 mb-5 italic">Complete deliveries in the order shown. Confirm each location after delivery.</p>
+  <div class="overflow-x-auto shadow-md rounded-lg">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-blue-500 text-white">
+          <th class="py-3 px-4 text-left">#</th>
+          <th class="py-3 px-4 text-left">Delivery Location</th>
+          <th class="py-3 px-4 text-left">Status</th>
+          <th class="py-3 px-4 text-left">Timestamp</th>
+          <th class="py-3 px-4 text-left">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let location of deliveryLocations; let i = index"
+            [ngClass]="{
+              'bg-gray-100 font-medium relative': canConfirm(i),
+              'bg-green-50 text-green-700': location.status === 'confirmed',
+              'opacity-70': location.status === 'pending' && !canConfirm(i)
+            }">
+          <td class="py-3 px-4 border-b border-gray-200">
+            <!-- <span *ngIf="canConfirm(i)" class="text-red-500 absolute left-0 ml-1">▶</span> *-->
+            {{ i + 1 }}
+          </td>
+          <td class="py-3 px-4 border-b border-gray-200">{{ location.address }}</td>
+          <td class="py-3 px-4 border-b border-gray-200">
+            <span [ngClass]="{
+              'bg-green-500 text-white': location.status === 'confirmed',
+              'bg-yellow-400 text-gray-800': location.status === 'pending'
+            }" class="px-2 py-1 rounded-full text-xs font-bold">
+              {{ location.status | titlecase }}
+            </span>
+          </td>
+          <td class="py-3 px-4 border-b border-gray-200">{{ location.timestamp | date:'short' }}</td>
+          <td class="py-3 px-4 border-b border-gray-200">
+            <button
+              [ngClass]="{
+                'bg-blue-500 hover:bg-blue-600': canConfirm(i),
+                'bg-gray-400 cursor-not-allowed': !canConfirm(i)
+              }"
+              class="px-3 py-2 text-white rounded transition duration-300"
+              [disabled]="!canConfirm(i)"
+              (click)="confirmDelivery(i)">
+              Confirm Delivery
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-8 text-center p-5 bg-gray-50 rounded-lg">
+    <div *ngIf="!confirmAllDeliveriesCompleted; else completedBlock" class="mt-8 text-center p-5 bg-gray-50 rounded-lg">
+  <button
+    [ngClass]="{
+      'bg-blue-500 hover:bg-blue-600': allDeliveriesCompleted,
+      'bg-gray-400 cursor-not-allowed': !allDeliveriesCompleted
+    }"
+    class="px-6 py-3 text-white rounded-md text-lg font-bold transition duration-300"
+    [disabled]="!allDeliveriesCompleted"
+    (click)="completeAllDeliveries()">
+    Complete All Deliveries
+  </button>
+  <div *ngIf="!allDeliveriesCompleted" class="mt-3 font-bold text-gray-600">
+    {{ currentIndex }} of {{ deliveryLocations.length }} deliveries completed
+  </div>
+  <div *ngIf="allDeliveriesCompleted" class="mt-3 font-bold text-green-600">
+    All deliveries completed! Click the button to finalize.
+  </div>
+</div>
+<ng-template #completedBlock>
+  <div class="text-center p-5 rounded-lg text-green-600">
+    All deliveries completed!
+  </div>
+</ng-template>
+  </div>
+</div>
