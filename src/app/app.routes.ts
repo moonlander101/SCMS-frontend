@@ -42,12 +42,12 @@ export const routes: Routes = [
     component: DashboardLayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
+      { path: '', redirectTo: 'profile', pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
       // Warehouse Manager routes
       {
         path: 'warehouse',
-        canActivate: [roleGuard],
+        canActivate: [roleGuard(5)],
         data: { roles: ['warehouse-manager'] },
         children: [
           { path: '', redirectTo: 'inventory', pathMatch: 'full' },
@@ -60,20 +60,62 @@ export const routes: Routes = [
             path: 'supplier-request-survey/:id',
             component: SupplierReqSurveyComponent,
           },
+          { path : 'profile', component: ProfileComponent },
+          { path: '**', redirectTo: '', pathMatch: 'full' }
         ],
       },
+      // Admin Routes
       {
-        path: 'forecast',
-        component: ForecastComponent,
-        pathMatch: 'full',
+        path : 'admin',
+        canActivate: [roleGuard(1)],
+        children : [
+          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          { path : 'profile', component: ProfileComponent, pathMatch: 'full'},
+          {
+            path: 'forecast',
+            component: ForecastComponent,
+            pathMatch: 'full',
+          },
+          // rest (modify sidebar.ts as well)
+          { path: '**', redirectTo: '', pathMatch: 'full' }
+        ]
       },
-      { path: 'order-history', component: OrderHistoryComponent }, // /dashboard/orders
-      { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
-      { path: 'product-management', component: ProductManagementComponent }, // /dashboard/product-management
-      { path: 'current-requests', component: CurrentRequestsComponent }, // /dashboard/current-requests
-      // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
-      // { path: 'vendors', component: VendorsComponent },
-      { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+      // Supplier Routes
+      {
+        path : 'supplier',
+        canActivate: [roleGuard(3)],
+        children : [
+          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          { path: 'order-history', component: OrderHistoryComponent },
+          { path: 'inventory', component: InventoryComponent },
+          { path: 'product-management', component: ProductManagementComponent },
+          { path: 'current-requests', component: CurrentRequestsComponent },
+          // { path: 'deliveries', component: DeliveriesComponent },
+          // { path: 'vendors', component: VendorsComponent },
+          { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+          { path: 'profile', component: ProfileComponent},
+          { path: '**', redirectTo: '', pathMatch: 'full' }
+        ]
+      },
+      {
+        path : 'vendor',
+        canActivate : [roleGuard(4)],
+        children : [
+          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          // rest... (modify sidebar.ts as well)
+          { path: '**', redirectTo: '', pathMatch: 'full' }
+        ]
+      },
+      {
+        path : 'driver',
+        canActivate : [roleGuard(6)],
+        children : [
+          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          {path  : 'profile', component: ProfileComponent},
+          // rest... (modify sidebar.ts as well)
+          { path: '**', redirectTo: '', pathMatch: 'full' }
+        ]
+      },
     ],
   },
   { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes
