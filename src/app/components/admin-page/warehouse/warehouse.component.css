@@ -1,0 +1,189 @@
+/* Warehouse Card Styles */
+.warehouse-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .warehouse-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Gradient Backgrounds */
+  .warehouse-header-gradient {
+    background-image: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  }
+  
+  .inventory-header-gradient {
+    background-image: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+  
+  /* Custom Badge Styles */
+  .custom-badge {
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .badge-blue {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #1e40af;
+  }
+  
+  .badge-green {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+  }
+  
+  .badge-amber {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+  }
+  
+  /* Status Indicators */
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  
+  .status-active {
+    background-color: #10b981;
+  }
+  
+  .status-inactive {
+    background-color: #ef4444;
+  }
+  
+  /* Button Animations */
+  .btn-primary {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+  }
+  
+  .btn-primary:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+  }
+  
+  @keyframes ripple {
+    0% {
+      transform: scale(0, 0);
+      opacity: 0.5;
+    }
+    20% {
+      transform: scale(25, 25);
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(40, 40);
+    }
+  }
+  
+  /* Search Input Focus Effect */
+  .search-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Table Row Hover Effect */
+  .inventory-row {
+    transition: background-color 0.2s ease;
+  }
+  
+  .inventory-row:hover {
+    background-color: rgba(243, 244, 246, 0.8);
+  }
+  
+  /* Loading Animation */
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Back Button Hover Effect */
+  .back-button {
+    transition: transform 0.2s ease;
+  }
+  
+  .back-button:hover {
+    transform: translateX(-3px);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .warehouse-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-container {
+      flex-direction: column;
+    }
+    
+    .stats-item {
+      margin-bottom: 1rem;
+    }
+  }
+  
+  /* Inventory Quantity Tags */
+  .quantity-high {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  .quantity-medium {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .quantity-low {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  /* Page Transitions */
+  .page-enter {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  .page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .page-exit {
+    opacity: 1;
+  }
+  
+  .page-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+  }

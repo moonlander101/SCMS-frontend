@@ -22,6 +22,9 @@ import { OrderSummaryComponent } from './components/vendor-page/order-summary/or
 import { CartSummaryComponent } from './components/vendor-page/cart-summary/cart-summary.component';
 import { OrdersComponent } from './components/vendor-page/orders/orders.component';
 
+import { WarehouseComponent } from './components/admin-page/warehouse/warehouse.component';
+
+
 export const routes: Routes = [
   {
     path: '',
@@ -50,6 +53,7 @@ export const routes: Routes = [
         component: ForecastComponent,
         pathMatch: 'full',
       },
+      { path: 'warehouse', component: WarehouseComponent, pathMatch: 'full' },
       { path: 'order-history', component: OrderHistoryComponent },   // /dashboard/orders
       { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
       { path: 'product-management', component: ProductManagementComponent}, // /dashboard/product-management
