@@ -7,11 +7,13 @@ import {
   OrderProduct,
   InventoryItem,
 } from '../../../service/order/vendor-order.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-vendor-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  providers: [VendorOrderService],
   templateUrl: './vendor-orders.component.html',
   styleUrl: './vendor-orders.component.css',
 })
@@ -84,79 +86,34 @@ export class VendorOrdersComponent implements OnInit {
       })),
     });
 
-    /**
-     * ACTUAL BACKEND IMPLEMENTATION (when ready):
-     *
-     * Step 1: Update the VendorOrderService to accept complete order details
-     * ----------------------------------------------------------------------
-     * // In vendor-order.service.ts:
-     * acceptOrder(orderDetails: Order): Observable<{ success: boolean; message: string }> {
-     *   // Send complete order information to backend
-     *   return this.http.post<{success: boolean; message: string}>(
-     *     `${this.apiUrl}/orders/accept`,
-     *     {
-     *       order_id: orderDetails.order_id,
-     *       status: "accepted",
-     *       products: orderDetails.products,
-     *       warehouse_id: this.warehouseId
-     *     }
-     *   );
-     * }
-     *
-     * Step 2: Call the updated service here with complete order information
-     * --------------------------------------------------------------------
-     * this.vendorOrderService.acceptOrder(orderToAccept).subscribe({
-     *   next: (response) => {
-     *     if (response.success) {
-     *       this.successMessage = response.message;
-     *       this.orders = this.orders.filter(order => order.order_id !== orderToAccept.order_id);
-     *       // After successful acceptance, update inventory counts
-     *       this.updateInventoryCounts(orderToAccept);
-     *       setTimeout(() => (this.successMessage = null), 5000);
-     *     } else {
-     *       this.errorMessage = response.message;
-     *       setTimeout(() => (this.errorMessage = null), 5000);
-     *     }
-     *   },
-     *   error: (error) => {
-     *     console.error('Error accepting order:', error);
-     *     this.errorMessage = 'Failed to accept order. Please try again.';
-     *     setTimeout(() => (this.errorMessage = null), 5000);
-     *   }
-     * });
-     *
-     * Step 3: Create helper method to update inventory counts locally
-     * --------------------------------------------------------------
-     * private updateInventoryCounts(order: Order): void {
-     *   order.products.forEach(product => {
-     *     const inventoryItem = this.inventory.find(item => item.product_name === product.product_name);
-     *     if (inventoryItem) {
-     *       inventoryItem.available_count -= product.product_count;
-     *     }
-     *   });
-     * }
-     */
+    // Current implementation with hardcoded warehouse ID
+    // In a real implementation, we would extract the warehouse ID from the JWT token in localStorage
+    // const token = localStorage.getItem('token');
+    // const decodedToken = jwt_decode(token);
+    // const warehouseId = decodedToken.warehouse_id;
+    const warehouseId = 1; // Hardcoded for now
 
-    // Current implementation with only order ID
-    this.vendorOrderService.acceptOrder(orderId).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.successMessage = response.message;
-          this.orders = this.orders.filter(
-            (order) => order.order_id !== orderId
-          );
-          setTimeout(() => (this.successMessage = null), 5000);
-        } else {
-          this.errorMessage = response.message;
+    this.vendorOrderService
+      .acceptOrder(orderId, orderToAccept.products, warehouseId)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.successMessage = response.message;
+            this.orders = this.orders.filter(
+              (order) => order.order_id !== orderId
+            );
+            setTimeout(() => (this.successMessage = null), 5000);
+          } else {
+            this.errorMessage = response.message;
+            setTimeout(() => (this.errorMessage = null), 5000);
+          }
+        },
+        error: (error) => {
+          console.error('Error accepting order:', error);
+          this.errorMessage = 'Failed to accept order. Please try again.';
           setTimeout(() => (this.errorMessage = null), 5000);
-        }
-      },
-      error: (error) => {
-        console.error('Error accepting order:', error);
-        this.errorMessage = 'Failed to accept order. Please try again.';
-        setTimeout(() => (this.errorMessage = null), 5000);
-      },
-    });
+        },
+      });
   }
 
   rejectOrder(orderId: string, event: Event): void {
@@ -168,27 +125,13 @@ export class VendorOrdersComponent implements OnInit {
       status: 'rejected',
     });
 
-    /**
-     * ACTUAL BACKEND IMPLEMENTATION (when ready):
-     *
-     * Step 1: Update the VendorOrderService to include rejection status
-     * ----------------------------------------------------------------
-     * // In vendor-order.service.ts:
-     * rejectOrder(orderId: string): Observable<{ success: boolean; message: string }> {
-     *   // Send order ID with rejection status to backend
-     *   return this.http.post<{success: boolean; message: string}>(
-     *     `${this.apiUrl}/orders/reject`,
-     *     {
-     *       order_id: orderId,
-     *       status: "rejected",
-     *       warehouse_id: this.warehouseId
-     *     }
-     *   );
-     * }
-     */
+    // In a real implementation, we would extract the warehouse ID from the JWT token in localStorage
+    // const token = localStorage.getItem('token');
+    // const decodedToken = jwt_decode(token);
+    // const warehouseId = decodedToken.warehouse_id;
+    const warehouseId = 1; // Hardcoded for now
 
-    // Current implementation with only order ID
-    this.vendorOrderService.rejectOrder(orderId).subscribe({
+    this.vendorOrderService.rejectOrder(orderId, warehouseId).subscribe({
       next: (response) => {
         if (response.success) {
           this.successMessage = response.message;
@@ -317,5 +260,51 @@ export class VendorOrdersComponent implements OnInit {
     }).length;
 
     return Math.round((fulfillable / total) * 100);
+  }
+
+  // Accept order
+  onAcceptOrder(order: Order): void {
+    this.isLoading = true;
+    this.successMessage = null;
+    this.errorMessage = null;
+
+    this.vendorOrderService
+      .acceptOrder(order.order_id, order.products, this.warehouseId)
+      .subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.successMessage =
+            response.message || 'Order accepted successfully';
+          // Refresh orders after accepting
+          this.loadOrders();
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Failed to accept order';
+        },
+      });
+  }
+
+  // Reject order
+  onRejectOrder(order: Order): void {
+    this.isLoading = true;
+    this.successMessage = null;
+    this.errorMessage = null;
+
+    this.vendorOrderService
+      .rejectOrder(order.order_id, this.warehouseId)
+      .subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.successMessage =
+            response.message || 'Order rejected successfully';
+          // Refresh orders after rejecting
+          this.loadOrders();
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Failed to reject order';
+        },
+      });
   }
 }

@@ -467,3 +467,24 @@
     margin-top: 8px;
   }
 }
+/* Modern Simple Spinner */
+.modern-loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+}
+
+.modern-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(26, 115, 232, 0.1);
+  border-top-color: #1a73e8;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
