@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { OrderService, OrderResponse } from '../../../services/order.service';
 
 interface Order {
   id: string;
@@ -14,7 +15,6 @@ interface Order {
 
 interface User {
   name: string;
-  // Add other user properties as needed
 }
 
 @Component({
@@ -25,92 +25,55 @@ interface User {
   styleUrl: './orders.component.css'
 })
 export class OrdersComponent implements OnInit {
-  // User data
-  user: User = {
-    name: 'John Doe'
-  };
+  user: User = { name: 'John Doe' };
 
-  // Orders data
   orders: Order[] = [];
   filteredOrders: Order[] = [];
 
-  // Pagination
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
-  totalPages: number = 1;
+  currentPage = 1;
+  itemsPerPage = 5;
+  totalPages = 1;
   pageNumbers: number[] = [];
-  paginationStart: number = 0;
-  paginationEnd: number = 0;
+  paginationStart = 0;
+  paginationEnd = 0;
 
-  // Filters
-  searchQuery: string = '';
-  statusFilter: string = 'all';
-  dateFilter: string = 'all';
+  searchQuery = '';
+  statusFilter = 'all';
+  dateFilter = 'all';
 
-  constructor() {}
+  constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
-    // Load mock order data
-    this.loadMockOrders();
-    this.filterOrders();
-    this.calculatePagination();
+    this.loadOrdersFromServer(2); // You can pass vendor ID dynamically
   }
 
-  loadMockOrders(): void {
-    // Mock data for demonstration
-    this.orders = [
-      {
-        id: '1001',
-        date: new Date(2025, 3, 15), // April 15, 2025
-        itemsCount: 3,
-        total: 129.99,
-        status: 'delivered'
+  loadOrdersFromServer(vendorId: number): void {
+    this.orderService.getOrdersByVendorId(vendorId).subscribe({
+      next: (data: OrderResponse[]) => {
+        this.orders = data.map(order => ({
+          id: order.order_id.toString(),
+          date: new Date(order.created_at),
+          itemsCount: order.products.reduce((sum, p) => sum + p.count, 0),
+          total: order.products.reduce((sum, p) => sum + (p.unit_price * p.count), 0),
+          status: this.mapStatus(order.status),
+          trackingNumber: order.blockchain_tx_id
+        }));
+        this.filterOrders();
+        this.calculatePagination();
       },
-      {
-        id: '1002',
-        date: new Date(2025, 4, 1), // May 1, 2025
-        itemsCount: 1,
-        total: 49.99,
-        status: 'shipped',
-        trackingNumber: 'TRACK123456'
-      },
-      {
-        id: '1003',
-        date: new Date(2025, 4, 5), // May 5, 2025
-        itemsCount: 2,
-        total: 89.98,
-        status: 'processing'
-      },
-      {
-        id: '1004',
-        date: new Date(2025, 3, 10), // April 10, 2025
-        itemsCount: 4,
-        total: 159.96,
-        status: 'cancelled'
-      },
-      {
-        id: '1005',
-        date: new Date(2025, 2, 20), // March 20, 2025
-        itemsCount: 2,
-        total: 79.98,
-        status: 'delivered'
-      },
-      {
-        id: '1006',
-        date: new Date(2025, 1, 15), // February 15, 2025
-        itemsCount: 1,
-        total: 29.99,
-        status: 'delivered'
-      },
-      {
-        id: '1007',
-        date: new Date(2025, 4, 3), // May 3, 2025
-        itemsCount: 3,
-        total: 109.97,
-        status: 'shipped',
-        trackingNumber: 'TRACK789012'
+      error: err => {
+        console.error('Error fetching orders:', err);
       }
-    ];
+    });
+  }
+
+  mapStatus(apiStatus: string): 'processing' | 'shipped' | 'delivered' | 'cancelled' {
+    const status = apiStatus.toLowerCase();
+    if (status.includes('pending')) return 'processing';
+    if (status.includes('shipped')) return 'shipped';
+    if (status.includes('delivered')) return 'delivered';
+    if (status.includes('cancelled')) return 'cancelled';
+    return 'processing';
   }
 
   filterOrders(): void {
