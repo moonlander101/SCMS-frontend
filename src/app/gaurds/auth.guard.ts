@@ -3,7 +3,7 @@ import { inject } from '@angular/core'
 import { jwtDecode } from 'jwt-decode'
 
 interface JwtPayload {
-  role?: string
+  role_id?: number
   exp?: number
 }
 
@@ -11,6 +11,7 @@ interface JwtPayload {
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router)
   const token = localStorage.getItem('token')
+  console.log('Token:', token)
 
   if (!token) {
     router.navigate(['/auth'])
@@ -26,8 +27,9 @@ export const authGuard: CanActivateFn = () => {
       return false
     }
 
-    return !!decoded.role
+    return !!decoded.role_id
   } catch {
+    console.log('Invalid token')
     router.navigate(['/auth'])
     return false
   }

@@ -2,27 +2,36 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Import Router
+import { Router } from '@angular/router';
+import { VendorSignupService } from '../../../service/auth/vendor-signup.service'; // Import the service
+import { LoginService } from '../../../service/auth/login.service'; // Import the LoginService
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-vendor-signup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  providers: [VendorSignupService, LoginService], // Provide both services
   templateUrl: './vendor-signup.component.html',
-  styleUrl: './vendor-signup.component.css'
+  styleUrl: './vendor-signup.component.css',
 })
 export class VendorSignupComponent implements OnInit, AfterViewInit {
   signInForm: FormGroup;
   signUpForm: FormGroup;
   isSignUpMode = false;
   currentStep = 1;
+  isLoading = false;
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router // Inject Router
+    private router: Router,
+    private vendorService: VendorSignupService,
+    private loginService: LoginService // Inject the LoginService
   ) {
     this.signInForm = this.fb.group({
       username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
 
@@ -31,19 +40,19 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       username: ['', Validators.required],
-      phone: ['', Validators.required],
-      
+
       // Step 2: Company Details
       companyName: ['', Validators.required],
       streetNo: ['', Validators.required],
       streetName: ['', Validators.required],
       city: ['', Validators.required],
       zipCode: ['', Validators.required],
-      
+      businessLicence: ['', Validators.required], // Add business licence field
+
       // Step 3: Account Setup
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
     });
   }
 
@@ -73,7 +82,7 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
 
   validateCurrentStep(): boolean {
     // Validate fields for current step
-    switch(this.currentStep) {
+    switch (this.currentStep) {
       case 1:
         return this.validateStep1();
       case 2:
@@ -84,26 +93,33 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
   }
 
   validateStep1(): boolean {
-    const step1Fields = ['firstName', 'lastName', 'username', 'phone'];
+    const step1Fields = ['firstName', 'lastName', 'username'];
     return this.validateFields(step1Fields);
   }
 
   validateStep2(): boolean {
-    const step2Fields = ['companyName', 'streetNo', 'streetName', 'city', 'zipCode'];
+    const step2Fields = [
+      'companyName',
+      'streetNo',
+      'streetName',
+      'city',
+      'zipCode',
+      'businessLicence',
+    ];
     return this.validateFields(step2Fields);
   }
 
   validateFields(fieldNames: string[]): boolean {
     let valid = true;
-    
-    fieldNames.forEach(field => {
+
+    fieldNames.forEach((field) => {
       const control = this.signUpForm.get(field);
       if (control?.invalid) {
         control.markAsTouched();
         valid = false;
       }
     });
-    
+
     return valid;
   }
 
@@ -119,49 +135,78 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
 
   onSignIn(): void {
     if (this.signInForm.valid) {
-      console.log('Sign In Form submitted', this.signInForm.value);
-      // Add navigation for sign in if needed
-      // this.router.navigate(['/dashboard/vendor']);
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      const credentials = {
+        username: this.signInForm.value.username,
+        password: this.signInForm.value.password,
+      };
+
+      this.loginService.login(credentials).subscribe({
+        next: (response) => {
+          console.log('Login successful', response);
+          // Navigation based on user role
+          const user = this.loginService.getCurrentUser();
+          if (user && user.role === 'Vendor') {
+            this.router.navigate(['/dashboard/profile']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          this.errorMessage =
+            error.error?.message || 'Login failed. Please try again.';
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
     }
   }
 
   onSignUp(): void {
     if (this.signUpForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
       // Construct full address
       const address = `${this.signUpForm.value.streetNo} ${this.signUpForm.value.streetName}, ${this.signUpForm.value.city}, ${this.signUpForm.value.zipCode}`;
-      
+
       const payload = {
-        firstName: this.signUpForm.value.firstName,
-        lastName: this.signUpForm.value.lastName,
         username: this.signUpForm.value.username,
-        phone: this.signUpForm.value.phone,
         email: this.signUpForm.value.email,
         password: this.signUpForm.value.password,
-        companyName: this.signUpForm.value.companyName,
-        address: address,
-        role: 'vendor'
+        first_name: this.signUpForm.value.firstName,
+        last_name: this.signUpForm.value.lastName,
+        shop_name: this.signUpForm.value.companyName,
+        location: address,
+        business_licence: this.signUpForm.value.businessLicence,
       };
-      
+
       console.log('Vendor Sign Up Payload:', payload);
-      
-      // Here you would normally call your API service
-      // this.authService.registerVendor(payload).subscribe(
-      //   response => {
-      //     // Handle successful registration
-      //     this.router.navigate(['/dashboard/vendor']);
-      //   },
-      //   error => {
-      //     // Handle error
-      //     console.error('Registration failed', error);
-      //   }
-      // );
-      
-      // For now, navigate directly to demonstrate the routing
-      this.router.navigate(['/dashboard/vendor']);
-      
+
+      this.vendorService.registerVendor(payload).subscribe({
+        next: (response) => {
+          console.log('Registration successful', response);
+          // You might want to auto-login the user or just redirect
+          this.router.navigate(['/dashboard/profile']);
+        },
+        error: (error) => {
+          console.error('Registration failed', error);
+          this.errorMessage =
+            error.error?.message || 'Registration failed. Please try again.';
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
     } else {
       // Mark all fields as touched to show validation errors
-      Object.keys(this.signUpForm.controls).forEach(key => {
+      Object.keys(this.signUpForm.controls).forEach((key) => {
         this.signUpForm.get(key)?.markAsTouched();
       });
     }

@@ -40,14 +40,14 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', component: ProfileComponent, pathMatch: 'full' }, // /dashboard
       { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
       // Warehouse Manager routes
       {
         path: 'warehouse',
-        // canActivate: [roleGuard],
+        canActivate: [roleGuard],
         data: { roles: ['warehouse-manager'] },
         children: [
           { path: '', redirectTo: 'inventory', pathMatch: 'full' },
