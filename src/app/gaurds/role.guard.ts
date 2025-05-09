@@ -3,11 +3,11 @@ import { inject } from '@angular/core'
 import {jwtDecode } from 'jwt-decode'
 
 interface JwtPayload {
-  role?: string
+  role_id?: number
   exp?: number
 }
 
-export function roleGuard(expectedRole: string): CanActivateFn {
+export function roleGuard(expectedRole: number): CanActivateFn {
   return () => {
     const router = inject(Router)
     const token = localStorage.getItem('token')
@@ -23,7 +23,7 @@ export function roleGuard(expectedRole: string): CanActivateFn {
           return false
       }
 
-      return decoded.role === expectedRole ? true : router.createUrlTree(['/auth'])
+      return decoded.role_id === expectedRole ? true : router.createUrlTree(['/auth'])
     } catch {
       return router.createUrlTree(['/auth'])
     }
