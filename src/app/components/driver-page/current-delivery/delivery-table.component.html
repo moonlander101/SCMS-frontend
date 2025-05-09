@@ -2,42 +2,38 @@
 <div class="max-w-6xl mx-auto p-5 font-sans">
   <h2 class="text-2xl font-bold text-gray-800 mb-2">Driver's Delivery Dashboard</h2>
   <p class="text-gray-600 mb-5 italic">Complete deliveries in the order shown. Confirm each location after delivery.</p>
-
   <!-- Delivery Table -->
   <div class="overflow-x-auto shadow-md rounded-lg">
-    <table class="w-full border-collapse">
-      <thead>
+    <table class="w-full border-collapse">      <thead>
         <tr class="bg-blue-500 text-white">
           <th class="py-3 px-4 text-left">#</th>
-          <th class="py-3 px-4 text-left">Delivery Location</th>
+          <th class="py-3 px-4 text-left">Order ID</th>
+          <th class="py-3 px-4 text-left">Sequence</th>
           <th class="py-3 px-4 text-left">Status</th>
-          <th class="py-3 px-4 text-left">Timestamp</th>
           <th class="py-3 px-4 text-left">Action</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let location of deliveryLocations; let i = index"
+      </thead><tbody>
+        <tr *ngFor="let item of deliveryItems; let i = index"
             [ngClass]="{
               'bg-gray-100 font-medium relative': canConfirm(i),
-              'bg-green-50 text-green-700': location.status === 'confirmed',
-              'opacity-70': location.status === 'pending' && !canConfirm(i)
+              'bg-green-50 text-green-700': item.is_delivered,
+              'opacity-70': !item.is_delivered && !canConfirm(i)
             }"
-            (click)="viewOrderDetails(location, $event)"
+            (click)="viewOrderDetails(item, $event)"
             class="cursor-pointer hover:bg-blue-50">
           <td class="py-3 px-4 border-b border-gray-200">
             {{ i + 1 }}
           </td>
-          <td class="py-3 px-4 border-b border-gray-200">{{ location.address }}</td>
+          <td class="py-3 px-4 border-b border-gray-200">{{ item.shipment.order_id }}</td>
+          <td class="py-3 px-4 border-b border-gray-200">{{ item.delivery_sequence }}</td>
           <td class="py-3 px-4 border-b border-gray-200">
             <span [ngClass]="{
-              'bg-green-500 text-white': location.status === 'confirmed',
-              'bg-yellow-400 text-gray-800': location.status === 'pending'
+              'bg-green-500 text-white': item.is_delivered,
+              'bg-yellow-400 text-gray-800': !item.is_delivered
             }" class="px-2 py-1 rounded-full text-xs font-bold">
-              {{ location.status | titlecase }}
+              {{ item.is_delivered ? 'Delivered' : 'Pending' }}
             </span>
-          </td>
-          <td class="py-3 px-4 border-b border-gray-200">{{ location.timestamp | date:'short' }}</td>
-          <td class="py-3 px-4 border-b border-gray-200">
+          </td>          <td class="py-3 px-4 border-b border-gray-200">
             <button
               [ngClass]="{
                 'bg-blue-500 hover:bg-blue-600': canConfirm(i),
@@ -45,22 +41,20 @@
               }"
               class="px-3 py-2 text-white rounded transition duration-300"
               [disabled]="!canConfirm(i)"
-              (click)="confirmDelivery(i)">
+              (click)="openConfirmationModal(i, $event)">
               Confirm Delivery
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <!-- Order Details Modal -->
-  <div *ngIf="showOrderDetails && selectedLocation"
+  </div>  <!-- Delivery Item Details Modal -->
+  <div *ngIf="showOrderDetails && selectedItem"
        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-screen overflow-y-auto">
       <!-- Modal Header -->
       <div class="bg-blue-500 text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
-        <h3 class="text-xl font-bold">Order Details</h3>
+        <h3 class="text-xl font-bold">Delivery Details</h3>
         <button (click)="closeOrderDetails()" class="text-white hover:text-gray-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -70,59 +64,66 @@
 
       <!-- Modal Content -->
       <div class="p-6">
-        <!-- Customer Info -->
-        <div class="mb-6">
-          <h4 class="text-lg font-bold text-gray-800 mb-2">Customer Information</h4>
+        <!-- Vehicle Info -->
+        <div class="mb-6" *ngIf="assignment">
+          <h4 class="text-lg font-bold text-gray-800 mb-2">Vehicle Information</h4>
           <div class="bg-gray-50 p-4 rounded-lg">
             <div class="grid md:grid-cols-2 gap-4">
               <div>
-                <p class="text-sm text-gray-500">Name</p>
-                <p class="font-medium">{{ selectedLocation.customerName }}</p>
+                <p class="text-sm text-gray-500">Vehicle ID</p>
+                <p class="font-medium">{{ assignment.vehicle }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Phone</p>
-                <p class="font-medium">{{ selectedLocation.phoneNumber }}</p>
-              </div>
-              <div class="md:col-span-2">
-                <p class="text-sm text-gray-500">Delivery Address</p>
-                <p class="font-medium">{{ selectedLocation.address }}</p>
-              </div>
-              <div *ngIf="selectedLocation.deliveryNotes" class="md:col-span-2">
-                <p class="text-sm text-gray-500">Delivery Notes</p>
-                <p class="font-medium">{{ selectedLocation.deliveryNotes }}</p>
+                <p class="text-sm text-gray-500">Total Load</p>
+                <p class="font-medium">{{ assignment.total_load }} units</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Order Items -->
+        <!-- Shipment Info -->
         <div class="mb-6">
-          <h4 class="text-lg font-bold text-gray-800 mb-2">Order Items</h4>
-          <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr class="bg-gray-100 text-gray-800">
-                  <th class="py-2 px-4 text-left border-b">Item</th>
-                  <th class="py-2 px-4 text-center border-b">Quantity</th>
-                  <th class="py-2 px-4 text-right border-b">Price</th>
-                  <th class="py-2 px-4 text-right border-b">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of selectedLocation.orderItems">
-                  <td class="py-3 px-4 border-b">{{ item.name }}</td>
-                  <td class="py-3 px-4 text-center border-b">{{ item.quantity }}</td>
-                  <td class="py-3 px-4 text-right border-b">${{ item.price.toFixed(2) }}</td>
-                  <td class="py-3 px-4 text-right border-b">${{ (item.quantity * item.price).toFixed(2) }}</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr class="font-bold">
-                  <td class="py-3 px-4" colspan="3">Total</td>
-                  <td class="py-3 px-4 text-right">${{ selectedLocation.totalAmount.toFixed(2) }}</td>
-                </tr>
-              </tfoot>
-            </table>
+          <h4 class="text-lg font-bold text-gray-800 mb-2">Shipment Information</h4>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Order ID</p>
+                <p class="font-medium">{{ selectedItem.shipment.order_id }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Shipment ID</p>
+                <p class="font-medium">{{ selectedItem.shipment.id }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Demand</p>
+                <p class="font-medium">{{ selectedItem.shipment.demand }} units</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Role</p>
+                <p class="font-medium">{{ selectedItem.role | titlecase }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Delivery Sequence</p>
+                <p class="font-medium">{{ selectedItem.delivery_sequence }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Location -->
+        <div class="mb-6">
+          <h4 class="text-lg font-bold text-gray-800 mb-2">Delivery Location</h4>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Latitude</p>
+                <p class="font-medium">{{ selectedItem.delivery_location.lat }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Longitude</p>
+                <p class="font-medium">{{ selectedItem.delivery_location.lon }}</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -131,22 +132,21 @@
           <h4 class="text-lg font-bold text-gray-800 mb-2">Delivery Status</h4>
           <div class="flex items-center space-x-4">
             <span [ngClass]="{
-              'bg-green-500 text-white': selectedLocation.status === 'confirmed',
-              'bg-yellow-400 text-gray-800': selectedLocation.status === 'pending'
+              'bg-green-500 text-white': selectedItem.is_delivered,
+              'bg-yellow-400 text-gray-800': !selectedItem.is_delivered
             }" class="px-3 py-1 rounded-full text-sm font-bold">
-              {{ selectedLocation.status | titlecase }}
+              {{ selectedItem.is_delivered ? 'Delivered' : 'Pending' }}
             </span>
-            <span *ngIf="selectedLocation.timestamp" class="text-gray-600">
-              Confirmed: {{ selectedLocation.timestamp | date:'medium' }}
+            <span *ngIf="selectedItem.delivered_at" class="text-gray-600">
+              Delivered: {{ selectedItem.delivered_at | date:'medium' }}
             </span>
           </div>
         </div>        <!-- Action Buttons -->
         <div class="flex justify-end space-x-4 mt-6">
           <button (click)="closeOrderDetails()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-md transition duration-300">
             Close
-          </button>
-          <button *ngIf="selectedLocation && canConfirmById(selectedLocation.id)"
-                  (click)="confirmDeliveryById(selectedLocation.id); closeOrderDetails()"
+          </button>          <button *ngIf="selectedItem && canConfirmById(selectedItem.shipment.id)"
+                  (click)="openConfirmationModal(findDeliveryIndexById(selectedItem.shipment.id), $event); closeOrderDetails()"
                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300">
             Confirm Delivery
           </button>
@@ -154,7 +154,6 @@
       </div>
     </div>
   </div>
-
   <!-- Complete All Section -->
   <div *ngIf="!confirmAllDeliveriesCompleted; else completedBlock" class="mt-8 text-center p-5 bg-gray-50 rounded-lg">
     <button
@@ -165,18 +164,52 @@
       class="px-6 py-3 text-white rounded-md text-lg font-bold transition duration-300"
       [disabled]="!allDeliveriesCompleted"
       (click)="completeAllDeliveries()">
-      Complete All Deliveries
-    </button>
-    <div *ngIf="!allDeliveriesCompleted" class="mt-3 font-bold text-gray-600">
-      {{ currentIndex }} of {{ deliveryLocations.length }} deliveries completed
+      Complete All Assignments
+    </button>    <div *ngIf="!allDeliveriesCompleted" class="mt-3 font-bold text-gray-600">
+      {{ currentIndex }} of {{ deliveryItems.length }} deliveries completed
     </div>
     <div *ngIf="allDeliveriesCompleted" class="mt-3 font-bold text-green-600">
-      All deliveries completed! Click the button to finalize.
+      All assignments completed! Click the button to finalize.
     </div>
-  </div>
-  <ng-template #completedBlock>
+  </div>  <ng-template #completedBlock>
     <div class="text-center p-5 rounded-lg text-green-600">
-      All deliveries completed!
+      All assignments completed!
     </div>
   </ng-template>
+  
+  <!-- Confirmation Modal -->
+  <div *ngIf="showConfirmationModal && itemToConfirm !== null"
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+      <!-- Modal Header -->
+      <div class="bg-blue-500 text-white px-6 py-4 rounded-t-lg">
+        <h3 class="text-xl font-bold">Confirm Delivery</h3>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="p-6">
+        <p class="text-gray-700 mb-6">
+          Are you sure you want to confirm this delivery as completed?
+          <span *ngIf="itemToConfirm !== null && deliveryItems[itemToConfirm]" class="font-bold block mt-2">
+            Order: {{ deliveryItems[itemToConfirm].shipment.order_id }}
+          </span>
+          <span *ngIf="itemToConfirm !== null && deliveryItems[itemToConfirm]" class="font-bold block">
+            Sequence: {{ deliveryItems[itemToConfirm].delivery_sequence }}
+          </span>
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-4">
+          <button (click)="closeConfirmationModal()" 
+                  class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-md transition duration-300">
+            Cancel
+          </button>
+          <button (click)="confirmAfterApproval()" 
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

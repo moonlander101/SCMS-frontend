@@ -3,23 +3,29 @@ import { Component, OnInit } from '@angular/core';
 import { NgFor, NgClass, NgIf } from '@angular/common';
 import { TitleCasePipe, DatePipe } from '@angular/common';
 
-interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
+interface AssignmentItem {
+  shipment: {
+    id: number;
+    order_id: string;
+    demand: number;
+    status: string;
+  };
+  role: 'driver' | 'helper' | 'pickup' | 'delivery';
+  delivery_sequence: number;
+  delivery_location: {
+    lat: number;
+    lon: number;
+  };
+  is_delivered: boolean;
+  delivered_at: string | null;
 }
 
-interface DeliveryLocation {
+interface Assignment {
   id: number;
-  address: string;
-  status: 'pending' | 'confirmed';
-  timestamp?: Date;
-  customerName: string;
-  phoneNumber: string;
-  orderItems: OrderItem[];
-  deliveryNotes?: string;
-  totalAmount: number;
+  vehicle: string;
+  total_load: number;
+  status: string;
+  items: AssignmentItem[];
 }
 
 @Component({
@@ -29,105 +35,99 @@ interface DeliveryLocation {
   imports: [NgFor, NgClass, NgIf, TitleCasePipe, DatePipe]
 })
 export class DeliveryTableComponent implements OnInit {
-  deliveryLocations: DeliveryLocation[] = [];
+  assignment: Assignment | null = null;
+  deliveryItems: AssignmentItem[] = [];
   currentIndex = 0;
   allDeliveriesCompleted = false;
   confirmAllDeliveriesCompleted = false;
-  selectedLocation: DeliveryLocation | null = null;
+  selectedItem: AssignmentItem | null = null;
   showOrderDetails = false;
 
-  constructor() { }
+  // Properties for confirmation modal
+  showConfirmationModal = false;
+  itemToConfirm: number | null = null;
 
-  ngOnInit(): void {
+  constructor() { }  ngOnInit(): void {
     // Mock data - this would typically come from a service
-    this.deliveryLocations = [
-      {
-        id: 1,
-        address: '123 Main St, Suite 101',
-        status: 'pending',
-        customerName: 'John Smith',
-        phoneNumber: '(555) 123-4567',
-        orderItems: [
-          { id: 'item1', name: 'Package A', quantity: 2, price: 45.99 },
-          { id: 'item2', name: 'Package B', quantity: 1, price: 29.99 }
-        ],
-        deliveryNotes: 'Leave at reception desk',
-        totalAmount: 121.97
-      },
-      {
-        id: 2,
-        address: '456 Oak Ave, Building A',
-        status: 'pending',
-        customerName: 'Sarah Johnson',
-        phoneNumber: '(555) 234-5678',
-        orderItems: [
-          { id: 'item3', name: 'Document Envelope', quantity: 1, price: 15.50 }
-        ],
-        deliveryNotes: 'Signature required',
-        totalAmount: 15.50
-      },
-      {
-        id: 3,
-        address: '789 Pine Rd, Unit 5',
-        status: 'pending',
-        customerName: 'Michael Davis',
-        phoneNumber: '(555) 345-6789',
-        orderItems: [
-          { id: 'item4', name: 'Electronics Package', quantity: 1, price: 299.99 },
-          { id: 'item5', name: 'Office Supplies', quantity: 3, price: 24.99 }
-        ],
-        totalAmount: 374.96
-      },
-      {
-        id: 4,
-        address: '321 Cedar Blvd, Shop 22',
-        status: 'pending',
-        customerName: 'Emily Wilson',
-        phoneNumber: '(555) 456-7890',
-        orderItems: [
-          { id: 'item6', name: 'Furniture Delivery', quantity: 1, price: 599.99 }
-        ],
-        deliveryNotes: 'Heavy item - use dolly',
-        totalAmount: 599.99
-      },
-      {
-        id: 5,
-        address: '654 Maple Dr, Office 303',
-        status: 'pending',
-        customerName: 'Robert Brown',
-        phoneNumber: '(555) 567-8901',
-        orderItems: [
-          { id: 'item7', name: 'Medical Supplies', quantity: 2, price: 89.50 },
-          { id: 'item8', name: 'Lab Equipment', quantity: 1, price: 349.99 }
-        ],
-        deliveryNotes: 'Handle with care',
-        totalAmount: 528.99
-      }
-    ];
-  }
+    this.assignment = {
+      id: 1,
+      vehicle: 'TRK001',
+      total_load: 500,
+      status: 'created',
+      items: [
+        {
+          shipment: {
+            id: 1,
+            order_id: 'ORD001',
+            demand: 500,
+            status: 'pending'
+          },
+          role: 'pickup',
+          delivery_sequence: 1,          delivery_location: {
+            lat: 7.2,
+            lon: 80.1 // Note: JSON had 'lng', changed to 'lon' to match interface
+          },
+          is_delivered: true,
+          delivered_at: "2024/12/12"
+        },
+        {
+          shipment: {
+            id: 1,
+            order_id: 'ORD001',
+            demand: 500,
+            status: 'pending'
+          },
+          role: 'delivery',
+          delivery_sequence: 2,          delivery_location: {
+            lat: 7.3,
+            lon: 80.2 // Note: JSON had 'lng', changed to 'lon' to match interface
+          },
+          is_delivered: false,
+          delivered_at: null
+        }
+      ]
+    };    // Sort delivery items by sequence
+    this.deliveryItems = [...this.assignment.items].sort((a, b) =>
+      a.delivery_sequence - b.delivery_sequence
+    );
 
-  // Confirms the current delivery and unlocks the next one
+    // Initialize currentIndex based on first non-delivered item
+    const firstNonDeliveredIndex = this.deliveryItems.findIndex(item => !item.is_delivered);
+    this.currentIndex = firstNonDeliveredIndex !== -1 ? firstNonDeliveredIndex : 0;
+
+    // Check if all deliveries are completed
+    this.allDeliveriesCompleted = !this.deliveryItems.some(item => !item.is_delivered);
+
+    // Update assignment status if all items are delivered
+    if (this.allDeliveriesCompleted && this.assignment) {
+      this.assignment.status = 'completed';
+    }
+  }// Confirms the current delivery and unlocks the next one
   confirmDelivery(index: number): void {
     if (index !== this.currentIndex) {
-      return; // Can only confirm the current active location
+      return; // Can only confirm the current active delivery item
     }
 
-    this.deliveryLocations[index].status = 'confirmed';
-    this.deliveryLocations[index].timestamp = new Date();
+    // Mark the current delivery item as delivered
+    const item = this.deliveryItems[index];
+    item.is_delivered = true;
+    item.delivered_at = new Date().toISOString();
+    item.shipment.status = 'delivered';
 
-    if (index < this.deliveryLocations.length - 1) {
+    if (index < this.deliveryItems.length - 1) {
       this.currentIndex++;
     } else {
       this.allDeliveriesCompleted = true;
+      if (this.assignment) {
+        this.assignment.status = 'completed';
+      }
     }
 
-    // Close details view if it was open for this location
-    if (this.selectedLocation && this.selectedLocation.id === this.deliveryLocations[index].id) {
+    // Close details view if it was open for this item
+    if (this.selectedItem && this.selectedItem.shipment.id === item.shipment.id) {
       this.closeOrderDetails();
     }
-  }
-
-  // Called when driver completes all deliveries
+  }  // Called when driver completes all deliveries
   completeAllDeliveries(): void {
     if (!this.allDeliveriesCompleted) {
       return; // All deliveries must be confirmed first
@@ -141,15 +141,14 @@ export class DeliveryTableComponent implements OnInit {
     // Additional logic to reset or move to next batch of deliveries
     // could be implemented here
   }
-
   // Helper method to check if a row can be confirmed
   canConfirm(index: number): boolean {
     return index === this.currentIndex && !this.allDeliveriesCompleted;
   }
 
-  // Find delivery location index by ID
+  // Find delivery item index by ID
   findDeliveryIndexById(id: number): number {
-    return this.deliveryLocations.findIndex(loc => loc.id === id);
+    return this.deliveryItems.findIndex(item => item.shipment.id === id);
   }
 
   // Can confirm by ID - used in the modal
@@ -164,25 +163,46 @@ export class DeliveryTableComponent implements OnInit {
     this.confirmDelivery(index);
   }
 
-  // Opens the order details view for a specific location
-  viewOrderDetails(location: DeliveryLocation, event: Event): void {
+  // Opens the order details view for a specific item
+  viewOrderDetails(item: AssignmentItem, event: Event): void {
     // Prevent triggering the row click when clicking the confirm button
     if ((event.target as HTMLElement).tagName === 'BUTTON') {
       return;
     }
 
-    this.selectedLocation = location;
+    this.selectedItem = item;
     this.showOrderDetails = true;
   }
 
   // Closes the order details view
   closeOrderDetails(): void {
-    this.selectedLocation = null;
+    this.selectedItem = null;
     this.showOrderDetails = false;
+  }  // Calculate the total demand for an assignment
+  calculateTotalDemand(items: AssignmentItem[]): number {
+    return items.reduce((total, item) => total + item.shipment.demand, 0);
   }
 
-  // Calculate the total for an order
-  calculateOrderTotal(items: OrderItem[]): number {
-    return items.reduce((total, item) => total + (item.quantity * item.price), 0);
+  // Open confirmation modal before confirming delivery
+  openConfirmationModal(index: number, event: Event): void {
+    event.stopPropagation(); // Prevent the row click event
+    if (this.canConfirm(index)) {
+      this.itemToConfirm = index;
+      this.showConfirmationModal = true;
+    }
+  }
+
+  // Close confirmation modal
+  closeConfirmationModal(): void {
+    this.showConfirmationModal = false;
+    this.itemToConfirm = null;
+  }
+
+  // Confirm after modal approval
+  confirmAfterApproval(): void {
+    if (this.itemToConfirm !== null) {
+      this.confirmDelivery(this.itemToConfirm);
+      this.closeConfirmationModal();
+    }
   }
 }
