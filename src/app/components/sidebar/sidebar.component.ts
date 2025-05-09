@@ -49,6 +49,7 @@ export class SidebarComponent {
       { label: 'Supplier Requests', route: '/dashboard/warehouse/supplier-requests' },
       { label: 'Vendor Orders', route: '/dashboard/warehouse/vendor-orders' },
       { label: 'Truck Tracking', route: '/dashboard/warehouse/truck-tracking' },
+      { label: 'Profile', route: '/dashboard/profile' },
     ],
     3: [ // Supplier
       { label: 'Order History', route: '/dashboard/supplier/order-history' },

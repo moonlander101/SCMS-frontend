@@ -1,7 +1,8 @@
 <div class="inventory-container">
-  <div *ngIf="loading" class="loading">
-    <div class="spinner"></div>
-    <p>Loading inventory data...</p>
+  <!-- Simple Spinner Loader - Add this before your skeleton loader -->
+  <div *ngIf="loading" class="modern-loader-container flex flex-col">
+    <div class="modern-spinner"></div>
+    <p>Loading Inventory...</p>
   </div>
 
   <div *ngIf="error" class="error">
@@ -13,7 +14,8 @@
   <div *ngIf="!loading && !error && inventory" class="inventory-data">
     <!-- Warehouse header with key metrics -->
     <div class="dashboard-header">
-      <div class="warehouse-info">
+      <h1 class="text-3xl font-bold text-gray-900">Warehouse Inventory</h1>
+      <div class="warehouse-info mt-4">
         <h1>{{ inventory.warehouse_city }}</h1>
         <div class="warehouse-status" [ngClass]="getStockLevelClass()">
           {{
