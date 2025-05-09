@@ -107,12 +107,13 @@ export const routes: Routes = [
           { path: '**', redirectTo: '', pathMatch: 'full' }
         ]
       },
+      // Driver Routes
       {
         path : 'driver',
         canActivate : [roleGuard(6)],
         children : [
           { path : '', redirectTo: 'profile', pathMatch: 'full'},
-          {path  : 'profile', component: ProfileComponent},
+          { path  : 'profile', component: ProfileComponent},
           // rest... (modify sidebar.ts as well)
           { path : 'current', component: DeliveryTableComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' }

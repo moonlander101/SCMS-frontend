@@ -57,6 +57,11 @@ export class SidebarComponent {
       { label: 'Current Requests', route: '/dashboard/supplier/current-requests' },
       { label: 'Supplier Dashboard', route: '/dashboard/supplier/supplier' },
       { label: 'Profile', route: '/dashboard/supplier/profile' },
+    ],
+
+    6: [
+      { label: 'Profile', route: '/dashboard/driver/profile'},
+      { label: 'Current Assignment', route: '/dashboard/driver/current'}
     ]
   };
 
