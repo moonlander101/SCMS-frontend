@@ -15,8 +15,8 @@ interface Tab {
 })
 export class SupplierDashboard {
   user = {
-    name: "John Smith",
-    role: "Warehouse Manager",
+    name: "Samuel Johnson",
+    role: "Supplier",
     employeeId: "LM-2023-089",
     department: "Logistics",
     location: "North Distribution Center",

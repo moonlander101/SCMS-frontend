@@ -1,14 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http'; // Import HttpClient
+import { Observable, of } from 'rxjs'; // Import Observable and of for error handling
+import { catchError, map } from 'rxjs/operators'; // Import operators
 
-// Optional: Define an interface for better type safety
+// Interface for the data structure coming from your API
+interface ApiInventoryItem {
+  product_name: string;
+  SKU: string;
+  warehouse: string;
+  Quantity_on_hand: number;
+}
+
 interface InventoryItem {
   productName: string;
   sku: string;
   warehouseLocation: string;
   quantity: number;
-  status: string; // Or a specific type like 'Available' | 'Low Stock'
-  // Add any other properties your items have
+  status: 'Available' | 'Low Stock' | 'Out of Stock'; // Specific status types
 }
 
 @Component({
@@ -19,39 +28,65 @@ interface InventoryItem {
   styleUrl: './inventory.component.css'
 })
 
-// Implement OnInit if you fetch data when the component loads
 export class InventoryComponent implements OnInit {
 
-  // --- ADD THIS LINE ---
-  // Initialize as an empty array. Use 'any[]' for now, or the interface
   inventoryItems: InventoryItem[] = [];
-  // OR if you don't want strict typing yet:
-  // inventoryItems: any[] = [];
+  isLoading: boolean = false; // To show a loading indicator
+  errorMessage: string | null = null; // To display any API errors
 
-  // Constructor (Inject services here if needed)
-  constructor(/* private inventoryService: InventoryService */) { }
+  // API URL -
+  // In a real app, the base URL and supplier_id might come from environment variables or a service
+  private apiUrl = 'http://localhost:8000/api/warehouse/supplier-dashboard/?supplier_id=103';
 
-  // ngOnInit is a good place to fetch initial data
+  constructor(private http: HttpClient) { } // Inject HttpClient
+
   ngOnInit(): void {
-    this.loadInventory(); // Call a method to load data
+    this.loadInventory();
   }
 
   loadInventory(): void {
-    // Here you would typically call a service to get the data
-    // For example:
-    // this.inventoryService.getInventory().subscribe(data => {
-    //   this.inventoryItems = data;
-    // });
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.inventoryItems = []; // Clear previous items
 
-    // --- TEMPORARY Placeholder Data (Remove when using a service) ---
-    this.inventoryItems = [
-      { productName: 'Turmeric Powder', sku: 'LP123', warehouseLocation: 'Main WH', quantity: 50, status: 'Available' },
-      { productName: 'Garam Masala', sku: 'WM456', warehouseLocation: 'Main WH', quantity: 5, status: 'Low Stock' },
-      { productName: 'Cinnamon Sticks', sku: 'KB789', warehouseLocation: 'Secondary WH', quantity: 0, status: 'Out of Stock' }
-    ];
-    // --- END Placeholder ---
+    this.http.get<ApiInventoryItem[]>(this.apiUrl).pipe(
+      map(apiData => {
+        // Transform API data to our InventoryItem structure and calculate status
+        return apiData.map(apiItem => {
+          let currentStatus: 'Available' | 'Low Stock' | 'Out of Stock';
+          const quantity = apiItem.Quantity_on_hand;
+
+          if (quantity === 0) {
+            currentStatus = 'Out of Stock';
+          } else if (quantity > 0 && quantity <= 150000) { // Between 0 (exclusive) and 150000 (inclusive)
+            currentStatus = 'Low Stock';
+          } else { // quantity > 150000
+            currentStatus = 'Available';
+          }
+
+          return {
+            productName: apiItem.product_name,
+            sku: apiItem.SKU,
+            warehouseLocation: apiItem.warehouse,
+            quantity: quantity,
+            status: currentStatus
+          };
+        });
+      }),
+      catchError(error => {
+        console.error('Error fetching inventory data:', error);
+        this.errorMessage = 'Failed to load inventory data. Please try again later.';
+        return of([]); // Return an empty array on error to prevent breaking the UI
+      })
+    ).subscribe({
+      next: (processedData) => {
+        this.inventoryItems = processedData;
+        this.isLoading = false;
+      },
+      error: () => {
+        // Error handling is already done in catchError, but you can add more here if needed
+        this.isLoading = false;
+      }
+    });
   }
-
-  // ... other methods if needed
-
 }
