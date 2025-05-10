@@ -22,6 +22,8 @@ import { TruckTrackingComponent } from './components/warehouse-manager-page/truc
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
 import { DriverManagerRegisterComponent } from './components/admin-page/driver-manager-register/driver-manager-register.component';
+import {WarehouseComponent} from './components/admin-page/warehouse/warehouse.component';
+
 
 export const routes: Routes = [
   {
@@ -71,7 +73,9 @@ export const routes: Routes = [
         canActivate: [roleGuard(1)],
         children : [
           { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          
           { path : 'profile', component: ProfileComponent, pathMatch: 'full'},
+          { path: 'warehouse', component: WarehouseComponent, pathMatch: 'full' },
           {
             path: 'forecast',
             component: ForecastComponent,
