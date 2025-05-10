@@ -1,0 +1,6 @@
+/* Optional: Make map full width and responsive */
+:host {
+    display: block;
+    width: 100%;
+  }
+  
