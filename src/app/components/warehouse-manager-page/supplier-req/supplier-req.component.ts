@@ -6,11 +6,16 @@ import {
   SupplierRequestService,
   SupplierRequest,
 } from '../../../service/order/supplier-request.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-supplier-req',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule, // Add this import
+  ],
   templateUrl: './supplier-req.component.html',
   styleUrl: './supplier-req.component.css',
 })

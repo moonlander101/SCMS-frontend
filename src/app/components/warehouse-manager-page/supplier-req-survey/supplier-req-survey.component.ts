@@ -7,29 +7,38 @@ import {
   FormBuilder,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   SupplierRequestService,
   SupplierRequest,
 } from '../../../service/order/supplier-request.service';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 interface SurveyData {
   requestId: number;
-  status: 'accepted' | 'received' | 'returned' | 'rejected';
-  surveyResponses: {
-    question1: number;
-    question2: number;
-    question3: number;
-    question4: number;
-    question5: number;
-  };
+  product_id: number;
+  supplier_id: number;
+  warehouse_id: number;
+  quantity: number;
+  status: string;
+  is_defective: boolean;
+  quality: number;
   comments: string;
 }
 
 @Component({
   selector: 'app-supplier-req-survey',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterModule, // Make sure RouterModule is imported
+  ],
+  providers: [
+    SupplierRequestService,
+  ],
   templateUrl: './supplier-req-survey.component.html',
   styleUrls: ['./supplier-req-survey.component.css'],
 })
@@ -49,11 +58,8 @@ export class SupplierReqSurveyComponent implements OnInit {
   ];
 
   questions = [
-    'How would you rate the quality of the delivered products?',
-    'How well did the delivery meet the expected timeline?',
-    'Was the product packaging in good condition?',
-    'Did the products meet the specifications requested?',
-    'How likely are you to order from this supplier again?',
+    'How is the quality of the goods?',
+    'Any Issues/ Noticable Defects?',
   ];
 
   constructor(
@@ -76,26 +82,11 @@ export class SupplierReqSurveyComponent implements OnInit {
     this.surveyForm = this.fb.group({
       status: ['received', Validators.required],
       question1: [
-        3,
-        [Validators.required, Validators.min(1), Validators.max(5)],
+        null, // Start with no selection to force user choice
+        [Validators.required, Validators.min(1), Validators.max(10)],
       ],
-      question2: [
-        3,
-        [Validators.required, Validators.min(1), Validators.max(5)],
-      ],
-      question3: [
-        3,
-        [Validators.required, Validators.min(1), Validators.max(5)],
-      ],
-      question4: [
-        3,
-        [Validators.required, Validators.min(1), Validators.max(5)],
-      ],
-      question5: [
-        3,
-        [Validators.required, Validators.min(1), Validators.max(5)],
-      ],
-      comments: [''],
+      question2: [null, Validators.required], // Start with no selection
+      comments: ['', Validators.required],
     });
   }
 
@@ -119,7 +110,19 @@ export class SupplierReqSurveyComponent implements OnInit {
   }
 
   getRatingLabel(value: number): string {
-    const labels = ['Poor', 'Fair', 'Average', 'Good', 'Excellent'];
+    // Expanded labels for 1-10 scale
+    const labels = [
+      'Very Poor', // 1
+      'Poor', // 2
+      'Below Average', // 3
+      'Slightly Below Average', // 4
+      'Average', // 5
+      'Slightly Above Average', // 6
+      'Above Average', // 7
+      'Good', // 8
+      'Very Good', // 9
+      'Excellent', // 10
+    ];
     return labels[value - 1] || '';
   }
 
@@ -133,31 +136,55 @@ export class SupplierReqSurveyComponent implements OnInit {
       return;
     }
 
+    if (!this.request) {
+      this.errorMessage = 'Cannot submit without request details';
+      this.submitError = true;
+      return;
+    }
+
     const formValues = this.surveyForm.value;
 
+    // Format the data according to API requirements
     const surveyData: SurveyData = {
       requestId: this.requestId,
+      product_id: this.request.product_id || 1, // Fallback if not available
+      supplier_id: this.request.supplier_id || 101, // Fallback if not available
+      warehouse_id: this.request.warehouse_id,
+      quantity: this.request.count,
       status: formValues.status,
-      surveyResponses: {
-        question1: formValues.question1,
-        question2: formValues.question2,
-        question3: formValues.question3,
-        question4: formValues.question4,
-        question5: formValues.question5,
-      },
+      is_defective: formValues.question2, // boolean value - true means defective
+      quality: formValues.question1, // 1-10 rating
       comments: formValues.comments,
     };
 
-    // Log the data that would be sent to the backend
-    console.log('Submitting survey data:', surveyData);
+    // Show loading state
+    this.isLoading = true;
+    this.submitSuccess = false;
+    this.submitError = false;
 
-    // Show success message
-    this.submitSuccess = true;
-
-    // Redirect after successful submission - FIXED PATH
-    setTimeout(() => {
-      this.router.navigate(['/dashboard/warehouse/supplier-requests']);
-    }, 2000);
+    // Make the actual API call
+    this.supplierRequestService.markDeliveryReceived(surveyData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.submitSuccess = true;
+          // Redirect after successful submission
+          setTimeout(() => {
+            this.router.navigate(['/dashboard/warehouse/supplier-requests']);
+          }, 2000);
+        } else {
+          this.submitError = true;
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.submitError = true;
+        this.errorMessage =
+          'Failed to update delivery status. Please try again.';
+        console.error('Error submitting form:', error);
+      },
+    });
   }
 
   goBack(): void {
