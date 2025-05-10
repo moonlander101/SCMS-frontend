@@ -2,10 +2,40 @@
   <app-sidebar [isClosed]="sidebarClosed"></app-sidebar>
   <div class="flex-1 flex flex-col">
     <div class="flex-1 overflow-y-auto relative">
-      <button class="absolute p-1 m-1 hover:backdrop-brightness-110 transition-all rounded-sm z-30" (click)="handleSidebarClosed()">
-        <lucide-angular [img]="panelLeft" class="my-icon text-white"></lucide-angular>
+      <!-- Sidebar toggle button -->
+      <button
+        class="absolute p-1 m-1 hover:backdrop-brightness-110 transition-all rounded-sm z-30"
+        (click)="handleSidebarClosed()"
+      >
+        <lucide-angular
+          [img]="panelLeft"
+          class="my-icon text-white"
+        ></lucide-angular>
       </button>
-      <router-outlet></router-outlet>
+
+      <!-- Background with gradient and wave - hidden for profile page -->
+      <div
+        *ngIf="!isProfilePage"
+        class="absolute inset-0 bg-gradient-to-l from-[#d47153] to-[#fde68a] md:h-[190px] z-0"
+      >
+        <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+          <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
+            <path
+              fill="#ffffff"
+              fill-opacity="1"
+              d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- For profile page: Just the router-outlet without wrapping div -->
+      <router-outlet *ngIf="isProfilePage"></router-outlet>
+
+      <!-- For other pages: Router outlet with styling -->
+      <div *ngIf="!isProfilePage" class="relative z-10 pt-16 px-4 h-full">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
 </div>

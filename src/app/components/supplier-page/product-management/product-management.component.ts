@@ -10,6 +10,7 @@ interface Product {
   sku: string;
   description?: string; // Optional property
   price: number;
+  
   // Add other product properties
 }
 
