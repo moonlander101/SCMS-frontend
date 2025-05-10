@@ -22,6 +22,10 @@ import { TruckTrackingComponent } from './components/warehouse-manager-page/truc
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
 import { DeliveryTableComponent } from './components/driver-page/current-delivery/delivery-table.component';
+import { DriverManagerRegisterComponent } from './components/admin-page/driver-manager-register/driver-manager-register.component';
+import { WarehouseComponent } from './components/admin-page/warehouse/warehouse.component';
+import { StockManagementComponent } from './components/admin-page/stock-management/stock-management.component';
+
 
 export const routes: Routes = [
   {
@@ -61,32 +65,40 @@ export const routes: Routes = [
             path: 'supplier-request-survey/:id',
             component: SupplierReqSurveyComponent,
           },
-          { path : 'profile', component: ProfileComponent },
-          { path: '**', redirectTo: '', pathMatch: 'full' }
+          { path: 'profile', component: ProfileComponent },
+          { path: '**', redirectTo: '', pathMatch: 'full' },
         ],
       },
       // Admin Routes
       {
-        path : 'admin',
+        path: 'admin',
         canActivate: [roleGuard(1)],
-        children : [
-          { path : '', redirectTo: 'profile', pathMatch: 'full'},
-          { path : 'profile', component: ProfileComponent, pathMatch: 'full'},
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
+
+          { path: 'profile', component: ProfileComponent, pathMatch: 'full' },
+          {
+            path: 'warehouse',
+            component: WarehouseComponent,
+            pathMatch: 'full',
+          },
           {
             path: 'forecast',
             component: ForecastComponent,
             pathMatch: 'full',
           },
+          { path: 'register', component: DriverManagerRegisterComponent },
+          { path: 'stock-manage', component: StockManagementComponent },
           // rest (modify sidebar.ts as well)
-          { path: '**', redirectTo: '', pathMatch: 'full' }
-        ]
+          { path: '**', redirectTo: '', pathMatch: 'full' },
+        ],
       },
       // Supplier Routes
       {
-        path : 'supplier',
+        path: 'supplier',
         canActivate: [roleGuard(3)],
-        children : [
-          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
           { path: 'order-history', component: OrderHistoryComponent },
           { path: 'inventory', component: InventoryComponent },
           { path: 'product-management', component: ProductManagementComponent },
@@ -94,18 +106,18 @@ export const routes: Routes = [
           // { path: 'deliveries', component: DeliveriesComponent },
           // { path: 'vendors', component: VendorsComponent },
           { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
-          { path: 'profile', component: ProfileComponent},
-          { path: '**', redirectTo: '', pathMatch: 'full' }
-        ]
+          { path: 'profile', component: ProfileComponent },
+          { path: '**', redirectTo: '', pathMatch: 'full' },
+        ],
       },
       {
-        path : 'vendor',
-        canActivate : [roleGuard(4)],
-        children : [
-          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+        path: 'vendor',
+        canActivate: [roleGuard(4)],
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
           // rest... (modify sidebar.ts as well)
-          { path: '**', redirectTo: '', pathMatch: 'full' }
-        ]
+          { path: '**', redirectTo: '', pathMatch: 'full' },
+        ],
       },
       // Driver Routes
       {

@@ -1,1 +1,85 @@
-<p>transactions works!</p>
+<div class="transactions-container bg-gray-50 min-h-screen p-6">
+  <div class="header">
+    <h1 class="text-3xl font-bold text-gray-900 mb-3">Transaction History</h1>
+    <p>Warehouse ID: {{warehouseId}}</p>
+  </div>
+
+  <div class="filters">
+    <div class="search-container">
+      <input 
+        type="text" 
+        placeholder="Search transactions..." 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (keyup)="onSearch()"
+      >
+      <i class="fas fa-search search-icon"></i>
+    </div>
+    <div class="filter-options">
+      <select class="filter-select" [(ngModel)]="filterType" (change)="onFilterChange()">
+        <option value="ALL">All Transactions</option>
+        <option value="INCOMING">Incoming Only</option>
+        <option value="OUTGOING">Outgoing Only</option>
+      </select>
+      <button class="refresh-btn" (click)="loadTransactions()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loader"></div>
+    <p>Loading transactions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error">
+    <p class="error-message">{{ error }}</p>
+    <button class="retry-btn" (click)="loadTransactions()">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-container" *ngIf="!loading && !error && filteredTransactions.length === 0">
+    <div class="empty-icon">
+      <i class="fas fa-inbox fa-3x"></i>
+    </div>
+    <p>No transactions found</p>
+  </div>
+
+  <!-- Transactions List -->
+  <div class="transactions-list" *ngIf="!loading && !error && filteredTransactions.length > 0">
+    <div class="transaction-card" *ngFor="let transaction of filteredTransactions" 
+         [ngClass]="{'incoming': transaction.transaction_type === 'INCOMING', 
+                    'outgoing': transaction.transaction_type === 'OUTGOING'}">
+      <div class="transaction-header">
+        <span class="transaction-type">
+          <i [class]="transaction.transaction_type === 'INCOMING' ? 'fas fa-arrow-down' : 'fas fa-arrow-up'"></i>
+          {{ transaction.transaction_type }}
+        </span>
+        <span class="transaction-date">{{ transaction.created_at | date:'medium' }}</span>
+      </div>
+      <div class="transaction-details">
+        <div class="detail-row">
+          <span class="detail-label">Reference:</span>
+          <span class="detail-value">{{ transaction.reference_number }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Quantity:</span>
+          <span class="detail-value" [ngClass]="{'positive': transaction.transaction_type === 'INCOMING', 
+                                               'negative': transaction.transaction_type === 'OUTGOING'}">
+            {{ transaction.transaction_type === 'INCOMING' ? '+' : '-' }}{{ transaction.quantity_change }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Created By:</span>
+          <span class="detail-value">{{ transaction.created_by }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Notes:</span>
+          <span class="detail-value notes">{{ transaction.notes }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

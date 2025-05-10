@@ -1,0 +1,19 @@
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Make inputs have a subtle hover effect */
+  input:hover, select:hover {
+    border-color: #cbd5e0;
+  }
+  
+  /* Add focus styling */
+  input:focus, select:focus {
+    border-color: #3b82f6;
+    outline: 2px solid #bfdbfe;
+  }

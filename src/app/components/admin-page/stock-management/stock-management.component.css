@@ -1,0 +1,80 @@
+/* Animation for fade-in effects */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Hover effects for product and supplier rows */
+.row-hover:hover {
+  background-color: rgba(249, 115, 22, 0.05);
+  transition: background-color 0.2s;
+}
+
+/* Button animations */
+button.submit-button {
+  transition: all 0.2s;
+}
+
+button.submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Table styling enhancements */
+.table-container {
+  overflow-x: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+}
+
+.table-header {
+  background-color: rgba(249, 115, 22, 0.05);
+}
+
+/* Form input focus styles */
+input:focus, select:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  outline: none;
+}
+
+/* Custom score badge colors */
+.score-high {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.score-medium {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.score-low {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Selected supplier row highlight */
+.selected-row {
+  background-color: rgba(249, 115, 22, 0.1);
+  border-left: 3px solid #f19249;
+}

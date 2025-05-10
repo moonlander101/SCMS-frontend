@@ -1,0 +1,479 @@
+<div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="relative">
+    <!-- Header Text - Left aligned -->
+    <div
+      class="container mx-auto px-4 py-2 relative z-10 bg-gray-100"
+    >
+      <div class="max-w-2xl">
+        <h2 class="text-xl md:text-2xl font-light text-black mt-3">
+          {{ selectedWarehouse ? "Inventory for" : "All Warehouses" }}
+        </h2>
+        <h1 class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-black/50 pl-3">
+          {{
+            selectedWarehouse
+              ? selectedWarehouse.warehouse_name
+              : "Warehouse Directory"
+          }}
+        </h1>
+        <p class="text-black/90 mt-2 text-lg font-light pl-3">
+          {{
+            selectedWarehouse
+              ? "View and manage inventory"
+              : "Manage your storage facilities"
+          }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow bg-gray-50">
+    <div class="container mx-auto px-6 py-12 max-w-6xl">
+      <!-- Warehouse List View -->
+      <div *ngIf="!selectedWarehouse">
+        <!-- Filtering and Search Section -->
+        <div
+          class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between"
+        >
+          <div class="flex items-center mb-4 md:mb-0 space-x-2">
+            <h2 class="text-2xl font-semibold text-gray-800">Warehouses</h2>
+            <span
+              class="bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm"
+            >
+              {{ warehouses.length }} locations
+            </span>
+          </div>
+
+          <div
+            class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3"
+          >
+            <!-- Search -->
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Search warehouses..."
+                [(ngModel)]="searchQuery"
+                (input)="filterWarehouses()"
+                class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#f19249] focus:border-[#f19249] w-full sm:w-64"
+              />
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warehouse Grid -->
+        <div *ngIf="!loading; else loadingTemplate">
+          <div
+            *ngIf="filteredWarehouses.length > 0; else noWarehousesTemplate"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+          >
+            <div
+              *ngFor="let warehouse of filteredWarehouses"
+              class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+              (click)="selectWarehouse(warehouse)"
+            >
+              <div
+                class="bg-gradient-to-r from-[#f19249] to-[#ea580c] p-4 flex justify-between items-center"
+              >
+                <h3 class="text-white font-medium text-lg truncate">
+                  {{ warehouse.warehouse_name }}
+                </h3>
+                <span
+                  class="bg-white/20 text-white text-xs px-2 py-1 rounded-full"
+                  >ID: {{ warehouse.id }}</span
+                >
+              </div>
+              <div class="p-5">
+                <div class="mb-4 flex items-center text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <span
+                    >{{ warehouse.location_x }},
+                    {{ warehouse.location_y }}</span
+                  >
+                </div>
+                <div class="mb-4 flex items-center text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                    />
+                  </svg>
+                  <span
+                    >Capacity:
+                    {{
+                      parseFloat(warehouse.capacity).toLocaleString()
+                    }}
+                    units</span
+                  >
+                </div>
+                <div class="flex items-center text-gray-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>Created: {{ formatDate(warehouse.created_at) }}</span>
+                </div>
+                <button
+                  class="mt-5 w-full py-2 bg-[#f19249] hover:bg-[#fcd9b1] text-white rounded-md flex items-center justify-center transition"
+                >
+                  <span>View Inventory</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory View -->
+      <div *ngIf="selectedWarehouse">
+        <!-- Back button and Search -->
+        <div
+          class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between"
+        >
+          <button
+            (click)="backToWarehouses()"
+            class="flex items-center text-[#f19249] hover:text-[#ea580c] transition mb-4 md:mb-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 17l-5-5m0 0l5-5m-5 5h12"
+              />
+            </svg>
+            Back to Warehouses
+          </button>
+
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Search inventory..."
+              [(ngModel)]="inventorySearchQuery"
+              (input)="filterInventory()"
+              class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#f19249] focus:border-[#f19249] w-full sm:w-64"
+            />
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warehouse Details Card -->
+        <div class="bg-white rounded-lg shadow-md p-5 mb-8">
+          <div class="flex flex-col md:flex-row justify-between">
+            <div>
+              <div class="flex items-center mb-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-[#f19249] mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-800">
+                  {{ selectedWarehouse.warehouse_name }}
+                </h3>
+                <span
+                  class="ml-2 bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full"
+                  >ID: {{ selectedWarehouse.id }}</span
+                >
+              </div>
+              <p class="text-gray-600 ml-8">
+                {{ selectedWarehouse.location_x }},
+                {{ selectedWarehouse.location_y }}
+              </p>
+            </div>
+            <div class="mt-4 md:mt-0 flex items-center">
+              <div class="text-right">
+                <div class="text-sm text-gray-600">Warehouse Capacity</div>
+                <div class="text-lg font-semibold text-gray-800">
+                  {{
+                    parseFloat(selectedWarehouse.capacity).toLocaleString()
+                  }}
+                  units
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div *ngIf="!inventoryLoading; else loadingTemplate">
+          <div
+            *ngIf="
+              filteredInventoryProducts.length > 0;
+              else noInventoryTemplate
+            "
+          >
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+              <!-- Header for larger screens -->
+              <div
+                class="hidden md:grid md:grid-cols-5 bg-gray-100 p-4 border-b border-gray-200 text-sm font-medium text-gray-600"
+              >
+                <div class="col-span-1">Category</div>
+                <div class="col-span-2">Product Name</div>
+                <div class="col-span-1">Quantity</div>
+                <div class="col-span-1">Supplied Date</div>
+              </div>
+
+              <!-- Inventory Items -->
+              <div>
+                <div
+                  *ngFor="let item of filteredInventoryProducts"
+                  class="border-b border-gray-200 last:border-0 hover:bg-gray-50 transition"
+                >
+                  <!-- Mobile Version (Card Layout) -->
+                  <div class="block md:hidden p-4">
+                    <div class="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 class="font-medium text-gray-800">
+                          {{ item.product_name }}
+                        </h3>
+                        <p class="text-gray-500 text-sm">
+                          Category: {{ item.category }}
+                        </p>
+                      </div>
+                      <span
+                        class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium"
+                      >
+                        {{ item.product_count.toLocaleString() }} units
+                      </span>
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                      Supplied: {{ formatDate(item.supplied_date) }} by
+                      {{ item.supplied_by }}
+                    </p>
+                  </div>
+
+                  <!-- Desktop Version (Table Layout) -->
+                  <div
+                    class="hidden md:grid md:grid-cols-5 md:items-center p-4"
+                  >
+                    <div class="col-span-1 text-gray-800">
+                      {{ item.category }}
+                    </div>
+                    <div class="col-span-2 font-medium text-gray-800">
+                      {{ item.product_name }}
+                    </div>
+                    <div class="col-span-1">
+                      <span
+                        class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium"
+                      >
+                        {{ item.product_count.toLocaleString() }} units
+                      </span>
+                    </div>
+                    <div class="col-span-1 text-gray-600">
+                      {{ formatDate(item.supplied_date) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Template -->
+      <ng-template #loadingTemplate>
+        <div class="flex justify-center items-center py-20">
+          <div
+            class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#f19249]"
+          ></div>
+          <span class="ml-3 text-gray-600">Loading...</span>
+        </div>
+      </ng-template>
+
+      <!-- No Warehouses Template -->
+      <ng-template #noWarehousesTemplate>
+        <div class="text-center py-16 bg-white rounded-lg shadow-sm">
+          <div class="mb-6 text-gray-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-16 w-16 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-medium text-gray-800 mb-2">
+            No warehouses found
+          </h3>
+          <p class="text-gray-600 mb-6">
+            {{
+              warehouses.length > 0
+                ? "No warehouses match your search."
+                : "There are no warehouses in the system yet."
+            }}
+          </p>
+          <div class="space-x-4">
+            <button
+              *ngIf="warehouses.length > 0 && filteredWarehouses.length === 0"
+              (click)="searchQuery = ''; filterWarehouses()"
+              class="inline-block px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
+            >
+              Clear Search
+            </button>
+            <button
+              class="inline-block bg-[#f19249] hover:bg-[#fcd9b1] text-white px-6 py-2 rounded-md transition"
+            >
+              Add Warehouse
+            </button>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- No Inventory Template -->
+      <ng-template #noInventoryTemplate>
+        <div class="text-center py-16 bg-white rounded-lg shadow-sm">
+          <div class="mb-6 text-gray-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-16 w-16 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-medium text-gray-800 mb-2">
+            No inventory items found
+          </h3>
+          <p class="text-gray-600 mb-6">
+            {{
+              inventoryProducts.length > 0
+                ? "No inventory items match your search."
+                : "This warehouse is currently empty."
+            }}
+          </p>
+          <div class="space-x-4">
+            <button
+              *ngIf="
+                inventoryProducts.length > 0 &&
+                filteredInventoryProducts.length === 0
+              "
+              (click)="inventorySearchQuery = ''; filterInventory()"
+              class="inline-block px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
+            >
+              Clear Search
+            </button>
+            <button
+              class="inline-block bg-[#f19249] hover:bg-[#fcd9b1] text-white px-6 py-2 rounded-md transition"
+            >
+              Add Inventory
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

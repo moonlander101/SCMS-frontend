@@ -49,6 +49,7 @@ export class SidebarComponent {
       { label: 'Supplier Requests', route: '/dashboard/warehouse/supplier-requests' },
       { label: 'Vendor Orders', route: '/dashboard/warehouse/vendor-orders' },
       { label: 'Truck Tracking', route: '/dashboard/warehouse/truck-tracking' },
+      { label: 'Profile', route: '/dashboard/profile' },
     ],
     3: [ // Supplier
       { label: 'Order History', route: '/dashboard/supplier/order-history' },
@@ -59,10 +60,19 @@ export class SidebarComponent {
       { label: 'Profile', route: '/dashboard/supplier/profile' },
     ],
 
-    6: [
+    6: [ // Driver
       { label: 'Profile', route: '/dashboard/driver/profile'},
       { label: 'Current Assignment', route: '/dashboard/driver/current'}
-    ]
+    ],
+
+    1: [ // Admin
+      { label: 'Warehouses', route: '/dashboard/admin/warehouse' },
+      { label: 'Demand Forecast', route: '/dashboard/admin/forecast' },
+      { label: 'Stock Management', route: '/dashboard/admin/stock-manage' },
+      { label: 'Registrations', route: '/dashboard/admin/register' },
+      { label: 'Profile', route: '/dashboard/profile' },
+    ],
+
   };
 
   // tabs: Tab[] = [
