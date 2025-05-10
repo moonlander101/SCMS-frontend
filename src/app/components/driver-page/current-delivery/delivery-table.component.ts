@@ -2,8 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NgFor, NgClass, NgIf } from '@angular/common';
 import { TitleCasePipe, DatePipe } from '@angular/common';
+import { DriverService } from '../../../service/driver/driver.service';
 
-interface AssignmentItem {
+export interface AssignmentItem {
   shipment: {
     id: number;
     order_id: string;
@@ -14,17 +15,18 @@ interface AssignmentItem {
   delivery_sequence: number;
   delivery_location: {
     lat: number;
-    lon: number;
+    lng: number;
   };
   is_delivered: boolean;
   delivered_at: string | null;
 }
 
-interface Assignment {
+export interface Assignment {
   id: number;
   vehicle: string;
   total_load: number;
   status: string;
+  providers : [DriverService],
   items: AssignmentItem[];
 }
 
@@ -32,7 +34,8 @@ interface Assignment {
   selector: 'app-delivery-table',
   templateUrl: './delivery-table.component.html',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf, TitleCasePipe, DatePipe]
+  imports: [NgFor, NgClass, NgIf, TitleCasePipe, DatePipe],
+  providers : [DriverService],
 })
 export class DeliveryTableComponent implements OnInit {
   assignment: Assignment | null = null;
@@ -47,69 +50,114 @@ export class DeliveryTableComponent implements OnInit {
   showConfirmationModal = false;
   itemToConfirm: number | null = null;
 
-  constructor() { }  ngOnInit(): void {
-    // Mock data - this would typically come from a service
-    this.assignment = {
-      id: 1,
-      vehicle: 'TRK001',
-      total_load: 500,
-      status: 'created',
-      items: [
-        {
-          shipment: {
-            id: 1,
-            order_id: 'ORD001',
-            demand: 500,
-            status: 'pending'
-          },
-          role: 'pickup',
-          delivery_sequence: 1,          delivery_location: {
-            lat: 7.2,
-            lon: 80.1 // Note: JSON had 'lng', changed to 'lon' to match interface
-          },
-          is_delivered: true,
-          delivered_at: "2024/12/12"
-        },
-        {
-          shipment: {
-            id: 1,
-            order_id: 'ORD001',
-            demand: 500,
-            status: 'pending'
-          },
-          role: 'delivery',
-          delivery_sequence: 2,          delivery_location: {
-            lat: 7.3,
-            lon: 80.2 // Note: JSON had 'lng', changed to 'lon' to match interface
-          },
-          is_delivered: false,
-          delivered_at: null
+  constructor(private driverService: DriverService) { }
+
+  ngOnInit(): void {
+    this.driverService.fetchAssignmentsByVehicle("TRK002").subscribe({
+      next: (data) => {
+        this.assignment = data as Assignment;
+        console.log('Assignment fetched:', this.assignment);
+
+        this.deliveryItems = [...this.assignment.items].sort((a, b) =>
+          a.delivery_sequence - b.delivery_sequence
+        );
+
+        // Initialize currentIndex based on first non-delivered item
+        const firstNonDeliveredIndex = this.deliveryItems.findIndex(item => !item.is_delivered);
+        console.log("First non-delivered index:", firstNonDeliveredIndex);
+
+        // Check if all items are delivered
+        this.allDeliveriesCompleted = firstNonDeliveredIndex === -1;
+
+        // If all items are delivered, set currentIndex to a value that won't match any row
+        // Otherwise, set it to the first non-delivered item
+        this.currentIndex = this.allDeliveriesCompleted ? -1 : firstNonDeliveredIndex;
+
+        // Update assignment status if all items are delivered
+        if (this.allDeliveriesCompleted && this.assignment) {
+          this.assignment.status = 'completed';
         }
-      ]
-    };    // Sort delivery items by sequence
-    this.deliveryItems = [...this.assignment.items].sort((a, b) =>
-      a.delivery_sequence - b.delivery_sequence
-    );
+      },
+      error: (err) => {
+        console.error('Error fetching assignment:', err);
+      }
+    });
+  }
 
-    // Initialize currentIndex based on first non-delivered item
-    const firstNonDeliveredIndex = this.deliveryItems.findIndex(item => !item.is_delivered);
-    this.currentIndex = firstNonDeliveredIndex !== -1 ? firstNonDeliveredIndex : 0;
+  // Confirms the current delivery and unlocks the next one
+confirmDelivery(index: number): void {
+  if (index !== this.currentIndex) {
+    return; // Can only confirm the current active delivery item
+  }
 
-    // Check if all deliveries are completed
-    this.allDeliveriesCompleted = !this.deliveryItems.some(item => !item.is_delivered);
+  const item = this.deliveryItems[index];
 
-    // Update assignment status if all items are delivered
-    if (this.allDeliveriesCompleted && this.assignment) {
-      this.assignment.status = 'completed';
+  // Call processArrival and wait for its completion before updating UI
+  if (this.assignment) {
+    // Show loading indicator or disable UI if needed
+
+    // Call markArrival and subscribe to its response
+    this.driverService.markArrival(
+      this.assignment.id,
+      item.delivery_sequence,
+      this.assignment.total_load,
+      this.assignment.status
+    ).subscribe({
+        next: (response: any) => {
+          console.log('Arrival marked successfully:', response);
+
+          // Check if there are actions to process
+          if (response && response.actions && Array.isArray(response.actions)) {
+            // Create an array of observables for each action
+            const completeRequests = response.actions.map((action: any) => {
+              if (action.assignment_item_id) {
+                return this.driverService.markComplete(
+                  this.assignment!.id,
+                  action.assignment_item_id,
+                  this.assignment!.total_load,
+                  this.assignment!.status
+                );
+              }
+              return null;
+            }).filter((req: null) => req !== null);
+
+            // Execute all completion requests
+            if (completeRequests.length > 0) {
+              // Use forkJoin to wait for all requests to complete
+              import('rxjs').then(({ forkJoin, of }) => {
+                forkJoin(completeRequests).subscribe({
+                  next: (results) => {
+                    console.log('All actions completed successfully:', results);
+
+                    // Only update UI state after all API calls are successful
+                    this.updateDeliveryState(index, item);
+                  },
+                  error: (error) => {
+                    console.error('Error completing actions:', error);
+                    // Handle error (show message to user)
+                  }
+                });
+              });
+            } else {
+              // No actions to complete
+              this.updateDeliveryState(index, item);
+            }
+          } else {
+            // No actions in response, just update the UI
+            this.updateDeliveryState(index, item);
+          }
+        },
+        error: (error) => {
+          console.error('Error marking arrival:', error);
+          // Handle error (show message to user)
+        }
+      });
     }
-  }// Confirms the current delivery and unlocks the next one
-  confirmDelivery(index: number): void {
-    if (index !== this.currentIndex) {
-      return; // Can only confirm the current active delivery item
-    }
+  }
 
+  // Helper method to update the local state after API calls complete
+  private updateDeliveryState(index: number, item: AssignmentItem): void {
     // Mark the current delivery item as delivered
-    const item = this.deliveryItems[index];
     item.is_delivered = true;
     item.delivered_at = new Date().toISOString();
     item.shipment.status = 'delivered';
@@ -127,7 +175,9 @@ export class DeliveryTableComponent implements OnInit {
     if (this.selectedItem && this.selectedItem.shipment.id === item.shipment.id) {
       this.closeOrderDetails();
     }
-  }  // Called when driver completes all deliveries
+  }
+
+  // Called when driver completes all deliveries
   completeAllDeliveries(): void {
     if (!this.allDeliveriesCompleted) {
       return; // All deliveries must be confirmed first
