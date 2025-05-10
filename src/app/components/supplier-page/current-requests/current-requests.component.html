@@ -1,8 +1,24 @@
 <div class="container mx-auto px-4 py-8">
-  <h2 class="text-2xl font-semibold text-[#003545] mb-6">Current Requests & Deadlines</h2>
+  <h2 class="text-2xl font-semibold text-[#003545] mb-6">Current Requests & Order History</h2>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" *ngIf="!isLoading && !errorMessage">
+    <div class="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+      <h3 class="text-lg font-semibold text-blue-600 mb-1">Pending Orders</h3>
+      <p class="text-3xl font-bold text-gray-800">{{ pendingCount }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+      <h3 class="text-lg font-semibold text-green-600 mb-1">Accepted Orders</h3>
+      <p class="text-3xl font-bold text-gray-800">{{ acceptedCount }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+      <h3 class="text-lg font-semibold text-purple-600 mb-1">Delivered Orders</h3>
+      <p class="text-3xl font-bold text-gray-800">{{ receivedCount }}</p>
+    </div>
+  </div>
 
   <!-- Loading Indicator -->
-  <div *ngIf="isLoading && !currentRequests.length" class="text-center py-10">
+  <div *ngIf="isLoading && !activeRequests.length && !otherRequests.length" class="text-center py-10">
     <p class="text-lg text-gray-500">Loading requests...</p>
     <div class="mt-4 animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
   </div>
@@ -13,8 +29,9 @@
     <span class="block sm:inline">{{ errorMessage }}</span>
   </div>
 
-  <!-- Table and data area -->
-  <div *ngIf="!isLoading || currentRequests.length > 0"> <!-- Show table even if loading more, if some data exists -->
+  <!-- Active Orders Table (Pending & Accepted) -->
+  <div *ngIf="!isLoading || activeRequests.length > 0">
+    <h3 class="text-xl font-semibold text-[#003545] mt-8 mb-4">Active Orders</h3>
     <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
       <table class="w-full table-auto">
         <thead class="bg-slate-100 text-left text-sm font-medium text-gray-600">
@@ -29,14 +46,14 @@
           </tr>
         </thead>
         <tbody class="text-gray-700">
-          <tr *ngFor="let request of currentRequests" class="border-b border-slate-200 hover:bg-slate-50">
+          <tr *ngFor="let request of activeRequests" class="border-b border-slate-200 hover:bg-slate-50">
             <td class="px-4 py-3 font-medium text-blue-700">{{ request.id }}</td>
             <td class="px-4 py-3">{{ request.requestDate | date:'shortDate' }}</td>
             <td class="px-4 py-3">{{ request.productName }}</td>
             <td class="px-4 py-3">{{ request.quantity | number }}</td>
             <td class="px-4 py-3 font-medium"
-                [class.text-red-600]="isOverdue(request.deadline) && request.status !== 'Received' && request.status !== 'Rejected'"
-                [class.text-gray-500]="request.status === 'Received' || request.status === 'Rejected'">
+                [class.text-red-600]="isOverdue(request.deadline) && request.status !== 'Accepted'"
+                [class.text-gray-500]="request.status === 'Accepted'">
               {{ request.deadline | date:'shortDate' }}
             </td>
             <td class="px-4 py-3">
@@ -59,17 +76,71 @@
               <button (click)="openDetailsModal(request)" class="text-blue-600 hover:underline text-sm">Details</button>
             </td>
           </tr>
-          <!-- Placeholder if no requests after loading and no error -->
-          <tr *ngIf="!isLoading && !errorMessage && currentRequests.length === 0">
-            <td colspan="7" class="text-center px-4 py-6 text-gray-500">No current requests found.</td>
+          <tr *ngIf="!isLoading && activeRequests.length === 0 && !errorMessage">
+            <td colspan="7" class="text-center px-4 py-6 text-gray-500">No active orders found.</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-</div>
 
-<!-- Details Modal -->
+  <!-- Other Orders Table (Rejected, Returned, Received) -->
+  <div *ngIf="!isLoading || otherRequests.length > 0">
+    <h3 class="text-xl font-semibold text-[#003545] mt-10 mb-4">Order History</h3>
+    <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
+      <table class="w-full table-auto">
+        <thead class="bg-slate-100 text-left text-sm font-medium text-gray-600">
+          <tr>
+            <th class="px-4 py-3">Request ID</th>
+            <th class="px-4 py-3">Request Date</th>
+            <th class="px-4 py-3">Product</th>
+            <th class="px-4 py-3">Quantity</th>
+            <th class="px-4 py-3">Outcome Date</th> <!-- Changed from Delivery Deadline -->
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <tr *ngFor="let request of otherRequests" class="border-b border-slate-200 hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-blue-700">{{ request.id }}</td>
+            <td class="px-4 py-3">{{ request.requestDate | date:'shortDate' }}</td>
+            <td class="px-4 py-3">{{ request.productName }}</td>
+            <td class="px-4 py-3">{{ request.quantity | number }}</td>
+            <td class="px-4 py-3">
+              <!-- Show receivedAt if status is 'Received', otherwise deadline for others, or N/A -->
+              <ng-container *ngIf="request.status === 'Received' && request.receivedAt">
+                {{ request.receivedAt | date:'shortDate' }} (Received)
+              </ng-container>
+              <ng-container *ngIf="request.status !== 'Received'">
+                 <!-- For Rejected/Returned, deadline might still be relevant contextually, or show N/A -->
+                 {{ request.deadline | date:'shortDate' }} (Expected)
+              </ng-container>
+               <ng-container *ngIf="request.status === 'Received' && !request.receivedAt">
+                N/A
+              </ng-container>
+            </td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 rounded-full text-xs font-medium"
+                    [ngClass]="getRequestStatusClass(request.status)">
+                {{ request.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <button (click)="openDetailsModal(request)" class="text-blue-600 hover:underline text-sm">Details</button>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && otherRequests.length === 0 && !errorMessage">
+            <td colspan="7" class="text-center px-4 py-6 text-gray-500">No historical orders found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div> <!-- End of main container -->
+
+
+<!-- Details Modal (Remains the same) -->
 <div *ngIf="isModalOpen && selectedRequestDetails"
      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50"
      (click)="closeDetailsModal()">
@@ -96,12 +167,11 @@
             <div><strong>Product ID:</strong> {{ raw.product_id }}</div>
             <div><strong>Warehouse ID:</strong> {{ raw.warehouse_id }}</div>
             <div *ngIf="raw.unit_price !== null"><strong>Unit Price:</strong> {{ raw.unit_price | currency:'USD':'symbol':'1.2-2' }}</div>
-            <div *ngIf="raw.received_at"><strong>Received At:</strong> {{ raw.received_at | date:'medium' }}</div>
+            <div *ngIf="raw.received_at"><strong>Received At:</strong> {{ raw.received_at | date:'medium' }}</div> <!-- Use raw.received_at as it's a string -->
             <div *ngIf="raw.quality"><strong>Quality:</strong> {{ raw.quality }}</div>
             <div *ngIf="raw.is_defective !== null"><strong>Is Defective:</strong> {{ raw.is_defective ? 'Yes' : 'No' }}</div>
         </ng-container>
       </div>
-      <!-- You could add more details from selectedRequestDetails.rawApiData here -->
       <pre class="mt-4 bg-gray-100 p-2 rounded text-xs overflow-x-auto"><code>{{ selectedRequestDetails.rawApiData | json }}</code></pre>
     </div>
     <div class="mt-5 text-right">
@@ -110,7 +180,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Footer (ensure it's outside the main component content div if you want it always at bottom) -->
 <div class="mt-auto bg-gray-100 py-6">

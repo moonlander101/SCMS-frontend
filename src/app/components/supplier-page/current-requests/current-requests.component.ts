@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // DatePipe for formatting
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -9,11 +9,11 @@ import { jwtDecode } from 'jwt-decode';
 interface ApiRequestItem {
   request_id: number;
   supplier_id: number;
-  created_at: string; // ISO date string
-  expected_delivery_date: string; // ISO date string
+  created_at: string;
+  expected_delivery_date: string;
   product_id: number;
   count: number;
-  status: 'pending' | 'accepted' | 'rejected' | 'received' | 'returned'; // API status values
+  status: 'pending' | 'accepted' | 'rejected' | 'received' | 'returned';
   received_at: string | null;
   warehouse_id: number;
   unit_price: number | null;
@@ -25,16 +25,16 @@ interface ApiRequestItem {
 
 // Your internal interface for display and component logic
 interface RequestItem {
-  id: number; // request_id
+  id: number;
   requestDate: Date;
   productName: string;
   quantity: number;
   deadline: Date;
-  status: 'Pending' | 'Accepted' | 'Rejected' | 'Received' | 'Returned'; // UI display status
+  status: 'Pending' | 'Accepted' | 'Rejected' | 'Received' | 'Returned';
+  receivedAt: Date | null; // Added for "Delivered Date"
   rawApiData?: ApiRequestItem;
   supplierId?: number;
   productId?: number;
-  receivedAt?: Date | null;
   warehouseId?: number;
   unitPrice?: number | null;
   quality?: string | null;
@@ -43,9 +43,9 @@ interface RequestItem {
 }
 
 interface JWTPayload {
-  user_id: number
-  username: string
-  role_id: number
+  user_id: number;
+  username: string;
+  role_id: number;
 }
 
 @Component({
@@ -57,59 +57,111 @@ interface JWTPayload {
   providers: [DatePipe]
 })
 export class CurrentRequestsComponent implements OnInit {
-  currentRequests: RequestItem[] = [];
+  // Master list from API
+  // allRequests: RequestItem[] = []; // We can derive filtered lists directly
+
+  // Filtered lists for tables
+  activeRequests: RequestItem[] = [];
+  otherRequests: RequestItem[] = []; // For Rejected, Returned, Received
+
+  // Counts for summary cards
+  pendingCount: number = 0;
+  acceptedCount: number = 0;
+  receivedCount: number = 0; // For 'Received' status orders
+
   isLoading: boolean = false;
   errorMessage: string | null = null;
   selectedRequestDetails: RequestItem | null = null;
   isModalOpen: boolean = false;
 
-  private supplierId = 103; // Example supplier ID - get this dynamically in a real app
+  private supplierId!: number; // Will be set in ngOnInit
 
-  // --- API URL defined directly in the component ---
   private readonly ORDER_MANAGEMENT_API_BASE_URL = 'http://localhost:8000/api/v0/supplier-request';
 
-  // private apiUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}`;
   constructor(private http: HttpClient, public datePipe: DatePipe) {}
 
   ngOnInit(): void {
-    let decoded : JWTPayload | null = null;
+    let decoded: JWTPayload | null = null;
     const token = localStorage.getItem("token");
     if (token) {
       try {
         decoded = jwtDecode(token);
         console.log('Decoded token:', decoded);
+        this.supplierId = decoded?.user_id || 1; // Set supplierId here
       } catch (error) {
         console.error('Error decoding token:', error);
+        this.supplierId = 1; // Fallback supplierId
       }
+    } else {
+      this.supplierId = 1; // Fallback if no token
+      console.warn('No token found, using fallback supplierId.');
     }
-    this.supplierId = decoded?.user_id || 1
-    this.loadRequests(decoded?.user_id || 1);
+    this.loadRequests(); // No need to pass supplierId if it's a class member
   }
 
-  loadRequests(user_id : number): void {
+  loadRequests(): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.currentRequests = [];
+    // Reset lists and counts
+    this.activeRequests = [];
+    this.otherRequests = [];
+    this.pendingCount = 0;
+    this.acceptedCount = 0;
+    this.receivedCount = 0;
 
-    this.http.get<ApiRequestItem[]>(`${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier/${user_id}/`).pipe(
+    if (!this.supplierId) {
+        this.errorMessage = "Supplier ID not available. Cannot load requests.";
+        this.isLoading = false;
+        return;
+    }
+
+    this.http.get<ApiRequestItem[]>(`${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier/${this.supplierId}/`).pipe(
       map(apiDataArray => {
+        // First, transform all API items
         return apiDataArray.map(apiItem => this.transformApiItemToRequestItem(apiItem));
+      }),
+      tap(transformedRequests => {
+        // Second, categorize and count
+        this.processAndCategorizeRequests(transformedRequests);
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching requests:', error);
         this.errorMessage = `Failed to load requests: ${error.statusText || 'Unknown error'}`;
-        return of([]);
+        return of([]); // Return empty on error so tap doesn't break if array is expected
       })
     ).subscribe({
-      next: (processedData) => {
-        this.currentRequests = processedData;
+      // Data processing is now in 'tap', 'next' can be minimal or for final checks
+      next: () => {
         this.isLoading = false;
       },
       error: () => {
+        // Error is caught by catchError, this ensures isLoading is false
         this.isLoading = false;
       }
     });
   }
+
+  private processAndCategorizeRequests(requests: RequestItem[]): void {
+    this.activeRequests = [];
+    this.otherRequests = [];
+    this.pendingCount = 0;
+    this.acceptedCount = 0;
+    this.receivedCount = 0;
+
+    requests.forEach(request => {
+      if (request.status === 'Pending' || request.status === 'Accepted') {
+        this.activeRequests.push(request);
+      } else if (request.status === 'Rejected' || request.status === 'Returned' || request.status === 'Received') {
+        this.otherRequests.push(request);
+      }
+
+      // Update counts
+      if (request.status === 'Pending') this.pendingCount++;
+      if (request.status === 'Accepted') this.acceptedCount++;
+      if (request.status === 'Received') this.receivedCount++;
+    });
+  }
+
 
   private transformApiItemToRequestItem(apiItem: ApiRequestItem): RequestItem {
     const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -120,10 +172,10 @@ export class CurrentRequestsComponent implements OnInit {
       quantity: apiItem.count,
       deadline: new Date(apiItem.expected_delivery_date),
       status: capitalize(apiItem.status) as RequestItem['status'],
+      receivedAt: apiItem.received_at ? new Date(apiItem.received_at) : null, // Map received_at
       rawApiData: apiItem,
       supplierId: apiItem.supplier_id,
       productId: apiItem.product_id,
-      receivedAt: apiItem.received_at ? new Date(apiItem.received_at) : null,
       warehouseId: apiItem.warehouse_id,
       unitPrice: apiItem.unit_price,
       quality: apiItem.quality,
@@ -160,7 +212,6 @@ export class CurrentRequestsComponent implements OnInit {
 
   updateRequestStatus(requestId: number, newApiStatus: 'accepted' | 'rejected'): void {
     this.isLoading = true;
-    // Construct the update URL using the base URL defined in the component
     const updateUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/${requestId}/status/`;
 
     this.http.patch(updateUrl, { status: newApiStatus })
@@ -171,16 +222,22 @@ export class CurrentRequestsComponent implements OnInit {
       catchError((error: HttpErrorResponse) => {
         console.error(`Error updating request ${requestId}:`, error);
         this.errorMessage = `Failed to update request ${requestId}. ${error.message || 'Please try again.'}`;
-        this.isLoading = false;
+        // Do not set isLoading false here if switchMap follows, let loadRequests handle it
         return throwError(() => error);
       }),
       switchMap(() => {
-        this.loadRequests(this.supplierId);
+        this.loadRequests(); // Reload all requests, which will re-filter and update counts
         return of(null);
       })
     )
     .subscribe({
-        complete: () => {}
+      error: () => {
+        // If switchMap or loadRequests itself errors out and doesn't complete
+        this.isLoading = false;
+      },
+      complete: () => {
+        // isLoading is typically set to false at the end of loadRequests
+      }
     });
   }
 
