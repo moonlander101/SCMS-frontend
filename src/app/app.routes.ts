@@ -63,13 +63,24 @@ export const routes: Routes = [
         component: ForecastComponent,
         pathMatch: 'full',
       },
-      { path: 'order-history', component: OrderHistoryComponent }, // /dashboard/orders
-      { path: 'inventory', component: InventoryComponent }, // /dashboard/inventory
-      { path: 'product-management', component: ProductManagementComponent }, // /dashboard/product-management
-      { path: 'current-requests', component: CurrentRequestsComponent }, // /dashboard/current-requests
-      // { path: 'deliveries', component: DeliveriesComponent }, // /dashboard/deliveries
-      // { path: 'vendors', component: VendorsComponent },
-      { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+      
+      // Supplier Routes
+      {
+        path: 'supplier',
+        // canActivate: [roleGuard(3)],
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
+          { path: 'order-history', component: OrderHistoryComponent },
+          { path: 'inventory', component: InventoryComponent },
+          { path: 'product-management', component: ProductManagementComponent },
+          { path: 'current-requests', component: CurrentRequestsComponent },
+          // { path: 'deliveries', component: DeliveriesComponent },
+          // { path: 'vendors', component: VendorsComponent },
+          { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
+          { path: 'profile', component: ProfileComponent },
+          { path: '**', redirectTo: '', pathMatch: 'full' },
+        ],
+      },
     ],
   },
   { path: '**', redirectTo: 'home' }, // Handle 404/unknown routes

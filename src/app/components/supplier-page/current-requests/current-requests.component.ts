@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common'; // DatePipe for format
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
 
 // Interface for the data structure from your API
 interface ApiRequestItem {
@@ -41,6 +42,12 @@ interface RequestItem {
   supplierName?: string;
 }
 
+interface JWTPayload {
+  user_id: number
+  username: string
+  role_id: number
+}
+
 @Component({
   selector: 'app-current-requests',
   standalone: true,
@@ -59,22 +66,32 @@ export class CurrentRequestsComponent implements OnInit {
   private supplierId = 103; // Example supplier ID - get this dynamically in a real app
 
   // --- API URL defined directly in the component ---
-  private readonly ORDER_MANAGEMENT_API_BASE_URL = 'http://localhost:YOUR_ORDER_API_PORT/api';
+  private readonly ORDER_MANAGEMENT_API_BASE_URL = 'http://localhost:8000/api/v0/supplier-request';
 
-  private apiUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}`;
-
+  // private apiUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}`;
   constructor(private http: HttpClient, public datePipe: DatePipe) {}
 
   ngOnInit(): void {
-    this.loadRequests();
+    let decoded : JWTPayload | null = null;
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        decoded = jwtDecode(token);
+        console.log('Decoded token:', decoded);
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
+    this.supplierId = decoded?.user_id || 1
+    this.loadRequests(decoded?.user_id || 1);
   }
 
-  loadRequests(): void {
+  loadRequests(user_id : number): void {
     this.isLoading = true;
     this.errorMessage = null;
     this.currentRequests = [];
 
-    this.http.get<ApiRequestItem[]>(this.apiUrl).pipe(
+    this.http.get<ApiRequestItem[]>(`${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier/${user_id}/`).pipe(
       map(apiDataArray => {
         return apiDataArray.map(apiItem => this.transformApiItemToRequestItem(apiItem));
       }),
@@ -144,7 +161,7 @@ export class CurrentRequestsComponent implements OnInit {
   updateRequestStatus(requestId: number, newApiStatus: 'accepted' | 'rejected'): void {
     this.isLoading = true;
     // Construct the update URL using the base URL defined in the component
-    const updateUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}/${requestId}`;
+    const updateUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/${requestId}/status/`;
 
     this.http.patch(updateUrl, { status: newApiStatus })
     .pipe(
@@ -158,7 +175,7 @@ export class CurrentRequestsComponent implements OnInit {
         return throwError(() => error);
       }),
       switchMap(() => {
-        this.loadRequests();
+        this.loadRequests(this.supplierId);
         return of(null);
       })
     )
