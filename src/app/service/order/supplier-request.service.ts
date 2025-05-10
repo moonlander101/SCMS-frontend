@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
 
 export interface SupplierRequest {
   request_id: number;
@@ -475,7 +476,32 @@ export class SupplierRequestService {
 
   // Get all requests
   getAllRequests(): Observable<SupplierRequest[]> {
-    return of(this.mockData);
+    const token = localStorage.getItem('token');
+    let warehouse_id = 1; // Default warehouse ID
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        warehouse_id = decodedToken?.warehouse_id;
+      }catch (error) {
+        console.error('Invalid token:', error);
+        return of(this.mockData);
+      }
+    }
+        
+    return this.http.get<SupplierRequest[]>(`http://localhost:8000/api/v0/supplier-request/warehouse/${warehouse_id}/?status=accepted`)
+      .pipe(
+        map(requests => {
+          // Map "accepted" status to "pending" for UI display
+          return requests.map(req => ({
+            ...req,
+            status: req.status === 'accepted' ? 'pending' : req.status
+          }));
+        }),
+        catchError((error) => {
+          console.error('Error fetching supplier requests:', error);
+          return of(this.mockData);
+        })
+      );
   }
 
   // Get requests by warehouse ID

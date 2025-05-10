@@ -62,7 +62,7 @@ export class SidebarComponent {
     1: [ // Admin
       { label: 'Warehouses', route: '/dashboard/admin/warehouse' },
       { label: 'Demand Forecast', route: '/dashboard/admin/forecast' },
-      { label: 'Stock Manage', route: '/dashboard/admin/supplier-ranks' },
+      { label: 'Stock Management', route: '/dashboard/admin/stock-manage' },
       { label: 'Registrations', route: '/dashboard/admin/register' },
       { label: 'Profile', route: '/dashboard/profile' },
     ],
