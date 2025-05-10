@@ -1,131 +1,189 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // <--- IMPORT THIS
+import { CommonModule, DatePipe } from '@angular/common'; // DatePipe for formatting
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
-// Interface to define the structure of a request item
+// Interface for the data structure from your API
+interface ApiRequestItem {
+  request_id: number;
+  supplier_id: number;
+  created_at: string; // ISO date string
+  expected_delivery_date: string; // ISO date string
+  product_id: number;
+  count: number;
+  status: 'pending' | 'accepted' | 'rejected' | 'received' | 'returned'; // API status values
+  received_at: string | null;
+  warehouse_id: number;
+  unit_price: number | null;
+  quality: string | null;
+  is_defective: boolean | null;
+  supplier_name: string;
+  product_name: string;
+}
+
+// Your internal interface for display and component logic
 interface RequestItem {
-  id: string;
-  requestDate: Date | string;
+  id: number; // request_id
+  requestDate: Date;
   productName: string;
   quantity: number;
-  deadline: Date | string;
-  status: 'New' | 'Accepted' | 'Rejected' | 'Shipped' | 'Processing';
+  deadline: Date;
+  status: 'Pending' | 'Accepted' | 'Rejected' | 'Received' | 'Returned'; // UI display status
+  rawApiData?: ApiRequestItem;
+  supplierId?: number;
+  productId?: number;
+  receivedAt?: Date | null;
+  warehouseId?: number;
+  unitPrice?: number | null;
+  quality?: string | null;
+  isDefective?: boolean | null;
+  supplierName?: string;
 }
 
 @Component({
   selector: 'app-current-requests',
-  standalone: true, // <--- MAKE SURE THIS IS TRUE
-  imports: [CommonModule], // <--- ADD THIS IMPORTS ARRAY WITH CommonModule
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './current-requests.component.html',
-  styleUrls: ['./current-requests.component.css']
+  styleUrls: ['./current-requests.component.css'],
+  providers: [DatePipe]
 })
 export class CurrentRequestsComponent implements OnInit {
-
   currentRequests: RequestItem[] = [];
+  isLoading: boolean = false;
+  errorMessage: string | null = null;
+  selectedRequestDetails: RequestItem | null = null;
+  isModalOpen: boolean = false;
 
-  constructor() { }
+  private supplierId = 103; // Example supplier ID - get this dynamically in a real app
+
+  // --- API URL defined directly in the component ---
+  private readonly ORDER_MANAGEMENT_API_BASE_URL = 'http://localhost:YOUR_ORDER_API_PORT/api';
+
+  private apiUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}`;
+
+  constructor(private http: HttpClient, public datePipe: DatePipe) {}
 
   ngOnInit(): void {
-    this.loadHardcodedRequests();
+    this.loadRequests();
   }
 
-  loadHardcodedRequests(): void {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
+  loadRequests(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.currentRequests = [];
 
-    // Ensure dates are consistently Dates or consistently strings if needed
-    // Using Date objects is generally better for date logic
-    this.currentRequests = [
-       {
-        id: 'PO-1001',
-        requestDate: yesterday, // Keep as Date object
-        productName: 'Cumin Seeds',
-        quantity: 50,
-        deadline: tomorrow, // Keep as Date object
-        status: 'New'
+    this.http.get<ApiRequestItem[]>(this.apiUrl).pipe(
+      map(apiDataArray => {
+        return apiDataArray.map(apiItem => this.transformApiItemToRequestItem(apiItem));
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching requests:', error);
+        this.errorMessage = `Failed to load requests: ${error.statusText || 'Unknown error'}`;
+        return of([]);
+      })
+    ).subscribe({
+      next: (processedData) => {
+        this.currentRequests = processedData;
+        this.isLoading = false;
       },
-      {
-        id: 'PO-1002',
-        requestDate: new Date(new Date().setDate(new Date().getDate() - 5)), // Use new Date() to avoid modifying 'today'
-        productName: 'Cloves',
-        quantity: 10,
-        deadline: nextWeek, // Keep as Date object
-        status: 'Accepted'
-      },
-      {
-        id: 'PO-1003',
-        requestDate: new Date(new Date().setDate(new Date().getDate() - 10)),
-        productName: 'Cinnamon Sticks',
-        quantity: 200,
-        deadline: yesterday, // Re-use yesterday variable if it's correct scope, or recalculate
-        status: 'Processing'
-      },
-      {
-        id: 'PO-1004',
-        requestDate: new Date(new Date().setDate(new Date().getDate() - 2)),
-        productName: 'Garam Masala',
-        quantity: 5,
-        deadline: new Date(new Date().setDate(new Date().getDate() + 3)),
-        status: 'New'
-      },
-       {
-        id: 'PO-1005',
-        requestDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-        productName: 'Chili Powder',
-        quantity: 25,
-        deadline: new Date(new Date().setDate(new Date().getDate() - 8)),
-        status: 'Accepted'
-      },
-      {
-        id: 'PO-1006',
-        requestDate: new Date(new Date().setDate(new Date().getDate() - 3)),
-        productName: 'Cardamom Pods',
-        quantity: 30,
-        deadline: new Date(new Date().setDate(new Date().getDate() + 10)),
-        status: 'Rejected'
+      error: () => {
+        this.isLoading = false;
       }
-    ];
-     // It's better to recalculate dates if modifying them in loops/assignments
+    });
   }
 
-  isOverdue(deadline: Date | string): boolean {
+  private transformApiItemToRequestItem(apiItem: ApiRequestItem): RequestItem {
+    const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+    return {
+      id: apiItem.request_id,
+      requestDate: new Date(apiItem.created_at),
+      productName: apiItem.product_name,
+      quantity: apiItem.count,
+      deadline: new Date(apiItem.expected_delivery_date),
+      status: capitalize(apiItem.status) as RequestItem['status'],
+      rawApiData: apiItem,
+      supplierId: apiItem.supplier_id,
+      productId: apiItem.product_id,
+      receivedAt: apiItem.received_at ? new Date(apiItem.received_at) : null,
+      warehouseId: apiItem.warehouse_id,
+      unitPrice: apiItem.unit_price,
+      quality: apiItem.quality,
+      isDefective: apiItem.is_defective,
+      supplierName: apiItem.supplier_name
+    };
+  }
+
+  isOverdue(deadline: Date): boolean {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const deadlineDate = new Date(deadline); // Convert string or Date object to Date
+    const deadlineDate = new Date(deadline);
     deadlineDate.setHours(0, 0, 0, 0);
-    return deadlineDate < today;
+    return deadlineDate < today && !this.isToday(deadlineDate);
   }
 
-  getRequestStatusClass(status: string): string {
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getFullYear() === today.getFullYear() &&
+           date.getMonth() === today.getMonth() &&
+           date.getDate() === today.getDate();
+  }
+
+  getRequestStatusClass(status: RequestItem['status']): string {
     switch (status) {
-      case 'New': return 'bg-blue-100 text-blue-700';
+      case 'Pending': return 'bg-blue-100 text-blue-700';
       case 'Accepted': return 'bg-green-100 text-green-700';
-      case 'Processing': return 'bg-yellow-100 text-yellow-700';
-      case 'Shipped': return 'bg-purple-100 text-purple-700';
       case 'Rejected': return 'bg-red-100 text-red-700';
+      case 'Received': return 'bg-purple-100 text-purple-700';
+      case 'Returned': return 'bg-orange-100 text-orange-700';
       default: return 'bg-gray-100 text-gray-700';
     }
   }
 
-  acceptRequest(requestId: string): void {
-    console.log(`Accepting request: ${requestId}`);
-    const request = this.currentRequests.find(r => r.id === requestId);
-    if (request) {
-       request.status = 'Accepted';
-    }
-    // TODO: Integrate with backend service and blockchain trigger
+  updateRequestStatus(requestId: number, newApiStatus: 'accepted' | 'rejected'): void {
+    this.isLoading = true;
+    // Construct the update URL using the base URL defined in the component
+    const updateUrl = `${this.ORDER_MANAGEMENT_API_BASE_URL}/supplier-request/supplier/${this.supplierId}/${requestId}`;
+
+    this.http.patch(updateUrl, { status: newApiStatus })
+    .pipe(
+      tap(() => {
+        console.log(`Request ${requestId} status update to ${newApiStatus} successful.`);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error(`Error updating request ${requestId}:`, error);
+        this.errorMessage = `Failed to update request ${requestId}. ${error.message || 'Please try again.'}`;
+        this.isLoading = false;
+        return throwError(() => error);
+      }),
+      switchMap(() => {
+        this.loadRequests();
+        return of(null);
+      })
+    )
+    .subscribe({
+        complete: () => {}
+    });
   }
 
-  rejectRequest(requestId: string): void {
+  acceptRequest(requestId: number): void {
+    console.log(`Accepting request: ${requestId}`);
+    this.updateRequestStatus(requestId, 'accepted');
+  }
+
+  rejectRequest(requestId: number): void {
     console.log(`Rejecting request: ${requestId}`);
-     const request = this.currentRequests.find(r => r.id === requestId);
-    if (request) {
-       request.status = 'Rejected';
-    }
-    // TODO: Integrate with backend service and blockchain trigger
+    this.updateRequestStatus(requestId, 'rejected');
+  }
+
+  openDetailsModal(request: RequestItem): void {
+    this.selectedRequestDetails = request;
+    this.isModalOpen = true;
+  }
+
+  closeDetailsModal(): void {
+    this.isModalOpen = false;
+    this.selectedRequestDetails = null;
   }
 }
