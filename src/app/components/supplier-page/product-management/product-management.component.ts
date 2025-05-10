@@ -1,17 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'; // Likely needed for add/edit form
-import { CommonModule } from '@angular/common'; // Ensure this is imported if standalone or in NgModule
-import { ReactiveFormsModule } from '@angular/forms'; // Import if using reactive forms
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { of, Subject, throwError } from 'rxjs';
+import { catchError, map, takeUntil, tap } from 'rxjs/operators';
 
+// Interface for the data from your LISTING API
+interface ApiProductListItem {
+  product_name: string;
+  SKU: string;
+  supplier_price: number;
+  warehouses: string[]; // Names of warehouses
+}
 
-interface Product {
-  id: string | number; // Use appropriate type for your ID
+// Interface for your component's product structure (for display in table)
+interface ProductDisplay {
   name: string;
   sku: string;
-  description?: string; // Optional property
   price: number;
-  
-  // Add other product properties
+  warehouses: string[]; // Names of warehouses this product is in
+  description?: string;
+}
+
+// Interface for warehouse selection (with ID)
+interface Warehouse {
+  id: number;
+  name: string;
+}
+
+// Interface for predefined product selection
+interface PredefinedProduct {
+  name: string;
+  id: number; // The actual product_id
+  sku: string; // The generated SKU
 }
 
 @Component({
@@ -19,110 +41,273 @@ interface Product {
   selector: 'app-product-management',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './product-management.component.html',
-  styleUrls: ['./product-management.component.css']
+  styleUrls: ['./product-management.component.css'],
+  providers: [CurrencyPipe]
 })
+export class ProductManagementComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
-export class ProductManagementComponent implements OnInit {
+  products: ProductDisplay[] = [];
 
-  // Properties for the component
-  products: Product[] = [];
-  productForm!: FormGroup; // For Add/Edit
-  showAddForm: boolean = false;
-  editingProduct: Product | null = null;
+  isAddProductToWarehouseModalOpen: boolean = false;
+  addProductToWarehouseForm!: FormGroup;
+  predefinedProductsForDropdown: PredefinedProduct[] = [];
+
+  editPriceForm!: FormGroup;
+  isEditPriceModalOpen: boolean = false;
+  productForPriceEdit: ProductDisplay | null = null;
+  filteredWarehousesForModal: Warehouse[] = [];
+
+  readonly allAvailableWarehouses: Warehouse[] = [
+    { id: 1, name: 'Colombo Central' },
+    { id: 2, name: 'Kandy Depot' },
+    { id: 3, name: 'Kurunegala Rock' }
+  ];
+
   successMessage: string | null = null;
   errorMessage: string | null = null;
+  isLoading: boolean = false;
+  isSubmitting: boolean = false;
 
-  // Inject FormBuilder and your ProductService
+  private readonly supplierId: number = 103;
+  private readonly PRODUCT_LIST_API_URL = 'http://127.0.0.1:8000/api/warehouse/supplier-product/prices/';
+  // Assuming Django URL is fixed to use a single slash:
+  private readonly ADD_OR_UPDATE_PRICE_API_URL = 'http://127.0.0.1:8000/api/warehouse//supplier-product/add_or_update/';
+
   constructor(
-    private fb: FormBuilder /*,
-    private productService: ProductService */ // Uncomment when service is ready
-  ) { }
+    private fb: FormBuilder,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
+    this.generatePredefinedProducts();
+    this.initAddProductToWarehouseForm();
+    this.initEditPriceForm();
     this.loadProducts();
-    this.initForm();
   }
 
-  initForm(): void {
-    this.productForm = this.fb.group({
-      id: [null], // Keep track of id for editing
-      name: ['', Validators.required],
-      sku: ['', Validators.required],
-      description: [''],
-      price: [0, [Validators.required, Validators.min(0)]]
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  generatePredefinedProducts(): void {
+    const productNames = [
+      'Chili Product 1', 'Cinnamon Product 2', 'Pepper Product 3', 'Cinnamon Product 4',
+      'Chili Product 5', 'Cinnamon Product 6', 'Pepper Product 7', 'Pepper Product 8',
+      'Chili Product 9', 'Cinnamon Product 10'
+    ];
+    this.predefinedProductsForDropdown = productNames.map(name => {
+      const id = this.extractProductIdFromName(name);
+      return {
+        name: name,
+        id: id || 0,
+        sku: this.generateSku(id) // SKU is generated here
+      };
     });
   }
 
-  loadProducts(): void {
-    // TODO: Replace with actual service call
-    // this.productService.getProducts().subscribe(data => this.products = data);
-    console.log('Loading products...');
-    // Placeholder:
-    this.products = [
-      { id: 'p1', name: 'Sample Item 1', sku: 'SKU001', price: 19.99 },
-      { id: 'p2', name: 'Sample Item 2', sku: 'SKU002', price: 29.99, description: 'A second item' }
-    ];
+  initAddProductToWarehouseForm(): void {
+    this.addProductToWarehouseForm = this.fb.group({
+      selected_product_id: [null, Validators.required],
+      sku_display: [{ value: '', disabled: true }], // Disabled input for SKU
+      warehouse_id: [null, Validators.required],
+      supplier_price: [null, [Validators.required, Validators.min(0)]]
+    });
+
+    // Auto-update SKU when product changes
+    this.addProductToWarehouseForm.get('selected_product_id')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(productId => {
+        const selectedProduct = this.predefinedProductsForDropdown.find(p => p.id === productId);
+        this.addProductToWarehouseForm.get('sku_display')?.setValue(selectedProduct ? selectedProduct.sku : '');
+      });
   }
 
-  onSubmit(): void {
-    // Logic for saving/updating product using this.productForm.value
-    console.log('Form submitted:', this.productForm.value);
-    this.successMessage = 'Product saved successfully!'; // Example message
-    // Reset form, reload products etc.
-     this.resetForm();
-     this.loadProducts(); // Reload list after save/update
+  initEditPriceForm(): void {
+    this.editPriceForm = this.fb.group({
+      warehouse_id: [null, Validators.required],
+      supplier_price: [null, [Validators.required, Validators.min(0)]]
+    });
   }
 
-  editProduct(product: Product): void {
-    this.editingProduct = product;
-    this.productForm.patchValue(product); // Load product data into form
-    this.showAddForm = true; // Show the form
-    this.successMessage = null;
-    this.errorMessage = null;
+  // Helper to generate SKU "SKUXXX"
+  generateSku(productId: number | null): string {
+    if (productId === null || productId === 0) return 'N/A'; // Or some placeholder
+    return `SKU${String(productId).padStart(3, '0')}`;
   }
 
-  cancelEdit(): void {
-    this.resetForm();
-  }
-
-   resetForm(): void {
-    this.editingProduct = null;
-    this.productForm.reset();
-    this.showAddForm = false;
-    this.successMessage = null;
-    this.errorMessage = null;
-  }
-
-  // --- ADD THIS METHOD ---
-  deleteProduct(productId: string | number): void {
-    // Optional: Add a confirmation dialog
-    if (confirm(`Are you sure you want to delete product with ID: ${productId}?`)) {
-      console.log('Attempting to delete product with ID:', productId);
-
-      // TODO: Replace with actual service call
-      // this.productService.deleteProduct(productId).subscribe({
-      //   next: () => {
-      //     console.log('Product deleted successfully');
-      //     this.successMessage = 'Product deleted successfully!';
-      //     // Remove the product from the local list to update UI instantly
-      //     this.products = this.products.filter(p => p.id !== productId);
-      //     this.errorMessage = null;
-      //   },
-      //   error: (err) => {
-      //     console.error('Error deleting product:', err);
-      //     this.errorMessage = 'Failed to delete product. Please try again.';
-      //     this.successMessage = null;
-      //   }
-      // });
-
-      // --- Placeholder for testing without service ---
-       this.products = this.products.filter(p => p.id !== productId);
-       this.successMessage = `Placeholder: Product ${productId} deleted.`;
-       this.errorMessage = null;
-       console.log(`Placeholder: Deleted product ${productId}`);
-      // --- End Placeholder ---
+  // Helper to extract product ID from name "Product Name X"
+  extractProductIdFromName(productName: string): number | null {
+    const match = productName.match(/\s(\d+)$/);
+    if (match && match[1]) {
+      return parseInt(match[1], 10);
     }
+    console.warn(`Could not extract product ID from name: ${productName}`);
+    return null;
   }
-  // --- END OF METHOD ---
 
+  loadProducts(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.products = [];
+    const apiUrl = `${this.PRODUCT_LIST_API_URL}?supplier_id=${this.supplierId}`;
+
+    this.http.get<ApiProductListItem[]>(apiUrl).pipe(
+      map(apiDataArray =>
+        apiDataArray.map(apiItem => ({
+          name: apiItem.product_name,
+          sku: apiItem.SKU, // This SKU comes from the API for existing products
+          price: apiItem.supplier_price,
+          warehouses: apiItem.warehouses || []
+        }))
+      ),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching products:', error);
+        this.errorMessage = `Failed to load product catalogue: ${error.statusText || 'Unknown error'}`;
+        return of([]);
+      })
+    ).subscribe({
+      next: (transformedProducts) => {
+        this.products = transformedProducts;
+        this.isLoading = false;
+      },
+      error: () => { this.isLoading = false; }
+    });
+  }
+
+  openAddProductToWarehouseModal(): void {
+    this.isAddProductToWarehouseModalOpen = true;
+    this.addProductToWarehouseForm.reset();
+    this.addProductToWarehouseForm.get('sku_display')?.setValue('');
+    this.clearMessages();
+  }
+
+  closeAddProductToWarehouseModal(): void {
+    this.isAddProductToWarehouseModalOpen = false;
+    this.addProductToWarehouseForm.reset();
+  }
+
+  onAddProductToWarehouseSubmit(): void {
+    if (this.addProductToWarehouseForm.invalid) {
+      this.showGeneralFormError("Please select a product, warehouse, and enter a valid price.");
+      return;
+    }
+    this.isSubmitting = true;
+    this.clearMessages();
+
+    const formValue = this.addProductToWarehouseForm.value; // Use getRawValue() if you need disabled field values
+    const payload = {
+      warehouse_id: Number(formValue.warehouse_id),
+      supplier_id: this.supplierId,
+      product_id: Number(formValue.selected_product_id),
+      supplier_price: Number(formValue.supplier_price)
+      // The SKU is not sent in this payload because the backend likely identifies the product by product_id.
+      // The SKU generation is primarily for display consistency in the UI.
+    };
+
+    console.log('Adding product to warehouse with payload:', payload);
+    const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
+
+    this.http.post(this.ADD_OR_UPDATE_PRICE_API_URL, payload, httpOptions).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error adding product to warehouse:', error);
+        let detail = error.error && typeof error.error === 'object' ? JSON.stringify(error.error) : (error.error || error.message);
+        this.showGeneralFormError(`Failed to add product: ${error.statusText || 'Unknown error'}. ${detail}`);
+        this.isSubmitting = false;
+        return throwError(() => error);
+      })
+    ).subscribe({
+      next: (response) => {
+        const selectedProduct = this.predefinedProductsForDropdown.find(p => p.id === payload.product_id);
+        this.showGeneralFormSuccess(`Product "${selectedProduct?.name || 'Selected Product'}" successfully added/updated for the warehouse.`);
+        this.isSubmitting = false;
+        this.closeAddProductToWarehouseModal();
+        this.loadProducts();
+      },
+      error: () => { this.isSubmitting = false; }
+    });
+  }
+
+  openEditPriceModal(product: ProductDisplay): void {
+    this.productForPriceEdit = product;
+    this.editPriceForm.reset();
+    this.clearMessages();
+
+    if (product.warehouses && product.warehouses.length > 0) {
+      this.filteredWarehousesForModal = this.allAvailableWarehouses.filter(wh =>
+        product.warehouses.includes(wh.name)
+      );
+    } else {
+      this.filteredWarehousesForModal = [];
+    }
+    if (this.filteredWarehousesForModal.length === 1) {
+        this.editPriceForm.patchValue({ warehouse_id: this.filteredWarehousesForModal[0].id });
+    }
+    this.isEditPriceModalOpen = true;
+  }
+
+  closeEditPriceModal(): void {
+    this.isEditPriceModalOpen = false;
+    this.productForPriceEdit = null;
+    this.filteredWarehousesForModal = [];
+    this.editPriceForm.reset();
+  }
+
+  onUpdatePriceSubmit(): void {
+    if (!this.productForPriceEdit || this.editPriceForm.invalid) {
+      this.showGeneralFormError("Modal Error: Please select a warehouse and enter a valid price.");
+      return;
+    }
+    this.isSubmitting = true;
+    this.clearMessages();
+
+    const productId = this.extractProductIdFromName(this.productForPriceEdit.name);
+    if (productId === null) {
+      this.showGeneralFormError(`Modal Error: Could not determine Product ID for "${this.productForPriceEdit.name}".`);
+      this.isSubmitting = false;
+      return;
+    }
+
+    const formValue = this.editPriceForm.value;
+    const payload = {
+      warehouse_id: Number(formValue.warehouse_id),
+      supplier_id: this.supplierId,
+      product_id: productId,
+      supplier_price: Number(formValue.supplier_price)
+    };
+    console.log('Updating price with payload:', payload);
+    const httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
+
+    this.http.post(this.ADD_OR_UPDATE_PRICE_API_URL, payload, httpOptions).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error updating price:', error);
+        let detail = error.error && typeof error.error === 'object' ? JSON.stringify(error.error) : (error.error || error.message);
+        this.showGeneralFormError(`Modal Error: Failed to update price: ${error.statusText}. ${detail}`);
+        this.isSubmitting = false;
+        return throwError(() => error);
+      })
+    ).subscribe({
+      next: (response) => {
+        this.showGeneralFormSuccess(`Price for "${this.productForPriceEdit?.name}" updated successfully.`);
+        this.isSubmitting = false;
+        this.closeEditPriceModal();
+        this.loadProducts();
+      },
+      error: () => { this.isSubmitting = false; }
+    });
+  }
+
+  clearMessages(): void {
+    this.successMessage = null;
+    this.errorMessage = null;
+  }
+  showGeneralFormError(message: string): void {
+    this.errorMessage = message;
+    this.successMessage = null;
+  }
+  showGeneralFormSuccess(message: string): void {
+    this.successMessage = message;
+    this.errorMessage = null;
+  }
 }
