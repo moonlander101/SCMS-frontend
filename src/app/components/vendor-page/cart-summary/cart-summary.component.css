@@ -1,0 +1,60 @@
+/* Add this to your existing CSS */
+
+/* Map container styling */
+app-map-selector {
+  display: block;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Selected location badge styles */
+.location-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(0, 95, 115, 0.1);
+  border-radius: 0.5rem;
+  color: #005f73;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+/* Map progress animation */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.map-loading {
+  animation: pulse 1.5s infinite;
+}
+
+/* Order confirmation map preview */
+.confirmation-map-preview {
+  width: 100%;
+  height: 120px;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(0, 95, 115, 0.2);
+}
+
+/* Add to cart-summary.component.css */
+.delivery-map-container {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+.location-details {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border-left: 4px solid #4285f4;
+}

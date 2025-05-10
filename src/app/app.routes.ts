@@ -22,7 +22,12 @@ import { TruckTrackingComponent } from './components/warehouse-manager-page/truc
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
 import {WarehouseComponent} from './components/admin-page/warehouse/warehouse.component';
-
+import { ProductSectionComponent } from './components/vendor-page/product-section/product-section.component';
+import { CartComponent } from './components/vendor-page/cart/cart.component';
+import { OrderSummaryComponent } from './components/vendor-page/order-summary/order-summary.component';
+import { CartSummaryComponent } from './components/vendor-page/cart-summary/cart-summary.component';
+import { OrdersComponent } from './components/vendor-page/orders/orders.component';
+import { CreateOrderComponent } from './components/vendor-page/create-order/create-order.component';
 
 export const routes: Routes = [
   {
@@ -105,7 +110,14 @@ export const routes: Routes = [
         path : 'vendor',
         canActivate : [roleGuard(4)],
         children : [
-          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          { path : '', redirectTo: 'product-section', pathMatch: 'full'},
+          {path : 'product-section', component: ProductSectionComponent, pathMatch: 'full'},
+          {path : 'cart', component: CartComponent, pathMatch: 'full'},
+          {path : 'orders', component: OrdersComponent, pathMatch: 'full'}, 
+          {path : 'order-summary', component: OrderSummaryComponent, pathMatch: 'full'},
+          {path : 'cart-summary', component: CartSummaryComponent, pathMatch: 'full'}, 
+          {path : 'create-order', component: CreateOrderComponent, pathMatch: 'full'},
+          { path : 'profile', component: ProfileComponent, pathMatch: 'full'},
           // rest... (modify sidebar.ts as well)
           { path: '**', redirectTo: '', pathMatch: 'full' }
         ]
