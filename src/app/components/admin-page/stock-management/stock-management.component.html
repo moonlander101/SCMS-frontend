@@ -1,0 +1,835 @@
+<div class="min-h-screen flex flex-col bg-gray-50">
+  <!-- Header Text - Left aligned -->
+  <div class="container mx-auto px-4 py-2 relative z-10 bg-gray-100">
+    <div class="max-w-2xl">
+      <h2 class="text-xl md:text-2xl font-light text-black mt-3">
+        Inventory Control
+      </h2>
+      <h1
+        class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-[#f19249]/50 pl-3"
+      >
+        Stock Management
+      </h1>
+      <p class="text-black/90 mt-2 text-lg font-light pl-3">
+        Manage your products and supplier assignments
+      </p>
+    </div>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between max-w-2xl mx-auto">
+      <!-- Step 1 -->
+      <div class="flex flex-col items-center">
+        <div
+          [ngClass]="{
+            'bg-[#f19249] text-white': true,
+            'shadow-lg': !selectedProduct
+          }"
+          class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 border-2 border-[#f19249]"
+        >
+          1
+        </div>
+        <span class="text-sm font-medium mt-2">Select Product</span>
+        <div
+          [ngClass]="{
+            'bg-[#f19249]': selectedProduct,
+            'bg-gray-300': !selectedProduct
+          }"
+          class="h-1 w-24 mt-2"
+        ></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flex flex-col items-center">
+        <div
+          [ngClass]="{
+            'bg-[#f19249] text-white': selectedProduct && !selectedSupplier,
+            'bg-[#f19249] text-white border-4': selectedSupplier,
+            'bg-gray-300 text-gray-600': !selectedProduct
+          }"
+          class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300"
+        >
+          2
+        </div>
+        <span
+          [ngClass]="{ 'text-gray-400': !selectedProduct }"
+          class="text-sm font-medium mt-2"
+          >Choose Supplier</span
+        >
+        <div
+          [ngClass]="{
+            'bg-[#f19249]': selectedSupplier,
+            'bg-gray-300': !selectedSupplier
+          }"
+          class="h-1 w-24 mt-2"
+        ></div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flex flex-col items-center">
+        <div
+          [ngClass]="{
+            'bg-[#f19249] text-white': selectedSupplier,
+            'bg-gray-300 text-gray-600': !selectedSupplier
+          }"
+          class="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300"
+        >
+          3
+        </div>
+        <span
+          [ngClass]="{ 'text-gray-400': !selectedSupplier }"
+          class="text-sm font-medium mt-2"
+          >Create Order</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 py-4">
+    <!-- Error/Success Messages -->
+    <div
+      *ngIf="errorMessage"
+      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-sm animate-fadeIn"
+      role="alert"
+    >
+      <p class="flex items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{ errorMessage }}
+      </p>
+    </div>
+
+    <div
+      *ngIf="successMessage"
+      class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm animate-fadeIn"
+      role="alert"
+    >
+      <p class="flex items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{ successMessage }}
+      </p>
+    </div>
+
+    <!-- Product Selection View -->
+    <div
+      *ngIf="!selectedProduct"
+      class="bg-white rounded-lg shadow-md p-6 mb-8 animate-fadeIn"
+    >
+      <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 mr-2 text-[#f19249]"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          />
+        </svg>
+        Available Products
+      </h2>
+
+      <div *ngIf="isLoadingProducts" class="text-center py-6">
+        <div
+          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#f19249] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span
+            class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+            >Loading...</span
+          >
+        </div>
+        <p class="mt-2 text-gray-600">Loading products...</p>
+      </div>
+
+      <div
+        *ngIf="!isLoadingProducts && products.length === 0"
+        class="text-center py-6"
+      >
+        <p class="text-gray-600">No products available.</p>
+      </div>
+
+      <div
+        *ngIf="!isLoadingProducts && products.length > 0"
+        class="overflow-x-auto rounded-lg"
+      >
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Product SKU
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Category
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Unit Price
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              *ngFor="let product of products"
+              class="hover:bg-orange-50 cursor-pointer transition-all duration-150 hover:shadow-md"
+              (click)="selectProduct(product)"
+            >
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+              >
+                <span class="text-[#f19249] font-medium">{{
+                  product.product_SKU
+                }}</span>
+              </td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium"
+              >
+                {{ product.product_name }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
+                >
+                  {{ getCategoryName(product.category) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatPrice(product.unit_price) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  (click)="selectProduct(product); $event.stopPropagation()"
+                  class="text-white bg-[#f19249] hover:bg-[#ea580c] transition px-3 py-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f19249] transform hover:scale-105"
+                >
+                  <span class="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                    Find Suppliers
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Supplier Rankings View -->
+    <div *ngIf="selectedProduct" class="mb-8 animate-fadeIn">
+      <!-- Back button -->
+      <button
+        (click)="resetSelection()"
+        class="flex items-center mb-4 text-[#f19249] hover:text-[#ea580c] transition font-medium"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
+        </svg>
+        Back to Products
+      </button>
+
+      <!-- Product Details -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 mr-2 text-[#f19249]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+            />
+          </svg>
+          Selected Product
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            class="p-4 bg-gray-50 rounded-md hover:shadow-md transition-shadow duration-300 hover:bg-orange-50/30"
+          >
+            <p class="text-sm text-gray-500">Product SKU</p>
+            <p class="text-lg font-medium">{{ selectedProduct.product_SKU }}</p>
+          </div>
+          <div
+            class="p-4 bg-gray-50 rounded-md hover:shadow-md transition-shadow duration-300 hover:bg-orange-50/30"
+          >
+            <p class="text-sm text-gray-500">Name</p>
+            <p class="text-lg font-medium">
+              {{ selectedProduct.product_name }}
+            </p>
+          </div>
+          <div
+            class="p-4 bg-gray-50 rounded-md hover:shadow-md transition-shadow duration-300 hover:bg-orange-50/30"
+          >
+            <p class="text-sm text-gray-500">Category</p>
+            <p class="text-lg font-medium">
+              {{ getCategoryName(selectedProduct.category) }}
+            </p>
+          </div>
+          <div
+            class="p-4 bg-gray-50 rounded-md hover:shadow-md transition-shadow duration-300 hover:bg-orange-50/30"
+          >
+            <p class="text-sm text-gray-500">Unit Price</p>
+            <p class="text-lg font-medium">
+              {{ formatPrice(selectedProduct.unit_price) }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplier Rankings Table -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 mr-2 text-[#f19249]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+            />
+          </svg>
+          Recommended Suppliers
+        </h2>
+
+        <div *ngIf="isLoadingSuppliers" class="text-center py-6">
+          <div
+            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#f19249] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          >
+            <span
+              class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+              >Loading...</span
+            >
+          </div>
+          <p class="mt-2 text-gray-600">Loading suppliers...</p>
+        </div>
+
+        <div
+          *ngIf="
+            !isLoadingSuppliers &&
+            (!supplierRankings || supplierRankings.suppliers.length === 0)
+          "
+          class="text-center py-6"
+        >
+          <p class="text-gray-600">No suppliers available for this product.</p>
+        </div>
+
+        <div
+          *ngIf="
+            !isLoadingSuppliers &&
+            supplierRankings &&
+            supplierRankings.suppliers.length > 0
+          "
+          class="overflow-x-auto rounded-lg"
+        >
+          <table class="min-w-full divide-y divide-gray-200 border-collapse">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Ranking
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Company Name
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Score
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  City
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr
+                *ngFor="
+                  let supplier of supplierRankings.suppliers;
+                  let i = index
+                "
+                [ngClass]="{
+                  'bg-orange-50 shadow-md border-l-4 border-[#f19249]':
+                    selectedSupplier &&
+                    selectedSupplier.supplier_id === supplier.supplier_id
+                }"
+                class="hover:bg-orange-50/50 transition-all duration-200 cursor-pointer transform hover:scale-[1.01]"
+                (click)="selectSupplier(supplier)"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div
+                    class="flex items-center justify-center w-7 h-7 rounded-full bg-[#f19249]/10 text-[#f19249] font-bold"
+                  >
+                    {{ i + 1 }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  {{ supplier.company_name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': supplier.score >= 5,
+                      'bg-yellow-100 text-yellow-800':
+                        supplier.score >= 3 && supplier.score < 5,
+                      'bg-red-100 text-red-800': supplier.score < 3
+                    }"
+                    class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  >
+                    {{ supplier.score.toFixed(2) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span class="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    {{ supplier.city }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    (click)="selectSupplier(supplier); $event.stopPropagation()"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-white transition-colors"
+                    [ngClass]="{
+                      'bg-green-500 hover:bg-green-600':
+                        selectedSupplier &&
+                        selectedSupplier.supplier_id === supplier.supplier_id,
+                      'bg-[#f19249] hover:bg-[#ea580c]':
+                        !selectedSupplier ||
+                        selectedSupplier.supplier_id !== supplier.supplier_id
+                    }"
+                  >
+                    <svg
+                      *ngIf="
+                        selectedSupplier &&
+                        selectedSupplier.supplier_id === supplier.supplier_id
+                      "
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {{
+                      selectedSupplier &&
+                      selectedSupplier.supplier_id === supplier.supplier_id
+                        ? "Selected"
+                        : "Select"
+                    }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Supplier Assignment Form -->
+      <div
+        *ngIf="selectedSupplier"
+        class="bg-white rounded-lg shadow-md p-6 mt-6 animate-fadeIn"
+      >
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 mr-2 text-[#f19249]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+          Create Order Request
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label
+              for="orderQuantity"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Order Quantity*
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="orderQuantity"
+                name="orderQuantity"
+                [(ngModel)]="orderQuantity"
+                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#f19249] focus:border-[#f19249] transition-all"
+                placeholder="Enter quantity"
+                min="1"
+              />
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="expectedDeliveryDate"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Expected Delivery Date*
+            </label>
+            <div class="relative">
+              <input
+                type="date"
+                id="expectedDeliveryDate"
+                name="expectedDeliveryDate"
+                [(ngModel)]="expectedDeliveryDate"
+                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#f19249] focus:border-[#f19249] transition-all"
+              />
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="md:col-span-2">
+            <label
+              for="warehouseId"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Select Warehouse*
+            </label>
+            <div class="relative">
+              <select
+                id="warehouseId"
+                name="warehouseId"
+                [(ngModel)]="selectedWarehouseId"
+                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#f19249] focus:border-[#f19249] appearance-none transition-all"
+              >
+                <option [ngValue]="null" disabled selected>
+                  Select a warehouse
+                </option>
+                <option
+                  *ngFor="let warehouse of warehouses"
+                  [ngValue]="warehouse.id"
+                >
+                  {{ warehouse.warehouse_name }} ({{ warehouse.location_x }},
+                  {{ warehouse.location_y }})
+                </option>
+              </select>
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+              </div>
+              <div
+                class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="selectedWarehouseId" class="md:col-span-2 animate-fadeIn">
+            <h3
+              class="text-md font-medium text-gray-800 mt-2 mb-3 flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-1 text-[#f19249]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Warehouse Details
+            </h3>
+            <div
+              class="bg-gray-50 p-4 rounded-md hover:shadow-md transition-all duration-300"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div *ngFor="let warehouse of warehouses">
+                  <div *ngIf="warehouse.id === selectedWarehouseId">
+                    <div class="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-[#f19249] mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        />
+                      </svg>
+                      <span class="text-sm text-gray-500">Name</span>
+                    </div>
+                    <p class="text-md font-medium pl-6">
+                      {{ warehouse.warehouse_name }}
+                    </p>
+
+                    <div class="flex items-center mt-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-[#f19249] mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                      <span class="text-sm text-gray-500">Location</span>
+                    </div>
+                    <p class="text-md pl-6">
+                      {{ warehouse.location_x }}, {{ warehouse.location_y }}
+                    </p>
+
+                    <div class="flex items-center mt-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-[#f19249] mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                      <span class="text-sm text-gray-500">Capacity</span>
+                    </div>
+                    <p class="text-md font-medium pl-6">
+                      {{ formatCapacity(warehouse.capacity) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end mt-6">
+          <button
+            type="button"
+            (click)="submitAssignment()"
+            [disabled]="
+              isSubmitting ||
+              !orderQuantity ||
+              !selectedWarehouseId ||
+              !expectedDeliveryDate
+            "
+            class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#f19249] hover:bg-[#ea580c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f19249] disabled:opacity-50 transition-all duration-200 transform hover:scale-105 active:scale-95"
+          >
+            <span
+              *ngIf="isSubmitting"
+              class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] mr-2"
+            ></span>
+            {{ isSubmitting ? "Processing..." : "Submit Order Request" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+
+</style>
