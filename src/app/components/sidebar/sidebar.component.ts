@@ -59,6 +59,12 @@ export class SidebarComponent {
       { label: 'Supplier Dashboard', route: '/dashboard/supplier/supplier' },
       { label: 'Profile', route: '/dashboard/supplier/profile' },
     ],
+
+    6: [ // Driver
+      { label: 'Profile', route: '/dashboard/driver/profile'},
+      { label: 'Current Assignment', route: '/dashboard/driver/current'}
+    ],
+
     1: [ // Admin
       { label: 'Warehouses', route: '/dashboard/admin/warehouse' },
       { label: 'Demand Forecast', route: '/dashboard/admin/forecast' },
@@ -66,6 +72,7 @@ export class SidebarComponent {
       { label: 'Registrations', route: '/dashboard/admin/register' },
       { label: 'Profile', route: '/dashboard/profile' },
     ],
+
   };
 
   // tabs: Tab[] = [

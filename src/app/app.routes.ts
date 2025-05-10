@@ -21,9 +21,11 @@ import { TransactionsComponent } from './components/warehouse-manager-page/trans
 import { TruckTrackingComponent } from './components/warehouse-manager-page/truck-tracking/truck-tracking.component';
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
+import { DeliveryTableComponent } from './components/driver-page/current-delivery/delivery-table.component';
 import { DriverManagerRegisterComponent } from './components/admin-page/driver-manager-register/driver-manager-register.component';
 import { WarehouseComponent } from './components/admin-page/warehouse/warehouse.component';
 import { StockManagementComponent } from './components/admin-page/stock-management/stock-management.component';
+
 
 export const routes: Routes = [
   {
@@ -117,15 +119,17 @@ export const routes: Routes = [
           { path: '**', redirectTo: '', pathMatch: 'full' },
         ],
       },
+      // Driver Routes
       {
-        path: 'driver',
-        canActivate: [roleGuard(6)],
-        children: [
-          { path: '', redirectTo: 'profile', pathMatch: 'full' },
-          { path: 'profile', component: ProfileComponent },
+        path : 'driver',
+        canActivate : [roleGuard(6)],
+        children : [
+          { path : '', redirectTo: 'profile', pathMatch: 'full'},
+          { path  : 'profile', component: ProfileComponent},
           // rest... (modify sidebar.ts as well)
-          { path: '**', redirectTo: '', pathMatch: 'full' },
-        ],
+          { path : 'current', component: DeliveryTableComponent },
+          { path: '**', redirectTo: '', pathMatch: 'full' }
+        ]
       },
     ],
   },
