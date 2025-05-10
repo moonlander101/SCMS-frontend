@@ -21,6 +21,7 @@ import { TransactionsComponent } from './components/warehouse-manager-page/trans
 import { TruckTrackingComponent } from './components/warehouse-manager-page/truck-tracking/truck-tracking.component';
 import { VendorOrdersComponent } from './components/warehouse-manager-page/vendor-orders/vendor-orders.component';
 import { SupplierReqSurveyComponent } from './components/warehouse-manager-page/supplier-req-survey/supplier-req-survey.component';
+import { DriverManagerRegisterComponent } from './components/admin-page/driver-manager-register/driver-manager-register.component';
 
 export const routes: Routes = [
   {
@@ -76,6 +77,7 @@ export const routes: Routes = [
             component: ForecastComponent,
             pathMatch: 'full',
           },
+          { path: 'register', component: DriverManagerRegisterComponent },
           // rest (modify sidebar.ts as well)
           { path: '**', redirectTo: '', pathMatch: 'full' }
         ]
