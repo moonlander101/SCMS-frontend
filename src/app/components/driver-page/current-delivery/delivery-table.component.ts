@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgFor, NgClass, NgIf } from '@angular/common';
 import { TitleCasePipe, DatePipe } from '@angular/common';
 import { DriverService } from '../../../service/driver/driver.service';
+import { jwtDecode } from 'jwt-decode';
 
 export interface AssignmentItem {
   shipment: {
@@ -53,7 +54,28 @@ export class DeliveryTableComponent implements OnInit {
   constructor(private driverService: DriverService) { }
 
   ngOnInit(): void {
-    this.driverService.fetchAssignmentsByVehicle("TRK002").subscribe({
+    const token = localStorage.getItem('token');
+    let vehicleId = "TRK002"; // Default fallback
+    
+    if (token) {
+      try {
+        // Use jwt-decode to parse the token
+        const decodedToken: any = jwtDecode(token);
+        console.log('Decoded token:', decodedToken);
+        
+        // Extract vehicle ID
+        if (decodedToken.vehicle_id) {
+          vehicleId = decodedToken.vehicle_id;
+          console.log('Using vehicle ID from token:', vehicleId);
+        }
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    } else {
+      console.warn('No token found, using default vehicle ID');
+    }
+
+    this.driverService.fetchAssignmentsByVehicle(vehicleId).subscribe({
       next: (data) => {
         this.assignment = data as Assignment;
         console.log('Assignment fetched:', this.assignment);
