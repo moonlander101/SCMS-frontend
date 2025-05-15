@@ -40,6 +40,7 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       username: ['', Validators.required],
+      phone: ['', Validators.required],
 
       // Step 2: Company Details
       companyName: ['', Validators.required],
@@ -47,7 +48,7 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
       streetName: ['', Validators.required],
       city: ['', Validators.required],
       zipCode: ['', Validators.required],
-      businessLicence: ['', Validators.required], // Add business licence field
+      businessLicense: ['', Validators.required], // Add business licence field
 
       // Step 3: Account Setup
       email: ['', [Validators.required, Validators.email]],
@@ -93,7 +94,7 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
   }
 
   validateStep1(): boolean {
-    const step1Fields = ['firstName', 'lastName', 'username'];
+    const step1Fields = ['firstName', 'lastName', 'username', 'phone'];
     return this.validateFields(step1Fields);
   }
 
@@ -181,9 +182,10 @@ export class VendorSignupComponent implements OnInit, AfterViewInit {
         password: this.signUpForm.value.password,
         first_name: this.signUpForm.value.firstName,
         last_name: this.signUpForm.value.lastName,
+        phone: this.signUpForm.value.phone,
         shop_name: this.signUpForm.value.companyName,
         location: address,
-        business_licence: this.signUpForm.value.businessLicence,
+        business_license: this.signUpForm.value.businessLicense,
       };
 
       console.log('Vendor Sign Up Payload:', payload);
