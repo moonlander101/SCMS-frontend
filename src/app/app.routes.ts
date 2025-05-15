@@ -115,7 +115,6 @@ export const routes: Routes = [
         canActivate: [roleGuard(4)],
         children: [
           { path: '', redirectTo: 'profile', pathMatch: 'full' },
-          // rest... (modify sidebar.ts as well)
           { path: '**', redirectTo: '', pathMatch: 'full' },
         ],
       },
@@ -126,7 +125,6 @@ export const routes: Routes = [
         children : [
           { path : '', redirectTo: 'profile', pathMatch: 'full'},
           { path  : 'profile', component: ProfileComponent},
-          // rest... (modify sidebar.ts as well)
           { path : 'current', component: DeliveryTableComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' }
         ]
