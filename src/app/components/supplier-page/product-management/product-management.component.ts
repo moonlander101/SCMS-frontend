@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { of, Subject, throwError } from 'rxjs';
 import { catchError, map, takeUntil, tap } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
 
 // Interface for the data from your LISTING API
 interface ApiProductListItem {
@@ -69,10 +70,28 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   isSubmitting: boolean = false;
 
-  private readonly supplierId: number = 103;
-  private readonly PRODUCT_LIST_API_URL = 'http://127.0.0.1:8000/api/warehouse/supplier-product/prices/';
+  private get supplierId(): number {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return 0;
+      }
+      const decoded: any = jwtDecode(token);
+      if (!decoded || !decoded.user_id) {
+        console.error('User ID not found in token');
+        return 0;
+      }
+      return decoded.user_id;
+    } catch (error) {
+      console.error('Failed to decode authentication token:', error);
+      return 0;
+    }
+  }
+
+  private readonly PRODUCT_LIST_API_URL = 'http://127.0.0.1:8001/api/warehouse/supplier-product/prices/';
   // Assuming Django URL is fixed to use a single slash:
-  private readonly ADD_OR_UPDATE_PRICE_API_URL = 'http://127.0.0.1:8000/api/warehouse//supplier-product/add_or_update/';
+  private readonly ADD_OR_UPDATE_PRICE_API_URL = 'http://127.0.0.1:8001/api/warehouse//supplier-product/add_or_update/';
 
   constructor(
     private fb: FormBuilder,
