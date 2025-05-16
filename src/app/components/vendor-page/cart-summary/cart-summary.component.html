@@ -1,0 +1,589 @@
+<div class="min-h-screen flex flex-col">
+  <!-- Persistent Cart Button -->
+  <div class="fixed top-4 right-4 z-40">
+    <button 
+      (click)="toggleCartPreview()" 
+      class="cart-toggle relative flex items-center justify-center p-3 bg-gradient-to-r from-[#003545] to-[#005f73] rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      
+      <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
+        {{ getTotalItems() }}
+      </span>
+    </button>
+    
+    <!-- Dropdown Content -->
+    <div *ngIf="isCartPreviewOpen" class="cart-dropdown absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+      <!-- Inside the dropdown content section -->
+<div *ngIf="isCartPreviewOpen" class="cart-dropdown absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+  <div class="p-4 border-b border-slate-100">
+    <h3 class="font-medium text-[#003545]">Your Cart ({{ getTotalItems() }})</h3>
+  </div>
+  
+  <!-- Empty cart state -->
+  <div *ngIf="cartItems.length === 0" class="p-6 text-center text-slate-500">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+    </svg>
+    <p>Your cart is empty</p>
+  </div>
+  
+  <!-- Cart items list -->
+  <div *ngIf="cartItems.length > 0" class="max-h-64 overflow-y-auto">
+    <div *ngFor="let item of cartItems; let i = index" class="p-3 border-b border-slate-100 hover:bg-slate-50 transition">
+      <div class="flex gap-3">
+        <!-- Item image -->
+        <img [src]="item.image" alt="{{ item.name }}" class="w-12 h-12 object-cover rounded-md flex-shrink-0">
+        
+        <div class="flex-1 min-w-0">
+          <!-- Item name and price -->
+          <h4 class="text-sm font-medium text-[#003545] truncate">{{ item.name }}</h4>
+          <div class="flex justify-between items-center mt-1">
+            <span class="text-sm font-semibold text-[#005f73]">${{ (item.price * item.quantity).toFixed(2) }}</span>
+            
+            <!-- Quantity controls -->
+            <div class="flex items-center">
+              <button 
+                (click)="decreaseQuantity(i)" 
+                class="text-slate-400 hover:text-slate-700 w-5 h-5 flex items-center justify-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                </svg>
+              </button>
+              
+              <span class="mx-1 text-xs text-slate-600 w-5 text-center">{{ item.quantity }}</span>
+              
+              <button 
+                (click)="increaseQuantity(i)" 
+                class="text-slate-400 hover:text-slate-700 w-5 h-5 flex items-center justify-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Remove button -->
+        <button 
+          (click)="removeItem(i)" 
+          class="text-slate-400 hover:text-red-500 mt-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Cart summary and actions -->
+  <div *ngIf="cartItems.length > 0" class="p-4 bg-slate-50">
+    <div class="flex justify-between text-sm mb-3">
+      <span class="text-slate-600">Subtotal:</span>
+      <span class="font-medium text-[#003545]">${{ getSubtotal() }}</span>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-2">
+      <button 
+        (click)="isCartPreviewOpen = false; currentStep = 'summary'"
+        class="py-2 px-3 text-xs text-center border border-slate-300 rounded-lg hover:bg-slate-100 transition"
+      >
+        View Cart
+      </button>
+      
+      <button 
+        (click)="goToCheckout()"
+        class="py-2 px-3 text-xs text-center bg-[#005f73] hover:bg-[#003d4d] text-white rounded-lg transition"
+      >
+        Checkout
+      </button>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <div class="relative">
+    <div class="absolute inset-0 bg-gradient-to-l from-[#005f73] to-[#003545] h-[220px] sm:h-[240px] md:h-[260px]">
+      <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
+        <svg viewBox="0 0 1440 200" class="w-full" preserveAspectRatio="none">
+          <path
+            fill="#f8fafc"
+            fill-opacity="1"
+            d="M0,96L80,106.7C160,117,320,139,480,149.3C640,160,800,160,960,138.7C1120,117,1280,75,1360,53.3L1440,32L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Header Text -->
+    <div class="container mx-auto px-4 relative z-10 h-[180px] sm:h-[200px] md:h-[220px] flex items-center justify-center">
+      <div class="text-center max-w-md mx-auto">
+        <div class="inline-block mb-1 px-4 py-1 rounded-full bg-white/20 text-blue-100 text-sm font-medium tracking-wide">
+          <span *ngIf="currentStep === 'summary'">Cart Summary</span>
+          <span *ngIf="currentStep === 'delivery'">Delivery Location</span>
+          <span *ngIf="currentStep === 'payment'">Payment</span>
+          <span *ngIf="currentStep === 'confirmation'">Order Confirmation</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mt-2">Checkout</h1>
+        <p class="text-white/90 mt-3 text-lg font-light">
+          <span *ngIf="currentStep === 'summary'">Review your items</span>
+          <span *ngIf="currentStep === 'delivery'">Choose your delivery location</span>
+          <span *ngIf="currentStep === 'payment'">Complete your purchase</span>
+          <span *ngIf="currentStep === 'confirmation'">Your order is confirmed</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow bg-slate-50">
+    <div class="container mx-auto px-6 py-12 max-w-6xl">
+      <!-- Progress Steps -->
+      <div class="mb-12">
+        <div class="relative">
+          <!-- Progress Bar -->
+          <div class="h-2 bg-gray-200 rounded-full mb-8">
+            <div class="h-2 rounded-full bg-[#005f73] transition-all duration-500" 
+                 [style.width]="currentStep === 'summary' ? '25%' : 
+                               currentStep === 'delivery' ? '50%' : 
+                               currentStep === 'payment' ? '75%' : '100%'"></div>
+          </div>
+          
+          <!-- Steps -->
+          <div class="flex justify-between text-sm text-gray-600">
+            <div class="flex flex-col items-center text-[#005f73] font-medium">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2 bg-[#005f73] text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span>Cart</span>
+            </div>
+            
+            <div class="flex flex-col items-center" 
+                [ngClass]="{'text-[#005f73] font-medium': currentStep === 'delivery' || currentStep === 'payment' || currentStep === 'confirmation',
+                           'text-gray-400': currentStep === 'summary'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2" 
+                  [ngClass]="{'bg-[#005f73] text-white': currentStep === 'delivery' || currentStep === 'payment' || currentStep === 'confirmation',
+                             'bg-gray-200 text-gray-400': currentStep === 'summary'}">
+                <span *ngIf="currentStep === 'summary'">2</span>
+                <svg *ngIf="currentStep !== 'summary'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span>Location</span>
+            </div>
+            
+            <div class="flex flex-col items-center" 
+                [ngClass]="{'text-[#005f73] font-medium': currentStep === 'payment' || currentStep === 'confirmation',
+                           'text-gray-400': currentStep === 'summary' || currentStep === 'delivery'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2" 
+                  [ngClass]="{'bg-[#005f73] text-white': currentStep === 'payment' || currentStep === 'confirmation',
+                             'bg-gray-200 text-gray-400': currentStep === 'summary' || currentStep === 'delivery'}">
+                <span *ngIf="currentStep === 'summary' || currentStep === 'delivery'">3</span>
+                <svg *ngIf="currentStep === 'payment' || currentStep === 'confirmation'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span>Payment</span>
+            </div>
+            
+            <div class="flex flex-col items-center" 
+                [ngClass]="{'text-[#005f73] font-medium': currentStep === 'confirmation',
+                           'text-gray-400': currentStep !== 'confirmation'}">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center mb-2" 
+                  [ngClass]="{'bg-[#005f73] text-white': currentStep === 'confirmation',
+                             'bg-gray-200 text-gray-400': currentStep !== 'confirmation'}">
+                <span *ngIf="currentStep !== 'confirmation'">4</span>
+                <svg *ngIf="currentStep === 'confirmation'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span>Complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: CART SUMMARY -->
+      <div *ngIf="currentStep === 'summary'" class="animate-fade-in">
+        <!-- Cart summary content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Cart items list -->
+          <div class="lg:col-span-2">
+            <!-- Cart items goes here -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-[#003545]">Your Items</h2>
+                <span class="bg-[#005f73] text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                  {{ getTotalItems() }}
+                </span>
+              </div>
+              
+              <div *ngIf="cartItems.length === 0" class="p-8 text-center text-slate-500">
+                Your cart is empty
+              </div>
+              
+              <div *ngIf="cartItems.length > 0" class="divide-y divide-slate-100">
+               <!-- Add this inside the div with class="divide-y divide-slate-100" -->
+<div *ngFor="let item of cartItems; let i = index" class="p-5 hover:bg-slate-50 transition-colors">
+  <div class="flex gap-4">
+    <img [src]="item.image" [alt]="item.name" class="w-20 h-20 object-cover rounded-lg">
+    
+    <div class="flex-1">
+      <div class="flex justify-between">
+        <h3 class="font-medium text-[#003545]">{{ item.name }}</h3>
+        <div class="font-semibold text-[#005f73]">${{ (item.price * item.quantity).toFixed(2) }}</div>
+      </div>
+      
+      <p class="text-sm text-slate-500 mt-1 mb-3">{{ item.description }}</p>
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center border border-slate-200 rounded-lg">
+          <button 
+            (click)="decreaseQuantity(i)"
+            class="px-2 py-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+          </button>
+          
+          <span class="px-2 py-1 text-sm">{{ item.quantity }}</span>
+          
+          <button 
+            (click)="increaseQuantity(i)"
+            class="px-2 py-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+        
+        <button 
+          (click)="removeItem(i)"
+          class="text-sm text-red-500 hover:text-red-700 transition"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+              </div>
+            </div>
+            
+            <!-- Continue button -->
+            <div class="mt-8">
+              <button 
+                (click)="proceedToDelivery()"
+                [disabled]="cartItems.length === 0"
+                class="w-full bg-[#005f73] hover:bg-[#003d4d] text-white py-3.5 rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <span>Continue to Delivery</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Order summary -->
+          <div class="lg:col-span-1">
+            <!-- Order summary goes here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- STEP 2: DELIVERY LOCATION -->
+      <div *ngIf="currentStep === 'delivery'" class="animate-fade-in">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Map and address form -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div class="p-6 border-b border-slate-100">
+                <h2 class="text-xl font-semibold text-[#003545]">Select Delivery Location</h2>
+                <p class="text-slate-500 mt-1">Move the marker or click on the map to set your exact delivery location</p>
+              </div>
+              
+              <div class="p-6">
+                <!-- Map Component -->
+                <div class="mb-6 rounded-lg overflow-hidden shadow-md border border-slate-200">
+                  <app-map-selector (locationSelected)="onLocationSelected($event)"></app-map-selector>
+                </div>
+                
+                <!-- Address Form -->
+                <form [formGroup]="deliveryForm" class="space-y-6 mt-8">
+                  <h3 class="text-lg font-medium text-[#003545] flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#005f73]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Delivery Address Details
+                  </h3>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1.5">First Name</label>
+                      <input 
+                        type="text" 
+                        formControlName="firstName"
+                        class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      >
+                      <div *ngIf="deliveryForm.get('firstName')?.invalid && deliveryForm.get('firstName')?.touched" 
+                           class="text-red-500 text-xs mt-1.5">
+                        First name is required
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
+                      <input 
+                        type="text" 
+                        formControlName="lastName"
+                        class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      >
+                      <div *ngIf="deliveryForm.get('lastName')?.invalid && deliveryForm.get('lastName')?.touched" 
+                           class="text-red-500 text-xs mt-1.5">
+                        Last name is required
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      formControlName="phone"
+                      class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                    >
+                    <div *ngIf="deliveryForm.get('phone')?.invalid && deliveryForm.get('phone')?.touched" 
+                         class="text-red-500 text-xs mt-1.5">
+                      Valid phone number is required
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Address Line</label>
+                    <input 
+                      type="text" 
+                      formControlName="address"
+                      class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                    >
+                    <div *ngIf="deliveryForm.get('address')?.invalid && deliveryForm.get('address')?.touched" 
+                         class="text-red-500 text-xs mt-1.5">
+                      Address is required
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1.5">City</label>
+                      <input 
+                        type="text" 
+                        formControlName="city"
+                        class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      >
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1.5">State/Province</label>
+                      <input 
+                        type="text" 
+                        formControlName="state"
+                        class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      >
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-slate-700 mb-1.5">Postal Code</label>
+                      <input 
+                        type="text" 
+                        formControlName="zipCode"
+                        class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      >
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Delivery Instructions (Optional)</label>
+                    <textarea 
+                      formControlName="instructions"
+                      rows="3"
+                      class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#005f73]/20 focus:border-[#005f73] transition"
+                      placeholder="E.g. Gate code, landmark, or special instructions for delivery"
+                    ></textarea>
+                  </div>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Selected Location Card -->
+            <div *ngIf="selectedLat && selectedLng" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-4 p-4">
+              <div class="flex items-start gap-3">
+                <div class="bg-green-100 rounded-full p-2 flex-shrink-0 mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-[#003545]">Selected Location</h4>
+                  <p class="text-xs text-slate-500 mt-1">
+                    Latitude: {{ selectedLat | number:'1.6-6' }}, Longitude: {{ selectedLng | number:'1.6-6' }}
+                  </p>
+                  <p *ngIf="locationAddress" class="text-sm text-slate-700 mt-2">
+                    {{ locationAddress }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Navigation buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-8">
+              <button 
+                (click)="currentStep = 'summary'"
+                class="sm:flex-1 py-3.5 px-6 border border-slate-300 rounded-lg hover:bg-slate-100 transition"
+              >
+                Back to Cart
+              </button>
+              
+             <!-- Replace the Continue to Payment button to ensure it opens the popup -->
+              <button 
+              (click)="proceedToPayment()"
+             
+              class="sm:flex-1 bg-[#005f73] hover:bg-[#003d4d] text-white py-3.5 px-6 rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+              Continue to Payment
+              </button>
+            </div>
+          </div>
+          
+          <!-- Order summary -->
+          <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 sticky top-6">
+              <h3 class="text-xl font-semibold text-[#003545] mb-4 pb-3 border-b border-slate-200">
+                Order Summary
+              </h3>
+              
+              <div class="space-y-5">
+                <div class="space-y-3">
+                  <p class="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span class="font-medium">${{ getSubtotal() }}</span>
+                  </p>
+                  <p class="flex justify-between text-slate-600">
+                    <span>Shipping:</span>
+                    <span class="font-medium">${{ shippingCost.toFixed(2) }}</span>
+                  </p>
+                  <p class="flex justify-between text-slate-600">
+                    <span>Tax ({{ taxRate }}%):</span>
+                    <span class="font-medium">${{ calculateTax().toFixed(2) }}</span>
+                  </p>
+                </div>
+                
+                <!-- Total -->
+                <div class="flex justify-between text-lg font-semibold text-[#003545] pt-2 border-t border-slate-100">
+                  <span>Total:</span>
+                  <span>${{ getTotal() }}</span>
+                </div>
+                
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+     
+
+<!-- Payment Popup -->
+<div *ngIf="showPaymentPopup" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+  <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+    <!-- Modal header -->
+    <div class="p-4 border-b border-slate-200 bg-gradient-to-r from-[#003545] to-[#005f73]">
+      <h3 class="text-lg font-medium text-white">Confirm Your Order</h3>
+    </div>
+    
+    <!-- Modal content -->
+    <div class="p-5">
+      <div class="mb-5">
+        <p class="text-slate-600 mb-4">Your order will be delivered to your specified location. You'll pay with:</p>
+        
+        <!-- Cash on delivery option -->
+        <div class="p-3 border rounded-lg flex items-center">
+          <div class="w-5 h-5 rounded-full border-2 mr-3 flex-shrink-0 flex items-center justify-center border-[#005f73]">
+            <div class="w-2.5 h-2.5 bg-[#005f73] rounded-full"></div>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium text-[#003545]">Cash on Delivery</p>
+            <p class="text-sm text-slate-500">Pay with cash when your order arrives</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#005f73]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Order summary in modal -->
+      <div class="bg-slate-50 p-4 rounded-lg mb-5">
+        <h4 class="font-medium text-[#003545] mb-2">Order Summary</h4>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-600">Total Amount:</span>
+          <span class="font-medium">${{ getTotal() }}</span>
+        </div>
+        <div class="flex justify-between text-sm mt-1">
+          <span class="text-slate-600">Order Number:</span>
+          <span class="font-medium">{{ orderNumber }}</span>
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="flex gap-3">
+        <button 
+          (click)="showPaymentPopup = false"
+          class="flex-1 py-2.5 border border-slate-300 rounded-lg hover:bg-slate-50 transition text-slate-700"
+        >
+          Cancel
+        </button>
+        
+        <button 
+          (click)="acceptOrder()"
+          class="flex-1 bg-[#005f73] hover:bg-[#003d4d] text-white py-2.5 rounded-lg transition font-medium"
+        >
+          Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Message -->
+<div *ngIf="orderAccepted" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 p-4 rounded shadow-lg animate-fade-in z-50 max-w-md">
+  <div class="flex items-start">
+    <div class="flex-shrink-0">
+      <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <div class="ml-3">
+      <p class="text-sm font-medium text-green-800">Order Confirmed!</p>
+      <p class="text-xs text-green-700 mt-1">Your order has been placed and will be delivered soon.</p>
+    </div>
+    <button 
+      (click)="orderAccepted = false" 
+      class="ml-auto -mx-1.5 -my-1.5 bg-green-100 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1"
+    >
+      <span class="sr-only">Dismiss</span>
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+</div>
+</div>

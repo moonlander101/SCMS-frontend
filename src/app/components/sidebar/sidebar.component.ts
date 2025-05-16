@@ -85,10 +85,8 @@ export class SidebarComponent {
 
     4: [
       // Vendor
-      {
-        label: 'Product Catalog',
-        route: '/dashboard/vendor/product-management',
-      },
+      { label: 'Product Catalog', route: '/dashboard/vendor/product-section' },
+      { label: 'Your Cart', route: '/dashboard/vendor/cart-summary' },
       { label: 'Order History', route: '/dashboard/vendor/order-history' },
       { label: 'Profile', route: '/dashboard/profile' },
     ],
