@@ -4,7 +4,6 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { SupplierDashboard } from './components/supplier-page/supplier/supplier.component';
 import { InventoryComponent } from './components/supplier-page/inventory/inventory.component';
 import { OrderHistoryComponent } from './components/supplier-page/order-history/order-history.component';
 import { ProductManagementComponent } from './components/supplier-page/product-management/product-management.component';
@@ -105,7 +104,6 @@ export const routes: Routes = [
           { path: 'inventory', component: InventoryComponent },
           { path: 'product-management', component: ProductManagementComponent },
           { path: 'current-requests', component: CurrentRequestsComponent },
-          { path: 'supplier', component: SupplierDashboard, pathMatch: 'full' },
           { path: 'profile', component: ProfileComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' },
         ],

@@ -54,17 +54,10 @@ export class SidebarComponent {
     ],
     3: [
       // Supplier
+      { label: 'Product Management', route: '/dashboard/supplier/product-management' },
       { label: 'Order History', route: '/dashboard/supplier/order-history' },
       { label: 'Inventory', route: '/dashboard/supplier/inventory' },
-      {
-        label: 'Product Management',
-        route: '/dashboard/supplier/product-management',
-      },
-      {
-        label: 'Current Requests',
-        route: '/dashboard/supplier/current-requests',
-      },
-      { label: 'Supplier Dashboard', route: '/dashboard/supplier/supplier' },
+      { label: 'Current Requests', route: '/dashboard/supplier/current-requests' },
       { label: 'Profile', route: '/dashboard/supplier/profile' },
     ],
 
