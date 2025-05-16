@@ -17,7 +17,15 @@ import {
 import { Router } from '@angular/router';
 import { MapSelectorComponent } from '../map-selector/map-selector.component';
 import * as L from 'leaflet';
-import { WarehouseService, Warehouse } from '../../../service/warehouse/warehouse.service';
+import {
+  WarehouseService,
+  Warehouse,
+} from '../../../service/warehouse/warehouse.service';
+import {
+  OrderService,
+  CreateOrderRequest,
+} from '../../../service/order/order.service';
+import { jwtDecode } from 'jwt-decode';
 
 interface CartItem {
   id: number;
@@ -117,7 +125,8 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private warehouseService: WarehouseService // Add this line
+    private warehouseService: WarehouseService,
+    private orderService: OrderService // Add this line
   ) {
     // Initialize delivery form specifically for map-based delivery
     this.deliveryForm = this.fb.group({
@@ -496,67 +505,134 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
   // Modify your acceptOrder method in cart-summary.component.ts
   acceptOrder(): void {
     try {
-      // IMPORTANT: Save these values BEFORE clearing the cart
+      // Save values for confirmation display
       this.confirmedItemsCount = this.getTotalItems();
       this.confirmedSubtotal = this.getSubtotal();
 
-      // Create order data object
+      // Get user ID from token or use default
+      let userId = 1;
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload: any = jwtDecode(token);
+          userId = payload.user_id || 1;
+        } catch (error) {
+          console.error('Error parsing user ID from token:', error);
+        }
+      }
+
+      // Log cart items to debug the issue
+      console.log('Cart items before mapping:', this.cartItems);
+
+      // Create the exact order format expected by the backend
       const orderData = {
-        orderNumber: this.orderNumber,
-        orderDate: this.orderDate,
-        items: [...this.cartItems], // Create a copy of the items
-        total: this.calculateConfirmedTotal().toFixed(2),
-        paymentMethod: 'cash_on_delivery',
-        warehouseId: this.selectedWarehouseId, // Add warehouse ID
-        warehouseName: this.selectedWarehouseName, // Add warehouse name
-        deliveryAddress: {
-          firstName: this.deliveryForm.get('firstName')?.value,
-          lastName: this.deliveryForm.get('lastName')?.value,
+        user_id: userId,
+        details: {
+          warehouse_id: this.selectedWarehouseId || 1,
+          warehouse_name: this.selectedWarehouseName,
+          first_name: this.deliveryForm.get('firstName')?.value,
+          last_name: this.deliveryForm.get('lastName')?.value,
           phone: this.deliveryForm.get('phone')?.value,
           address: this.deliveryForm.get('address')?.value,
           city: this.deliveryForm.get('city')?.value,
           state: this.deliveryForm.get('state')?.value,
-          zipCode: this.deliveryForm.get('zipCode')?.value,
-          instructions: this.deliveryForm.get('instructions')?.value,
-          coordinates: {
-            lat: this.selectedLat,
-            lng: this.selectedLng,
-          },
+          zipcode: this.deliveryForm.get('zipCode')?.value,
+          latitude: this.selectedLat?.toString() || '0',
+          longitude: this.selectedLng?.toString() || '0',
+          instructions: this.deliveryForm.get('instructions')?.value || '',
         },
-        status: 'processing',
+        products: this.cartItems.map((item) => {
+          // Ensure product_id is included and is a number
+          return {
+            product_id: Number(item.id), // Force conversion to number
+            count: item.quantity,
+          };
+        }),
       };
 
-      // Get existing orders from localStorage or initialize empty array
-      const existingOrders = localStorage.getItem('orders');
-      let orders = existingOrders ? JSON.parse(existingOrders) : [];
+      // Only add instructions if it exists (to match exact format)
+      const instructions = this.deliveryForm.get('instructions')?.value;
+      if (instructions) {
+        orderData.details.instructions = instructions;
+      }
 
-      // Add new order
-      orders.push(orderData);
+      console.log('Sending order to API:', JSON.stringify(orderData));
 
-      // Update localStorage
-      localStorage.setItem('orders', JSON.stringify(orders));
-      console.log('Order saved to localStorage:', orderData);
+      // Send order to the backend
+      this.orderService.createOrder(orderData).subscribe({
+        next: (response) => {
+          console.log('Order created successfully:', response);
 
-      // Set confirmation screen state
-      this.showPaymentPopup = false;
-      this.orderAccepted = true;
-      this.currentStep = 'confirmation';
+          // Save to localStorage for offline access
+          this.saveOrderToLocalStorage(response.order_id || this.orderNumber);
 
-      // NOW clear the cart - AFTER saving all the data we need
-      this.cartItems = [];
-      localStorage.removeItem('cart');
+          // Update UI
+          this.showPaymentPopup = false;
+          this.orderAccepted = true;
+          this.currentStep = 'confirmation';
 
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+          // Clear cart
+          this.cartItems = [];
+          localStorage.removeItem('cart');
 
-      // Hide success message after 5 seconds
-      setTimeout(() => {
-        this.orderAccepted = false;
-      }, 5000);
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          // Hide success message after delay
+          setTimeout(() => {
+            this.orderAccepted = false;
+          }, 5000);
+        },
+        error: (error) => {
+          console.error('API order creation failed:', error);
+          // Fall back to localStorage in case of API failure
+          this.saveOrderToLocalStorage(this.orderNumber);
+        },
+      });
     } catch (error) {
-      console.error('Error saving order:', error);
+      console.error('Error processing order:', error);
       alert('There was an error processing your order. Please try again.');
     }
+  }
+
+  // Helper method to save to localStorage
+  private saveOrderToLocalStorage(orderId: string | number): void {
+    // Create order data object for localStorage
+    const orderData = {
+      orderNumber: typeof orderId === 'string' ? orderId : `ORD-${orderId}`,
+      orderDate: this.orderDate,
+      items: [...this.cartItems],
+      total: this.calculateConfirmedTotal().toFixed(2),
+      paymentMethod: 'cash_on_delivery',
+      warehouseId: this.selectedWarehouseId,
+      warehouseName: this.selectedWarehouseName,
+      deliveryAddress: {
+        firstName: this.deliveryForm.get('firstName')?.value,
+        lastName: this.deliveryForm.get('lastName')?.value,
+        phone: this.deliveryForm.get('phone')?.value,
+        address: this.deliveryForm.get('address')?.value,
+        city: this.deliveryForm.get('city')?.value,
+        state: this.deliveryForm.get('state')?.value,
+        zipCode: this.deliveryForm.get('zipCode')?.value,
+        instructions: this.deliveryForm.get('instructions')?.value,
+        coordinates: {
+          lat: this.selectedLat,
+          lng: this.selectedLng,
+        },
+      },
+      status: 'processing',
+    };
+
+    // Get existing orders from localStorage or initialize empty array
+    const existingOrders = localStorage.getItem('orders');
+    let orders = existingOrders ? JSON.parse(existingOrders) : [];
+
+    // Add new order
+    orders.push(orderData);
+
+    // Update localStorage
+    localStorage.setItem('orders', JSON.stringify(orders));
+    console.log('Order saved to localStorage:', orderData);
   }
 
   // Add these methods to your CartSummaryComponent class
@@ -586,7 +662,7 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
       error: (error) => {
         console.error('Error fetching warehouses:', error);
         this.isLoadingWarehouses = false;
-      }
+      },
     });
   }
 
@@ -594,9 +670,27 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
     this.selectedWarehouseId = warehouseId;
     this.showWarehouseError = false;
     // Store warehouse name for display on confirmation
-    const selectedWarehouse = this.warehouses.find(w => w.id === warehouseId);
+    const selectedWarehouse = this.warehouses.find((w) => w.id === warehouseId);
     if (selectedWarehouse) {
       this.selectedWarehouseName = selectedWarehouse.warehouse_name;
+    }
+  }
+
+  // Add this debugging function
+  inspectCartItems(): void {
+    console.log('Detailed cart inspection:');
+
+    if (this.cartItems && this.cartItems.length > 0) {
+      this.cartItems.forEach((item, index) => {
+        console.log(`Item ${index}:`, {
+          id: item.id,
+          type: typeof item.id,
+          name: item.name,
+          quantity: item.quantity,
+        });
+      });
+    } else {
+      console.log('Cart is empty or undefined');
     }
   }
 }

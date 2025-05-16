@@ -16,6 +16,7 @@ import {
 } from '../../../service/warehouse/product.service';
 
 interface CartItem {
+  id: number; // Add this field
   name: string;
   subtitle: string;
   price: number;
@@ -105,6 +106,7 @@ export class ProductSectionComponent implements OnInit, OnDestroy {
     this.productService.getProducts().subscribe({
       next: (products: ApiProduct[]) => {
         this.products = products.map((product) => ({
+          id: product.id, // Add the ID from the API product
           name: product.product_name,
           subtitle: `SKU: ${product.product_SKU}`,
           price: +product.unit_price,
@@ -177,9 +179,9 @@ export class ProductSectionComponent implements OnInit, OnDestroy {
       // Update quantity if item exists
       existingItem.quantity += this.selectedQuantity;
     } else {
-      // Add new item to cart
+      // Add new item to cart - FIX THE DUPLICATE ID ISSUE
       currentCart.push({
-        ...product,
+        ...product, // This already includes the id property
         quantity: this.selectedQuantity,
       });
     }
