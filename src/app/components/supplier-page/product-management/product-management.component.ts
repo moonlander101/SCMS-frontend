@@ -112,7 +112,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
       selected_product_id: [null, Validators.required],
       sku_display: [{ value: '', disabled: true }], // Disabled input for SKU
       warehouse_id: [null, Validators.required],
-      supplier_price: [null, [Validators.required, Validators.min(0)]]
+      supplier_price: [null, [Validators.required, Validators.min(0)]],
+      lead_time_days: [null, [Validators.required, Validators.min(1)]],
+      maximum_capacity: [null, [Validators.required, Validators.min(1)]]
     });
 
     // Auto-update SKU when product changes
@@ -190,20 +192,20 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 
   onAddProductToWarehouseSubmit(): void {
     if (this.addProductToWarehouseForm.invalid) {
-      this.showGeneralFormError("Please select a product, warehouse, and enter a valid price.");
+      this.showGeneralFormError("Please complete all required fields with valid values.");
       return;
     }
     this.isSubmitting = true;
     this.clearMessages();
 
-    const formValue = this.addProductToWarehouseForm.value; // Use getRawValue() if you need disabled field values
+    const formValue = this.addProductToWarehouseForm.value;
     const payload = {
       warehouse_id: Number(formValue.warehouse_id),
       supplier_id: this.supplierId,
       product_id: Number(formValue.selected_product_id),
-      supplier_price: Number(formValue.supplier_price)
-      // The SKU is not sent in this payload because the backend likely identifies the product by product_id.
-      // The SKU generation is primarily for display consistency in the UI.
+      supplier_price: Number(formValue.supplier_price),
+      lead_time_days: Number(formValue.lead_time_days),
+      maximum_capacity: Number(formValue.maximum_capacity)
     };
 
     console.log('Adding product to warehouse with payload:', payload);
