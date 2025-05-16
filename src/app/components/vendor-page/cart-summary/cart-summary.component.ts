@@ -321,12 +321,7 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
     return this.deliveryForm.valid && this.selectedLat !== null && this.selectedLng !== null;
   }
 
-  proceedToPayment(): void {
-    if (this.canProceedFromDelivery()) {
-      this.currentStep = 'payment';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
+  
 
   completeOrder(): void {
     if (this.paymentForm.valid && this.cartItems.length > 0) {
@@ -367,4 +362,102 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
   continueShopping(): void {
     this.router.navigate(['/dashboard/vendor/products']);
   }
+  // Add this method to your component class
+
+goToCheckout(): void {
+  this.isCartPreviewOpen = false;
+  
+  if (this.cartItems.length === 0) {
+    // Don't proceed if cart is empty
+    return;
+  }
+  
+  if (this.currentStep === 'summary') {
+    // If already on summary, proceed to delivery
+    this.proceedToDelivery();
+  } else {
+    // Otherwise, go to summary first
+    this.currentStep = 'summary';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+// Add these properties to your component class
+showPaymentPopup: boolean = false;
+orderAccepted: boolean = false;
+
+// Add this method to handle payment acceptance
+// Modify the proceedToPayment method to ensure the popup appears
+proceedToPayment() {
+  if (this.deliveryForm.invalid) {
+    this.deliveryForm.markAllAsTouched(); // show all validation errors
+    this.showPaymentPopup = true;
+    return;
+  }
+
+  this.showPaymentPopup = true;
+}
+
+// Enhance the acceptOrder method to handle localStorage updates
+acceptOrder(): void {
+  try {
+    // Create order data object
+    const orderData = {
+      orderNumber: this.orderNumber,
+      orderDate: this.orderDate,
+      items: this.cartItems,
+      total: this.getTotal(),
+      paymentMethod: 'cash_on_delivery',
+      deliveryAddress: {
+        firstName: this.deliveryForm.get('firstName')?.value,
+        lastName: this.deliveryForm.get('lastName')?.value,
+        phone: this.deliveryForm.get('phone')?.value,
+        address: this.deliveryForm.get('address')?.value,
+        city: this.deliveryForm.get('city')?.value,
+        state: this.deliveryForm.get('state')?.value,
+        zipCode: this.deliveryForm.get('zipCode')?.value,
+        instructions: this.deliveryForm.get('instructions')?.value,
+        coordinates: {
+          lat: this.selectedLat,
+          lng: this.selectedLng
+        }
+      },
+      status: 'processing'
+    };
+    
+    // Get existing orders from localStorage or initialize empty array
+    const existingOrders = localStorage.getItem('orders');
+    let orders = existingOrders ? JSON.parse(existingOrders) : [];
+    
+    // Add new order
+    orders.push(orderData);
+    
+    // Update localStorage
+    localStorage.setItem('orders', JSON.stringify(orders));
+    console.log('Order saved to localStorage:', orderData);
+    
+    // Clear cart
+    this.cartItems = [];
+    localStorage.removeItem('cart');
+    
+    // Close popup and show success message
+    this.showPaymentPopup = false;
+    this.orderAccepted = true;
+    
+    // Go to confirmation
+    this.currentStep = 'confirmation';
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      this.orderAccepted = false;
+    }, 5000);
+  } catch (error) {
+    console.error('Error saving order:', error);
+    alert('There was an error processing your order. Please try again.');
+  }
+}
+
+
 }
