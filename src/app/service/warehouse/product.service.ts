@@ -19,6 +19,7 @@ export interface ApiCategory {
 }
 
 export interface Product {
+  id: number;
   name: string;
   subtitle: string;
   price: number;
