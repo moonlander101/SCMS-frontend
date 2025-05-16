@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, NgZone } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -11,7 +12,7 @@ L.Icon.Default.mergeOptions({
 @Component({
   selector: 'app-map-selector',
   standalone: true,
-  imports: [],
+  imports: [CommonModule], // Add CommonModule for pipes
   templateUrl: './map-selector.component.html',
   styleUrls: ['./map-selector.component.css']
 })
@@ -58,7 +59,7 @@ export class MapSelectorComponent implements AfterViewInit {
           // Optional circle to show accuracy
           L.circle([userLat, userLng], {
             radius: position.coords.accuracy,
-            color: 'blue',
+            color: 'orange',
             fillOpacity: 0.2
           }).addTo(this.map);
 
