@@ -34,8 +34,8 @@ export interface SupplierAssignmentRequest {
   providedIn: 'root',
 })
 export class SupplierRankService {
-  private apiUrl = 'http://localhost:8000/api/ranking/ranking/suppliers/';
-  private assignmentUrl = 'http://localhost:8000/api/supplier/assign/';
+  private apiUrl = 'http://localhost:8004/api/ranking/ranking/suppliers/';
+  private assignmentUrl = 'http://localhost:8000/api/v0/supplier-request/';
 
   // Mock data for supplier rankings
   private mockRankings: SupplierRankingsResponse = {
@@ -43,7 +43,7 @@ export class SupplierRankService {
     city: null,
     suppliers: [
       {
-        supplier_id: 12,
+        supplier_id: 101,
         company_name: 'Mu Logistics',
         score: 5.5524000000000004,
         state: 'Q4_D3_P3_S4',
@@ -52,7 +52,7 @@ export class SupplierRankService {
         city: 'Jaffna',
       },
       {
-        supplier_id: 8,
+        supplier_id: 102,
         company_name: 'Theta Products',
         score: 5.350200000000002,
         state: 'Q4_D3_P3_S4',
@@ -61,7 +61,7 @@ export class SupplierRankService {
         city: 'Colombo',
       },
       {
-        supplier_id: 1,
+        supplier_id: 103,
         company_name: 'Alpha Supplies Ltd',
         score: 5.332200000000001,
         state: 'Q4_D3_P3_S4',
@@ -77,23 +77,23 @@ export class SupplierRankService {
 
   getSupplierRankings(productId: number): Observable<SupplierRankingsResponse> {
     // For development, return mock data
-    return of(this.mockRankings);
+    // return of(this.mockRankings);
 
     // For production, uncomment this line:
-    // return this.http.get<SupplierRankingsResponse>(`${this.apiUrl}?product_id=${productId}`).pipe(
-    //   catchError(this.handleError<SupplierRankingsResponse>('getSupplierRankings', { product_id: productId.toString(), city: null, suppliers: [], count: 0 }))
-    // );
+    return this.http.get<SupplierRankingsResponse>(`${this.apiUrl}?product_id=${productId}`).pipe(
+      catchError(this.handleError<SupplierRankingsResponse>('getSupplierRankings', { product_id: productId.toString(), city: null, suppliers: [], count: 0 }))
+    );
   }
 
   assignSupplier(request: SupplierAssignmentRequest): Observable<any> {
     // For development, just log and return success
     console.log('Assignment request:', request);
-    return of({ success: true, message: 'Supplier assigned successfully' });
+    // return of({ success: true, message: 'Supplier assigned successfully' });
 
     // For production, uncomment this line:
-    // return this.http.post<any>(this.assignmentUrl, request).pipe(
-    //   catchError(this.handleError<any>('assignSupplier'))
-    // );
+    return this.http.post<any>(this.assignmentUrl, request).pipe(
+      catchError(this.handleError<any>('assignSupplier'))
+    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
