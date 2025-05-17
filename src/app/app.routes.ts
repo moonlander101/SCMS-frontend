@@ -100,7 +100,7 @@ export const routes: Routes = [
         canActivate: [roleGuard(3)],
         children: [
           { path: '', redirectTo: 'profile', pathMatch: 'full' },
-          { path: 'order-history', component: OrderHistoryComponent },
+          // { path: 'order-history', component: OrderHistoryComponent },
           { path: 'inventory', component: InventoryComponent },
           { path: 'product-management', component: ProductManagementComponent },
           { path: 'current-requests', component: CurrentRequestsComponent },
