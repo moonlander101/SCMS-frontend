@@ -3,6 +3,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http'; // Import HttpClient
 import { Observable, of } from 'rxjs'; // Import Observable and of for error handling
 import { catchError, map } from 'rxjs/operators'; // Import operators
+import { jwtDecode } from 'jwt-decode';
 
 // Interface for the data structure coming from your API
 interface ApiInventoryItem {
@@ -36,7 +37,25 @@ export class InventoryComponent implements OnInit {
 
   // API URL -
   // In a real app, the base URL and supplier_id might come from environment variables or a service
-  private apiUrl = 'http://localhost:8000/api/warehouse/supplier-dashboard/?supplier_id=103';
+  private get supplierId(): number {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('No authentication token found');
+          return 0;
+        }
+        const decoded: any = jwtDecode(token);
+        if (!decoded || !decoded.user_id) {
+          console.error('User ID not found in token');
+          return 0;
+        }
+        return decoded.user_id;
+      } catch (error) {
+        console.error('Failed to decode authentication token:', error);
+        return 0;
+      }
+    }
+  private apiUrl = `http://localhost:8000/api/warehouse/supplier-dashboard/?supplier_id=${this.supplierId}`;
 
   constructor(private http: HttpClient) { } // Inject HttpClient
 

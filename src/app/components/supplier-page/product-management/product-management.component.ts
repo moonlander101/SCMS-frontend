@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { of, Subject, throwError } from 'rxjs';
 import { catchError, map, takeUntil, tap } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
 
 // Interface for the data from your LISTING API
 interface ApiProductListItem {
@@ -69,10 +70,28 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   isSubmitting: boolean = false;
 
-  private readonly supplierId: number = 103;
-  private readonly PRODUCT_LIST_API_URL = 'http://127.0.0.1:8000/api/warehouse/supplier-product/prices/';
+  private get supplierId(): number {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return 0;
+      }
+      const decoded: any = jwtDecode(token);
+      if (!decoded || !decoded.user_id) {
+        console.error('User ID not found in token');
+        return 0;
+      }
+      return decoded.user_id;
+    } catch (error) {
+      console.error('Failed to decode authentication token:', error);
+      return 0;
+    }
+  }
+
+  private readonly PRODUCT_LIST_API_URL = 'http://127.0.0.1:8001/api/warehouse/supplier-product/prices/';
   // Assuming Django URL is fixed to use a single slash:
-  private readonly ADD_OR_UPDATE_PRICE_API_URL = 'http://127.0.0.1:8000/api/warehouse//supplier-product/add_or_update/';
+  private readonly ADD_OR_UPDATE_PRICE_API_URL = 'http://127.0.0.1:8001/api/warehouse//supplier-product/add_or_update/';
 
   constructor(
     private fb: FormBuilder,
@@ -112,7 +131,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
       selected_product_id: [null, Validators.required],
       sku_display: [{ value: '', disabled: true }], // Disabled input for SKU
       warehouse_id: [null, Validators.required],
-      supplier_price: [null, [Validators.required, Validators.min(0)]]
+      supplier_price: [null, [Validators.required, Validators.min(0)]],
+      lead_time_days: [null, [Validators.required, Validators.min(1)]],
+      maximum_capacity: [null, [Validators.required, Validators.min(1)]]
     });
 
     // Auto-update SKU when product changes
@@ -190,20 +211,20 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 
   onAddProductToWarehouseSubmit(): void {
     if (this.addProductToWarehouseForm.invalid) {
-      this.showGeneralFormError("Please select a product, warehouse, and enter a valid price.");
+      this.showGeneralFormError("Please complete all required fields with valid values.");
       return;
     }
     this.isSubmitting = true;
     this.clearMessages();
 
-    const formValue = this.addProductToWarehouseForm.value; // Use getRawValue() if you need disabled field values
+    const formValue = this.addProductToWarehouseForm.value;
     const payload = {
       warehouse_id: Number(formValue.warehouse_id),
       supplier_id: this.supplierId,
       product_id: Number(formValue.selected_product_id),
-      supplier_price: Number(formValue.supplier_price)
-      // The SKU is not sent in this payload because the backend likely identifies the product by product_id.
-      // The SKU generation is primarily for display consistency in the UI.
+      supplier_price: Number(formValue.supplier_price),
+      lead_time_days: Number(formValue.lead_time_days),
+      maximum_capacity: Number(formValue.maximum_capacity)
     };
 
     console.log('Adding product to warehouse with payload:', payload);

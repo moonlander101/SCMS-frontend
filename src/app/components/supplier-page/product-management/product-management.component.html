@@ -89,18 +89,18 @@
 
 <!-- NEW "Add Product to Warehouse" Modal -->
 <div *ngIf="isAddProductToWarehouseModalOpen"
-     class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+     class="fixed inset-0 bg-black/40 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
      (click)="closeAddProductToWarehouseModal()">
-  <div class="relative mx-auto p-6 border w-full max-w-lg shadow-xl rounded-xl bg-white" (click)="$event.stopPropagation()">
-    <div class="flex justify-between items-center pb-3 border-b mb-4">
-      <h3 class="text-xl font-semibold text-gray-900">Add Product to Warehouse</h3>
-      <button (click)="closeAddProductToWarehouseModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-semibold">×</button>
+  <div class="relative mx-auto p-6 w-full max-w-lg shadow-xl rounded-xl bg-white" (click)="$event.stopPropagation()">
+    <div class="flex justify-between items-center pb-3 mb-4">
+      <h3 class="text-xl font-semibold text-orange-600">Add Product to Warehouse</h3>
+      <button (click)="closeAddProductToWarehouseModal()" class="text-gray-400 hover:text-orange-600 text-2xl font-semibold">×</button>
     </div>
     <form [formGroup]="addProductToWarehouseForm" (ngSubmit)="onAddProductToWarehouseSubmit()">
       <div class="mb-4">
         <label for="productNameSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Product</label>
         <select id="productNameSelect" formControlName="selected_product_id"
-                class="w-full p-3 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500">
           <option [ngValue]="null" disabled>-- Choose a product --</option>
           <option *ngFor="let p of predefinedProductsForDropdown" [value]="p.id">{{ p.name }}</option>
         </select>
@@ -117,7 +117,7 @@
       <div class="mb-4">
         <label for="addWarehouseSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Warehouse</label>
         <select id="addWarehouseSelect" formControlName="warehouse_id"
-                class="w-full p-3 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500">
           <option [ngValue]="null" disabled>-- Choose a warehouse --</option>
           <option *ngFor="let wh of allAvailableWarehouses" [value]="wh.id">{{ wh.name }}</option>
         </select>
@@ -125,11 +125,14 @@
              class="text-red-500 text-xs mt-1">Warehouse selection is required.</div>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-4">
         <label for="addSupplierPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit Price for this Warehouse</label>
-        <input id="addSupplierPrice" type="number" formControlName="supplier_price" step="0.01"
-               class="w-full p-3 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-               placeholder="0.00">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
+          <input id="addSupplierPrice" type="number" formControlName="supplier_price" step="0.01"
+                 class="w-full p-3 pl-8 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+                 placeholder="0.00">
+        </div>
         <div *ngIf="addProductToWarehouseForm.get('supplier_price')?.invalid && (addProductToWarehouseForm.get('supplier_price')?.dirty || addProductToWarehouseForm.get('supplier_price')?.touched)"
              class="text-red-500 text-xs mt-1">
           <span *ngIf="addProductToWarehouseForm.get('supplier_price')?.errors?.['required']">Price is required.</span>
@@ -137,11 +140,47 @@
         </div>
       </div>
 
-      <div class="flex justify-end space-x-3 pt-4 border-t">
+      <!-- New Lead Time Days Field -->
+      <div class="mb-4">
+        <label for="leadTimeDays" class="block text-sm font-medium text-gray-700 mb-1">
+          How many days on average would a delivery take?
+        </label>
+        <div class="relative">
+          <input id="leadTimeDays" type="number" formControlName="lead_time_days" min="1" step="1"
+                 class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+                 placeholder="Enter lead time in days">
+          <!-- <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 mr-8">days</span> -->
+        </div>
+        <div *ngIf="addProductToWarehouseForm.get('lead_time_days')?.invalid && (addProductToWarehouseForm.get('lead_time_days')?.dirty || addProductToWarehouseForm.get('lead_time_days')?.touched)"
+             class="text-red-500 text-xs mt-1">
+          <span *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['required']">Lead time is required.</span>
+          <span *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['min']">Lead time must be at least 1 day.</span>
+        </div>
+      </div>
+
+      <!-- New Maximum Capacity Field -->
+      <div class="mb-6">
+        <label for="maximumCapacity" class="block text-sm font-medium text-gray-700 mb-1">
+          Maximum Capacity
+        </label>
+        <div class="relative">
+          <input id="maximumCapacity" type="number" formControlName="maximum_capacity" min="1" step="1"
+                 class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+                 placeholder="Enter maximum storage capacity">
+          <!-- <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 mr-8">kilos</span> -->
+        </div>
+        <div *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.invalid && (addProductToWarehouseForm.get('maximum_capacity')?.dirty || addProductToWarehouseForm.get('maximum_capacity')?.touched)"
+             class="text-red-500 text-xs mt-1">
+          <span *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['required']">Maximum capacity is required.</span>
+          <span *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['min']">Maximum capacity must be at least 1 unit.</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-4">
         <button type="button" (click)="closeAddProductToWarehouseModal()"
                 class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium">Cancel</button>
         <button type="submit" [disabled]="addProductToWarehouseForm.invalid || isSubmitting"
-                class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 font-medium">
+                class="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 font-medium transition duration-150 ease-in-out">
           <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>Add Product to Warehouse
         </button>
       </div>
