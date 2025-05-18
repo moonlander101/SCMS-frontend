@@ -6,7 +6,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class VendorSignupService {
-  private apiUrl = 'http://localhost:8000/api/v1';
+  private apiUrl = 'http://localhost:8003/api/v1';
 
   constructor(private http: HttpClient) {}
 

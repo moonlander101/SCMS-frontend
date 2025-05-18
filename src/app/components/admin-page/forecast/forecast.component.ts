@@ -168,7 +168,7 @@ export class ForecastComponent {
       days: this.days,
     };
 
-    this.http.post('http://localhost:8000/api/forecast/', body).subscribe({
+    this.http.post('http://localhost:8001/api/forecast/', body).subscribe({
       next: (res: any) => {
         console.log('Forecast API response:', res);
         this.forecastResult = res;

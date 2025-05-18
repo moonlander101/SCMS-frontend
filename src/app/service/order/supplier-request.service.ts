@@ -478,23 +478,28 @@ export class SupplierRequestService {
   getAllRequests(): Observable<SupplierRequest[]> {
     const token = localStorage.getItem('token');
     let warehouse_id = 1; // Default warehouse ID
+    
     if (token) {
       try {
         const decodedToken: any = jwtDecode(token);
         warehouse_id = decodedToken?.warehouse_id;
-      }catch (error) {
+      } catch (error) {
         console.error('Invalid token:', error);
         return of(this.mockData);
       }
     }
-        
+    
     return this.http.get<SupplierRequest[]>(`http://localhost:8000/api/v0/supplier-request/warehouse/${warehouse_id}/?status=accepted`)
       .pipe(
         map(requests => {
-          // Map "accepted" status to "pending" for UI display
+          // Map and format date fields
           return requests.map(req => ({
             ...req,
-            status: req.status === 'accepted' ? 'pending' : req.status
+            status: req.status === 'accepted' ? 'pending' : req.status,
+            // Format dates to show only YYYY-MM-DD
+            created_at: req.created_at.split('T')[0],
+            expected_delivery_date: req.expected_delivery_date.split('T')[0],
+            received_at: req.received_at ? req.received_at.split('T')[0] : null
           }));
         }),
         catchError((error) => {

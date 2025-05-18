@@ -30,7 +30,7 @@ export interface WarehouseManagerRegistration {
   providedIn: 'root',
 })
 export class RegisterService {
-  private apiUrl = 'http://localhost:8000/api/v1/register/';
+  private apiUrl = 'http://localhost:8003/api/v1/register/';
 
   constructor(private http: HttpClient) {}
 
