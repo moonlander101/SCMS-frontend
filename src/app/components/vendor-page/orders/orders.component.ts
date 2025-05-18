@@ -188,7 +188,7 @@ export class OrdersComponent implements OnInit {
   // Generate mock tracking status for demonstration
   generateMockTrackingStatus(status: string, orderDate: Date): TrackingStatus {
     const result: TrackingStatus = {
-      processing: null,
+      processing: null, // We'll keep the property name for compatibility
       shipped: null,
       delivered: null,
     };
@@ -209,7 +209,8 @@ export class OrdersComponent implements OnInit {
     if (status.toLowerCase() === 'pending') {
       // Just ordered, no processing yet
       return result;
-    } else if (status.toLowerCase() === 'processing') {
+    } else if (status.toLowerCase() === 'accepted') {
+      // Changed from 'processing'
       result.processing = processingDate;
     } else if (status.toLowerCase() === 'shipped') {
       result.processing = processingDate;
@@ -337,14 +338,14 @@ export class OrdersComponent implements OnInit {
     switch (status) {
       case 'pending':
         return `${baseClasses} bg-blue-100 text-blue-800`;
-      case 'processing':
+      case 'accepted': // Changed from 'accepted'
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
       case 'shipped':
         return `${baseClasses} bg-indigo-100 text-indigo-800`;
       case 'delivered':
         return `${baseClasses} bg-green-100 text-green-800`;
       case 'rejected':
-        return `${baseClasses} bg-red-100 text-red-800`; // Same styling as cancelled
+        return `${baseClasses} bg-red-100 text-red-800`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-800`;
     }

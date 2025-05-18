@@ -27,7 +27,7 @@ export interface OrderResponse {
   providedIn: 'root',
 })
 export class VendorOrderService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'http://localhost:8001/api';
 
   constructor(private http: HttpClient) {}
 

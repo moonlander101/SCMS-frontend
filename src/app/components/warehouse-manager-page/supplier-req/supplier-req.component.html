@@ -294,70 +294,90 @@
       </div>
     </div>
 
-    <!-- Table container with updated styling -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+    <!-- Table container with improved styling and margins -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+      <!-- Add horizontal padding to the table container -->
+      <div class="overflow-x-auto p-1">
+        <!-- Fix the table layout to auto-size columns based on content -->
+        <table class="w-full divide-y divide-gray-200 table-auto">
           <thead class="bg-gray-50">
             <tr>
+              <!-- ID column - make it narrower -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-16 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 ID
               </th>
+              
+              <!-- Supplier column - appropriate width -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-40 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Supplier
               </th>
+              
+              <!-- Product column - wider for product names -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-48 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Product
               </th>
+              
+              <!-- Quantity column - narrow for numbers -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-28 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Quantity
               </th>
+              
+              <!-- Unit Price column - narrow for currency -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-28 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Unit Price
               </th>
+              
+              <!-- Total Value column - narrow for currency -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-32 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Total Value
               </th>
+              
+              <!-- Date columns - fixed width -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-28 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Created
               </th>
+              
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-28 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Expected
               </th>
+              
+              <!-- Status column - narrow -->
               <th
                 scope="col"
-                class="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-24 px-4 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Status
               </th>
+              
+              <!-- Actions column - align right -->
               <th
                 *ngIf="filterType === 'pending'"
                 scope="col"
-                class="px-6 py-3.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="w-28 px-4 py-3.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider pr-8"
               >
                 Actions
               </th>
@@ -369,28 +389,45 @@
               (click)="viewDetails(request.request_id)"
               class="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
             >
+              <!-- ID column -->
               <td
-                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
               >
                 #{{ request.request_id }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
+              
+              <!-- Supplier column - fix missing px padding -->
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div
+                  class="text-sm font-medium text-gray-900 truncate"
+                  title="{{ request.supplier_name }}"
+                >
                   {{ request.supplier_name }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
+              
+              <!-- Product column -->
+              <td class="px-4 py-4 whitespace-nowrap">
+                <div
+                  class="text-sm text-gray-900 truncate"
+                  title="{{ request.product_name }}"
+                >
                   {{ request.product_name }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              
+              <!-- Quantity column -->
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                 {{ request.count.toLocaleString() }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              
+              <!-- Unit Price column -->
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                 ${{ request.unit_price.toFixed(2) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              
+              <!-- Total Value column -->
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                 ${{
                   getTotalPrice(request).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -398,13 +435,18 @@
                   })
                 }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ request.created_at }}
+              
+              <!-- Date columns -->
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                {{ request.created_at | date:'yyyy-MM-dd' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ request.expected_delivery_date }}
+              
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                {{ request.expected_delivery_date | date:'yyyy-MM-dd' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              
+              <!-- Status column -->
+              <td class="px-4 py-4 whitespace-nowrap">
                 <span
                   [ngClass]="{
                     'bg-amber-100 text-amber-800 border-amber-400':
@@ -417,9 +459,11 @@
                   {{ request.status }}
                 </span>
               </td>
+              
+              <!-- Actions column -->
               <td
                 *ngIf="filterType === 'pending' && request.status === 'pending'"
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium pr-8"
               >
                 <button
                   (click)="viewOrderDetails(request.request_id, $event)"

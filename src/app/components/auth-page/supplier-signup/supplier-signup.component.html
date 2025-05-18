@@ -49,26 +49,33 @@
         class="sign-up-form"
       >
         <h2 class="title">Supplier Registration</h2>
-        
-        <!-- Progress Bar -->
+
+        <!-- Progress Bar - Updated to 3 steps instead of 4 -->
         <div class="form-progress">
-          <div class="step" [ngClass]="{'active': currentStep >= 1, 'completed': currentStep > 1}">
+          <div
+            class="step"
+            [ngClass]="{ active: currentStep >= 1, completed: currentStep > 1 }"
+          >
             <div class="step-number">1</div>
             <div class="step-label">Personal</div>
           </div>
-          <div class="progress-line" [ngClass]="{'active': currentStep > 1}"></div>
-          <div class="step" [ngClass]="{'active': currentStep >= 2, 'completed': currentStep > 2}">
+          <div
+            class="progress-line"
+            [ngClass]="{ active: currentStep > 1 }"
+          ></div>
+          <div
+            class="step"
+            [ngClass]="{ active: currentStep >= 2, completed: currentStep > 2 }"
+          >
             <div class="step-number">2</div>
-            <div class="step-label">Products</div>
-          </div>
-          <div class="progress-line" [ngClass]="{'active': currentStep > 2}"></div>
-          <div class="step" [ngClass]="{'active': currentStep >= 3, 'completed': currentStep > 3}">
-            <div class="step-number">3</div>
             <div class="step-label">Company</div>
           </div>
-          <div class="progress-line" [ngClass]="{'active': currentStep > 3}"></div>
-          <div class="step" [ngClass]="{'active': currentStep >= 4}">
-            <div class="step-number">4</div>
+          <div
+            class="progress-line"
+            [ngClass]="{ active: currentStep > 2 }"
+          ></div>
+          <div class="step" [ngClass]="{ active: currentStep >= 3 }">
+            <div class="step-number">3</div>
             <div class="step-label">Account</div>
           </div>
         </div>
@@ -77,49 +84,71 @@
         <div class="form-step" *ngIf="currentStep === 1">
           <div class="input-field">
             <i class="fas fa-user"></i>
-            <input type="text" placeholder="First Name" formControlName="firstName" />
+            <input
+              type="text"
+              placeholder="First Name"
+              formControlName="firstName"
+            />
           </div>
           <div class="input-field">
             <i class="fas fa-user"></i>
-            <input type="text" placeholder="Last Name" formControlName="lastName" />
-          </div>
-          <div class="input-field">
-            <i class="fas fa-id-badge"></i>
-            <input type="text" placeholder="Username" formControlName="username" />
+            <input
+              type="text"
+              placeholder="Last Name"
+              formControlName="lastName"
+            />
           </div>
           <div class="input-field">
             <i class="fas fa-phone"></i>
-            <input type="text" placeholder="Phone Number" formControlName="phone" />
+            <input
+              type="text"
+              placeholder="Phone Number"
+              formControlName="phone"
+            />
           </div>
         </div>
 
-        <!-- Step 2: Product Selection (simplified) -->
+        <!-- Step 2: Company Details (previously step 3) -->
         <div class="form-step" *ngIf="currentStep === 2">
-          <div class="input-field select-field">
-            <i class="fas fa-box"></i>
-            <select formControlName="product">
-              <option value="" disabled selected>Select Product to Supply</option>
-              <option *ngFor="let product of products" [value]="product.id">
-                {{product.name}}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Step 3: Company Details -->
-        <div class="form-step" *ngIf="currentStep === 3">
           <div class="input-field">
             <i class="fas fa-building"></i>
-            <input type="text" placeholder="Company Name" formControlName="companyName" />
+            <input
+              type="text"
+              placeholder="Company Name"
+              formControlName="companyName"
+            />
+          </div>
+          <div class="input-field">
+            <i class="fas fa-briefcase"></i>
+            <select formControlName="businessType" class="select-field">
+              <option value="" disabled selected>Select Business Type</option>
+              <option value="Manufacturers/Producers">
+                Manufacturers/Producers
+              </option>
+              <option value="Distributors">Distributors</option>
+              <option value="Importers">Importers</option>
+            </select>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-file-invoice"></i>
+            <input type="text" placeholder="Tax ID" formControlName="taxId" />
           </div>
           <div class="address-fields">
             <div class="input-field">
               <i class="fas fa-map-marker-alt"></i>
-              <input type="text" placeholder="Street No." formControlName="streetNo" />
+              <input
+                type="text"
+                placeholder="Street No."
+                formControlName="streetNo"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-road"></i>
-              <input type="text" placeholder="Street Name" formControlName="streetName" />
+              <input
+                type="text"
+                placeholder="Street Name"
+                formControlName="streetName"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-city"></i>
@@ -127,36 +156,66 @@
             </div>
             <div class="input-field">
               <i class="fas fa-mail-bulk"></i>
-              <input type="text" placeholder="ZIP Code" formControlName="zipCode" />
+              <input
+                type="text"
+                placeholder="ZIP Code"
+                formControlName="zipCode"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Step 4: Account Setup -->
-        <div class="form-step" *ngIf="currentStep === 4">
+        <!-- Step 3: Account Setup (previously step 4) -->
+        <div class="form-step" *ngIf="currentStep === 3">
+          <div class="input-field">
+            <i class="fas fa-id-badge"></i>
+            <input
+              type="text"
+              placeholder="Username"
+              formControlName="username"
+            />
+          </div>
           <div class="input-field">
             <i class="fas fa-envelope"></i>
             <input type="email" placeholder="Email" formControlName="email" />
           </div>
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" placeholder="Password" formControlName="password" />
+            <input
+              type="password"
+              placeholder="Password"
+              formControlName="password"
+            />
           </div>
           <div class="input-field">
             <i class="fas fa-lock"></i>
-            <input type="password" placeholder="Confirm Password" formControlName="confirmPassword" />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              formControlName="confirmPassword"
+            />
           </div>
         </div>
 
-        <!-- Navigation Buttons -->
+        <!-- Navigation Buttons - Updated for 3 steps -->
         <div class="form-navigation">
-          <button type="button" class="btn previous" *ngIf="currentStep > 1" (click)="prevStep()">
+          <button
+            type="button"
+            class="btn previous"
+            *ngIf="currentStep > 1"
+            (click)="prevStep()"
+          >
             Previous
           </button>
-          <button type="button" class="btn next" *ngIf="currentStep < 4" (click)="nextStep()">
+          <button
+            type="button"
+            class="btn next"
+            *ngIf="currentStep < 3"
+            (click)="nextStep()"
+          >
             Next
           </button>
-          <button type="submit" class="btn submit" *ngIf="currentStep === 4">
+          <button type="submit" class="btn submit" *ngIf="currentStep === 3">
             Register
           </button>
         </div>

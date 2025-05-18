@@ -4,14 +4,27 @@
   <div class="relative bg-gray-100 shadow-md">
     <div class="container mx-auto px-6 py-8 relative z-10">
       <div class="max-w-2xl">
-        <h2 class="text-xl md:text-2xl font-light text-black mt-3">Supply Management</h2>
-        <h1 class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-black/80 pl-3">Product Catalogue</h1>
-        <p class="text-black/90 mt-2 text-lg font-light pl-3">View your products and manage their prices per warehouse.</p>
+        <h2 class="text-xl md:text-2xl font-light text-black mt-3">
+          Supply Management
+        </h2>
+        <h1
+          class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-black/80 pl-3"
+        >
+          Product Catalogue
+        </h1>
+        <p class="text-black/90 mt-2 text-lg font-light pl-3">
+          View your products and manage their prices per warehouse.
+        </p>
       </div>
     </div>
     <div class="absolute bottom-0 left-0 right-0 overflow-hidden">
-      <svg viewBox="0 0 1440 60" class="w-full h-12 fill-gray-50 transform rotate-180">
-        <path d="M0,32L80,37.3C160,43,320,53,480,53.3C640,53,800,43,960,32C1120,21,1280,11,1360,5.3L1440,0L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path>
+      <svg
+        viewBox="0 0 1440 60"
+        class="w-full h-12 fill-gray-50 transform rotate-180"
+      >
+        <path
+          d="M0,32L80,37.3C160,43,320,53,480,53.3C640,53,800,43,960,32C1120,21,1280,11,1360,5.3L1440,0L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"
+        ></path>
       </svg>
     </div>
   </div>
@@ -19,8 +32,10 @@
   <div class="container mx-auto px-4 py-8">
     <!-- Button to toggle "Add Product to Warehouse" Modal -->
     <div class="mb-6">
-      <button (click)="openAddProductToWarehouseModal()"
-              class="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition duration-150 ease-in-out text-base font-medium">
+      <button
+        (click)="openAddProductToWarehouseModal()"
+        class="bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 transition duration-150 ease-in-out text-base font-medium"
+      >
         <i class="fas fa-plus mr-2"></i>
         Add Product to Warehouse
       </button>
@@ -28,22 +43,66 @@
 
     <!-- General Loading, Error, Success Messages -->
     <div *ngIf="isLoading && !products.length" class="text-center py-10">
-        <i class="fas fa-spinner fa-spin fa-3x text-indigo-500"></i>
-        <p class="text-lg text-gray-500 mt-2">Loading product catalogue...</p>
+      <i class="fas fa-spinner fa-spin fa-3x text-indigo-500"></i>
+      <p class="text-lg text-gray-500 mt-2">Loading product catalogue...</p>
     </div>
-    <div *ngIf="successMessage" class="my-4 p-4 bg-green-100 text-green-700 rounded-md border border-green-300 shadow-sm">
+    <div
+      *ngIf="successMessage"
+      class="my-4 p-4 bg-green-100 text-green-700 rounded-md border border-green-300 shadow-sm"
+    >
       <i class="fas fa-check-circle mr-2"></i> {{ successMessage }}
     </div>
-    <div *ngIf="errorMessage && !isLoading" class="my-4 p-4 bg-red-100 text-red-700 rounded-md border border-red-300 shadow-sm">
+    <div
+      *ngIf="errorMessage && !isLoading"
+      class="my-4 p-4 bg-red-100 text-red-700 rounded-md border border-red-300 shadow-sm"
+    >
       <i class="fas fa-exclamation-triangle mr-2"></i> {{ errorMessage }}
     </div>
 
+    <!-- Welcome Banner for First Time Users -->
+    <div
+      *ngIf="isFirstTimeUser"
+      class="welcome-banner bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-lg shadow-sm mb-6 border border-orange-100"
+    >
+      <div class="flex items-start">
+        <div class="flex-grow">
+          <h3 class="text-xl font-semibold text-orange-800 mb-2">
+            Welcome to Your Supplier Dashboard!
+          </h3>
+          <p class="text-gray-700 mb-4">
+            To get started selling your products, you'll need to add them to our
+            warehouse system. This allows vendors to see and purchase your
+            products.
+          </p>
+          <button
+            (click)="openAddProductToWarehouseModal()"
+            class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+          >
+            <i class="fas fa-plus mr-2"></i> Add Your First Product
+          </button>
+        </div>
+        <button
+          (click)="dismissWelcomeMessage()"
+          class="text-gray-400 hover:text-gray-600"
+          aria-label="Dismiss welcome message"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- List of Existing Products -->
-    <h3 class="text-2xl font-semibold text-[#003545] mb-4 mt-8 border-b pb-3">Your Product Catalogue</h3>
+    <h3 class="text-2xl font-semibold text-[#003545] mb-4 mt-8 border-b pb-3">
+      Your Product Catalogue
+    </h3>
     <div *ngIf="!isLoading || products.length > 0">
-      <div class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-x-auto">
+      <div
+        class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-x-auto"
+      >
         <table class="w-full table-auto">
-          <thead class="bg-slate-100 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+          <thead
+            class="bg-slate-100 text-left text-sm font-medium text-gray-700 uppercase tracking-wider"
+          >
             <tr>
               <th class="px-6 py-3">Product Name</th>
               <th class="px-6 py-3">SKU</th>
@@ -54,28 +113,46 @@
           </thead>
           <tbody class="text-gray-700 divide-y divide-slate-200">
             <tr *ngFor="let product of products" class="hover:bg-slate-50">
-              <td class="px-6 py-4 whitespace-nowrap font-medium">{{ product.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ product.sku }}</td> <!-- This SKU comes from the API listing -->
-              <td class="px-6 py-4 whitespace-nowrap text-right">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
+                {{ product.name }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ product.sku }}</td>
+              <!-- This SKU comes from the API listing -->
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                {{ product.price | currency : "USD" : "symbol" : "1.2-2" }}
+              </td>
               <td class="px-6 py-4">
-                <ng-container *ngIf="product.warehouses && product.warehouses.length > 0; else noWarehouses">
-                  <span *ngFor="let wh of product.warehouses"
-                        class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold mr-2 mb-1 px-2.5 py-0.5 rounded-full">
+                <ng-container
+                  *ngIf="
+                    product.warehouses && product.warehouses.length > 0;
+                    else noWarehouses
+                  "
+                >
+                  <span
+                    *ngFor="let wh of product.warehouses"
+                    class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold mr-2 mb-1 px-2.5 py-0.5 rounded-full"
+                  >
                     {{ wh }}
                   </span>
                 </ng-container>
-                <ng-template #noWarehouses><span class="text-xs text-gray-500 italic">Not priced in any warehouse</span></ng-template>
+                <ng-template #noWarehouses
+                  ><span class="text-xs text-gray-500 italic"
+                    >Not priced in any warehouse</span
+                  ></ng-template
+                >
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-center">
-                <button (click)="openEditPriceModal(product)"
-                        class="text-indigo-600 hover:text-indigo-900 font-medium">
+                <button
+                  (click)="openEditPriceModal(product)"
+                  class="text-indigo-600 hover:text-indigo-900 font-medium"
+                >
                   <i class="fas fa-tags mr-1"></i>Set/Update Price
                 </button>
               </td>
             </tr>
             <tr *ngIf="!isLoading && products.length === 0 && !errorMessage">
               <td colspan="5" class="text-center px-6 py-10 text-gray-500">
-                <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                <i class="fas fa-box-open fa-2x mb-2"></i><br />
                 No products found in your catalogue.
               </td>
             </tr>
@@ -84,156 +161,366 @@
       </div>
     </div>
   </div>
-</div> <!-- End of main container -->
-
+</div>
+<!-- End of main container -->
 
 <!-- NEW "Add Product to Warehouse" Modal -->
-<div *ngIf="isAddProductToWarehouseModalOpen"
-     class="fixed inset-0 bg-black/40 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
-     (click)="closeAddProductToWarehouseModal()">
-  <div class="relative mx-auto p-6 w-full max-w-lg shadow-xl rounded-xl bg-white" (click)="$event.stopPropagation()">
+<div
+  *ngIf="isAddProductToWarehouseModalOpen"
+  class="fixed inset-0 bg-black/40 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+  (click)="closeAddProductToWarehouseModal()"
+>
+  <div
+    class="relative mx-auto p-6 w-full max-w-lg shadow-xl rounded-xl bg-white"
+    (click)="$event.stopPropagation()"
+  >
     <div class="flex justify-between items-center pb-3 mb-4">
-      <h3 class="text-xl font-semibold text-orange-600">Add Product to Warehouse</h3>
-      <button (click)="closeAddProductToWarehouseModal()" class="text-gray-400 hover:text-orange-600 text-2xl font-semibold">×</button>
+      <h3 class="text-xl font-semibold text-orange-600">
+        Add Product to Warehouse
+      </h3>
+      <button
+        (click)="closeAddProductToWarehouseModal()"
+        class="text-gray-400 hover:text-orange-600 text-2xl font-semibold"
+      >
+        ×
+      </button>
     </div>
-    <form [formGroup]="addProductToWarehouseForm" (ngSubmit)="onAddProductToWarehouseSubmit()">
+    <form
+      [formGroup]="addProductToWarehouseForm"
+      (ngSubmit)="onAddProductToWarehouseSubmit()"
+    >
       <div class="mb-4">
-        <label for="productNameSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Product</label>
-        <select id="productNameSelect" formControlName="selected_product_id"
-                class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500">
+        <label
+          for="productNameSelect"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Select Product</label
+        >
+        <select
+          id="productNameSelect"
+          formControlName="selected_product_id"
+          class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500"
+        >
           <option [ngValue]="null" disabled>-- Choose a product --</option>
-          <option *ngFor="let p of predefinedProductsForDropdown" [value]="p.id">{{ p.name }}</option>
+          <option *ngFor="let p of availableProducts" [value]="p.id">
+            {{ p.product_name }}
+          </option>
         </select>
-        <div *ngIf="addProductToWarehouseForm.get('selected_product_id')?.invalid && (addProductToWarehouseForm.get('selected_product_id')?.dirty || addProductToWarehouseForm.get('selected_product_id')?.touched)"
-             class="text-red-500 text-xs mt-1">Product selection is required.</div>
-      </div>
-
-      <div class="mb-4">
-        <label for="autoSkuDisplay" class="block text-sm font-medium text-gray-700 mb-1">SKU (Auto-generated)</label>
-        <input id="autoSkuDisplay" type="text" formControlName="sku_display"
-               class="w-full p-3 border rounded-md border-gray-300 bg-gray-100 cursor-not-allowed" readonly>
-      </div>
-
-      <div class="mb-4">
-        <label for="addWarehouseSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Warehouse</label>
-        <select id="addWarehouseSelect" formControlName="warehouse_id"
-                class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500">
-          <option [ngValue]="null" disabled>-- Choose a warehouse --</option>
-          <option *ngFor="let wh of allAvailableWarehouses" [value]="wh.id">{{ wh.name }}</option>
-        </select>
-        <div *ngIf="addProductToWarehouseForm.get('warehouse_id')?.invalid && (addProductToWarehouseForm.get('warehouse_id')?.dirty || addProductToWarehouseForm.get('warehouse_id')?.touched)"
-             class="text-red-500 text-xs mt-1">Warehouse selection is required.</div>
-      </div>
-
-      <div class="mb-4">
-        <label for="addSupplierPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit Price for this Warehouse</label>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">$</span>
-          <input id="addSupplierPrice" type="number" formControlName="supplier_price" step="0.01"
-                 class="w-full p-3 pl-8 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
-                 placeholder="0.00">
+        <div
+          *ngIf="
+            addProductToWarehouseForm.get('selected_product_id')?.invalid &&
+            (addProductToWarehouseForm.get('selected_product_id')?.dirty ||
+              addProductToWarehouseForm.get('selected_product_id')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Product selection is required.
         </div>
-        <div *ngIf="addProductToWarehouseForm.get('supplier_price')?.invalid && (addProductToWarehouseForm.get('supplier_price')?.dirty || addProductToWarehouseForm.get('supplier_price')?.touched)"
-             class="text-red-500 text-xs mt-1">
-          <span *ngIf="addProductToWarehouseForm.get('supplier_price')?.errors?.['required']">Price is required.</span>
-          <span *ngIf="addProductToWarehouseForm.get('supplier_price')?.errors?.['min']">Price must be 0 or more.</span>
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="autoSkuDisplay"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >SKU (Auto-generated)</label
+        >
+        <input
+          id="autoSkuDisplay"
+          type="text"
+          formControlName="sku_display"
+          class="w-full p-3 border rounded-md border-gray-300 bg-gray-100 cursor-not-allowed"
+          readonly
+        />
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="addWarehouseSelect"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Select Warehouse</label
+        >
+        <select
+          id="addWarehouseSelect"
+          formControlName="warehouse_id"
+          class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500"
+        >
+          <option [ngValue]="null" disabled>-- Choose a warehouse --</option>
+          <option *ngFor="let wh of allAvailableWarehouses" [value]="wh.id">
+            {{ wh.name }}
+          </option>
+        </select>
+        <div
+          *ngIf="
+            addProductToWarehouseForm.get('warehouse_id')?.invalid &&
+            (addProductToWarehouseForm.get('warehouse_id')?.dirty ||
+              addProductToWarehouseForm.get('warehouse_id')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Warehouse selection is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="addSupplierPrice"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Unit Price for this Warehouse</label
+        >
+        <div class="relative">
+          <span
+            class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"
+            >$</span
+          >
+          <input
+            id="addSupplierPrice"
+            type="number"
+            formControlName="supplier_price"
+            step="0.01"
+            class="w-full p-3 pl-8 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+            placeholder="0.00"
+          />
+        </div>
+        <div
+          *ngIf="
+            addProductToWarehouseForm.get('supplier_price')?.invalid &&
+            (addProductToWarehouseForm.get('supplier_price')?.dirty ||
+              addProductToWarehouseForm.get('supplier_price')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          <span
+            *ngIf="addProductToWarehouseForm.get('supplier_price')?.errors?.['required']"
+            >Price is required.</span
+          >
+          <span
+            *ngIf="addProductToWarehouseForm.get('supplier_price')?.errors?.['min']"
+            >Price must be 0 or more.</span
+          >
         </div>
       </div>
 
       <!-- New Lead Time Days Field -->
       <div class="mb-4">
-        <label for="leadTimeDays" class="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          for="leadTimeDays"
+          class="block text-sm font-medium text-gray-700 mb-1"
+        >
           How many days on average would a delivery take?
         </label>
         <div class="relative">
-          <input id="leadTimeDays" type="number" formControlName="lead_time_days" min="1" step="1"
-                 class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
-                 placeholder="Enter lead time in days">
+          <input
+            id="leadTimeDays"
+            type="number"
+            formControlName="lead_time_days"
+            min="1"
+            step="1"
+            class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+            placeholder="Enter lead time in days"
+          />
           <!-- <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 mr-8">days</span> -->
         </div>
-        <div *ngIf="addProductToWarehouseForm.get('lead_time_days')?.invalid && (addProductToWarehouseForm.get('lead_time_days')?.dirty || addProductToWarehouseForm.get('lead_time_days')?.touched)"
-             class="text-red-500 text-xs mt-1">
-          <span *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['required']">Lead time is required.</span>
-          <span *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['min']">Lead time must be at least 1 day.</span>
+        <div
+          *ngIf="
+            addProductToWarehouseForm.get('lead_time_days')?.invalid &&
+            (addProductToWarehouseForm.get('lead_time_days')?.dirty ||
+              addProductToWarehouseForm.get('lead_time_days')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          <span
+            *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['required']"
+            >Lead time is required.</span
+          >
+          <span
+            *ngIf="addProductToWarehouseForm.get('lead_time_days')?.errors?.['min']"
+            >Lead time must be at least 1 day.</span
+          >
         </div>
       </div>
 
       <!-- New Maximum Capacity Field -->
       <div class="mb-6">
-        <label for="maximumCapacity" class="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          for="maximumCapacity"
+          class="block text-sm font-medium text-gray-700 mb-1"
+        >
           Maximum Capacity
         </label>
         <div class="relative">
-          <input id="maximumCapacity" type="number" formControlName="maximum_capacity" min="1" step="1"
-                 class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
-                 placeholder="Enter maximum storage capacity">
+          <input
+            id="maximumCapacity"
+            type="number"
+            formControlName="maximum_capacity"
+            min="1"
+            step="1"
+            class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
+            placeholder="Enter maximum storage capacity"
+          />
           <!-- <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 mr-8">kilos</span> -->
         </div>
-        <div *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.invalid && (addProductToWarehouseForm.get('maximum_capacity')?.dirty || addProductToWarehouseForm.get('maximum_capacity')?.touched)"
-             class="text-red-500 text-xs mt-1">
-          <span *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['required']">Maximum capacity is required.</span>
-          <span *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['min']">Maximum capacity must be at least 1 unit.</span>
+        <div
+          *ngIf="
+            addProductToWarehouseForm.get('maximum_capacity')?.invalid &&
+            (addProductToWarehouseForm.get('maximum_capacity')?.dirty ||
+              addProductToWarehouseForm.get('maximum_capacity')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          <span
+            *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['required']"
+            >Maximum capacity is required.</span
+          >
+          <span
+            *ngIf="addProductToWarehouseForm.get('maximum_capacity')?.errors?.['min']"
+            >Maximum capacity must be at least 1 unit.</span
+          >
         </div>
       </div>
 
       <div class="flex justify-end space-x-3 pt-4">
-        <button type="button" (click)="closeAddProductToWarehouseModal()"
-                class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium">Cancel</button>
-        <button type="submit" [disabled]="addProductToWarehouseForm.invalid || isSubmitting"
-                class="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 font-medium transition duration-150 ease-in-out">
-          <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>Add Product to Warehouse
+        <button
+          type="button"
+          (click)="closeAddProductToWarehouseModal()"
+          class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="addProductToWarehouseForm.invalid || isSubmitting"
+          class="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 font-medium transition duration-150 ease-in-out"
+        >
+          <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>Add
+          Product to Warehouse
         </button>
       </div>
     </form>
   </div>
 </div>
 
-
-<!-- Edit Price Per Warehouse Modal (remains the same from previous version) -->
-<div *ngIf="isEditPriceModalOpen && productForPriceEdit"
-     class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
-     (click)="closeEditPriceModal()">
-  <div class="relative mx-auto p-6 border w-full max-w-lg shadow-xl rounded-xl bg-white" (click)="$event.stopPropagation()">
-    <div class="flex justify-between items-center pb-3 border-b mb-4">
-      <h3 class="text-xl font-semibold text-gray-900">Set/Update Price for Warehouse</h3>
-      <button (click)="closeEditPriceModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-semibold">×</button>
+<!-- Edit Price Per Warehouse Modal - Updated to match theme -->
+<div
+  *ngIf="isEditPriceModalOpen && productForPriceEdit"
+  class="fixed inset-0 bg-black/40 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+  (click)="closeEditPriceModal()"
+>
+  <div
+    class="relative mx-auto p-6 w-full max-w-lg shadow-xl rounded-xl bg-white"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex justify-between items-center pb-3 mb-4">
+      <h3 class="text-xl font-semibold text-orange-600">
+        Set/Update Price for Warehouse
+      </h3>
+      <button
+        (click)="closeEditPriceModal()"
+        class="text-gray-400 hover:text-orange-600 text-2xl font-semibold"
+      >
+        ×
+      </button>
     </div>
     <form [formGroup]="editPriceForm" (ngSubmit)="onUpdatePriceSubmit()">
       <div class="mb-4 p-3 bg-gray-100 rounded-md">
-        <p class="text-sm text-gray-600">Product: <strong class="text-gray-800">{{ productForPriceEdit.name }}</strong></p>
-        <p class="text-sm text-gray-600">SKU: <strong class="text-gray-800">{{ productForPriceEdit.sku }}</strong></p>
+        <p class="text-sm text-gray-600">
+          Product:
+          <strong class="text-gray-800">{{ productForPriceEdit.name }}</strong>
+        </p>
+        <p class="text-sm text-gray-600">
+          SKU:
+          <strong class="text-gray-800">{{ productForPriceEdit.sku }}</strong>
+        </p>
       </div>
       <div class="mb-4">
-        <label for="warehouseSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Associated Warehouse</label>
-        <select id="warehouseSelect" formControlName="warehouse_id"
-                [disabled]="filteredWarehousesForModal.length === 0"
-                class="w-full p-3 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
+        <label
+          for="warehouseSelect"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Select Associated Warehouse</label
+        >
+        <select
+          id="warehouseSelect"
+          formControlName="warehouse_id"
+          [disabled]="filteredWarehousesForModal.length === 0"
+          class="w-full p-3 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+        >
           <option [ngValue]="null" disabled>
-            {{ filteredWarehousesForModal.length > 0 ? '-- Choose a warehouse --' : 'No associated warehouses for this product' }}
+            {{
+              filteredWarehousesForModal.length > 0
+                ? "-- Choose a warehouse --"
+                : "No associated warehouses for this product"
+            }}
           </option>
-          <option *ngFor="let wh of filteredWarehousesForModal" [value]="wh.id">{{ wh.name }}</option>
+          <option *ngFor="let wh of filteredWarehousesForModal" [value]="wh.id">
+            {{ wh.name }}
+          </option>
         </select>
-        <div *ngIf="editPriceForm.get('warehouse_id')?.invalid && (editPriceForm.get('warehouse_id')?.dirty || editPriceForm.get('warehouse_id')?.touched)"
-             class="text-red-500 text-xs mt-1">Warehouse selection is required.</div>
-      </div>
-      <div class="mb-6">
-        <label for="supplierPrice" class="block text-sm font-medium text-gray-700 mb-1">New Unit Price for Selected Warehouse</label>
-        <input id="supplierPrice" type="number" formControlName="supplier_price" step="0.01"
-               [disabled]="filteredWarehousesForModal.length === 0"
-               class="w-full p-3 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-               placeholder="0.00">
-        <div *ngIf="editPriceForm.get('supplier_price')?.invalid && (editPriceForm.get('supplier_price')?.dirty || editPriceForm.get('supplier_price')?.touched)"
-             class="text-red-500 text-xs mt-1">
-          <span *ngIf="editPriceForm.get('supplier_price')?.errors?.['required']">Price is required.</span>
-          <span *ngIf="editPriceForm.get('supplier_price')?.errors?.['min']">Price must be 0 or more.</span>
+        <div
+          *ngIf="
+            editPriceForm.get('warehouse_id')?.invalid &&
+            (editPriceForm.get('warehouse_id')?.dirty ||
+              editPriceForm.get('warehouse_id')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Warehouse selection is required.
         </div>
       </div>
-      <div class="flex justify-end space-x-3 pt-4 border-t">
-        <button type="button" (click)="closeEditPriceModal()"
-                class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium">Cancel</button>
-        <button type="submit" [disabled]="editPriceForm.invalid || isSubmitting || filteredWarehousesForModal.length === 0"
-                class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 font-medium">
-          <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>Update Price
+      <div class="mb-6">
+        <label
+          for="supplierPrice"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >New Unit Price for Selected Warehouse</label
+        >
+        <div class="relative">
+          <span
+            class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"
+            >$</span
+          >
+          <input
+            id="supplierPrice"
+            type="number"
+            formControlName="supplier_price"
+            step="0.01"
+            [disabled]="filteredWarehousesForModal.length === 0"
+            class="w-full p-3 pl-8 border rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            placeholder="0.00"
+          />
+        </div>
+        <div
+          *ngIf="
+            editPriceForm.get('supplier_price')?.invalid &&
+            (editPriceForm.get('supplier_price')?.dirty ||
+              editPriceForm.get('supplier_price')?.touched)
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          <span
+            *ngIf="editPriceForm.get('supplier_price')?.errors?.['required']"
+            >Price is required.</span
+          >
+          <span *ngIf="editPriceForm.get('supplier_price')?.errors?.['min']"
+            >Price must be 0 or more.</span
+          >
+        </div>
+      </div>
+      <div class="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          (click)="closeEditPriceModal()"
+          class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="
+            editPriceForm.invalid ||
+            isSubmitting ||
+            filteredWarehousesForModal.length === 0
+          "
+          class="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 font-medium transition duration-150 ease-in-out"
+        >
+          <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>Update
+          Price
         </button>
       </div>
     </form>
@@ -242,5 +529,5 @@
 
 <!-- Footer -->
 <div class="bg-gray-100 py-6 text-center text-gray-500 text-sm mt-12">
-    © 2025 Supply Chain Management System. All rights reserved.
+  © 2025 Supply Chain Management System. All rights reserved.
 </div>

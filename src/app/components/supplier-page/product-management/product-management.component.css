@@ -1,0 +1,17 @@
+/* Add this to your product-management.component.css file */
+.welcome-banner {
+  position: relative;
+  border-left: 4px solid #f63b3b;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-banner button.text-gray-400 {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}

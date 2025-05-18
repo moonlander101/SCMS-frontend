@@ -65,7 +65,7 @@ export class OrderService {
   private baseUrl = 'http://127.0.0.1:8000/api/v0/orders';
 
   // Flag to control using mock data vs real API
-  private useMockData = true; // Set to false when your API is ready
+  private useMockData = false; // Set to false when your API is ready
 
   constructor(private http: HttpClient) {}
 
@@ -130,7 +130,7 @@ export class OrderService {
       {
         order_id: 76,
         user_id: 1,
-        status: 'processing',
+        status: 'accepted',
         created_at: '2025-05-16T17:41:39.166453Z',
         products: [
           {
