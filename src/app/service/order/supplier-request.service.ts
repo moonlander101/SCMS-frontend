@@ -46,7 +46,7 @@ export interface DeliverySubmission {
   providedIn: 'root',
 })
 export class SupplierRequestService {
-  private apiUrl = 'http://localhost:8000/api'; // Replace with your actual API URL
+  private apiUrl = 'http://localhost:8001/api'; // Replace with your actual API URL
 
   // Fix the mock data declaration - make it a private property
   private mockData: SupplierRequest[] = [
