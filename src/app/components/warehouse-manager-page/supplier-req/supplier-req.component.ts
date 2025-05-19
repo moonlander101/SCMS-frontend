@@ -11,11 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-supplier-req',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule, // Add this import
-  ],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './supplier-req.component.html',
   styleUrl: './supplier-req.component.css',
 })
@@ -25,7 +21,11 @@ export class SupplierReqComponent implements OnInit {
   currentWarehouseId = 1; // This would come from authentication or route param
   filterType = 'pending'; // Default filter to show only pending requests
 
-  // Add these new filter properties
+  // Add missing properties that are used in the template
+  isLoading: boolean = true;
+  error: string | null = null;
+
+  // Filter properties
   supplierFilter: string = ''; // For supplier dropdown
   dateFilter: string = ''; // For date input
   searchQuery: string = ''; // For search field
@@ -43,14 +43,21 @@ export class SupplierReqComponent implements OnInit {
   }
 
   loadRequests(): void {
-    this.supplierRequestService.getAllRequests().subscribe((data) => {
-      this.requests = data;
+    this.isLoading = true;
+    this.error = null;
 
-      // Extract unique suppliers for the dropdown
-      this.extractSuppliers();
-
-      // Apply initial filters
-      this.applyFilters();
+    this.supplierRequestService.getAllRequests().subscribe({
+      next: (data) => {
+        this.requests = data;
+        this.extractSuppliers();
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading supplier requests:', err);
+        this.error = 'Failed to load supplier requests. Please try again.';
+        this.isLoading = false;
+      },
     });
   }
 

@@ -8,6 +8,7 @@ import {
   InventoryItem,
 } from '../../../service/order/vendor-order.service';
 import { HttpClientModule } from '@angular/common/http';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-vendor-orders',
@@ -22,7 +23,7 @@ export class VendorOrdersComponent implements OnInit {
   inventory: InventoryItem[] = [];
   isLoading = true;
   expandedOrderId: string | null = null;
-  warehouseId = 1; // Hardcoded for now
+  warehouseId: number = 1; // Will be updated from token
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
@@ -35,6 +36,8 @@ export class VendorOrdersComponent implements OnInit {
   constructor(private vendorOrderService: VendorOrderService) {}
 
   ngOnInit(): void {
+    // Get warehouse ID from token
+    this.warehouseId = this.getWarehouseIdFromToken();
     this.loadOrders();
   }
 
@@ -52,6 +55,35 @@ export class VendorOrdersComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  // Helper method to get warehouse ID from token
+  private getWarehouseIdFromToken(): number {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.warn(
+          'No authentication token found. Using default warehouse ID.'
+        );
+        return 1; // Default fallback
+      }
+
+      const decodedToken: any = jwtDecode(token);
+
+      if (!decodedToken || !decodedToken.warehouse_id) {
+        console.warn(
+          'Token does not contain warehouse_id. Using default warehouse ID.'
+        );
+        return 1; // Default fallback
+      }
+
+      console.log('Using warehouse ID from token:', decodedToken.warehouse_id);
+      return decodedToken.warehouse_id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return 1; // Default fallback
+    }
   }
 
   toggleOrderDetails(orderId: string): void {
@@ -80,21 +112,16 @@ export class VendorOrdersComponent implements OnInit {
     console.log('Accepting order with details:', {
       order_id: orderToAccept.order_id,
       status: 'accepted',
+      warehouse_id: this.warehouseId,
       products: orderToAccept.products.map((product) => ({
         product_name: product.product_name,
         product_count: product.product_count,
       })),
     });
 
-    // Current implementation with hardcoded warehouse ID
-    // In a real implementation, we would extract the warehouse ID from the JWT token in localStorage
-    // const token = localStorage.getItem('token');
-    // const decodedToken = jwt_decode(token);
-    // const warehouseId = decodedToken.warehouse_id;
-    const warehouseId = 1; // Hardcoded for now
-
+    // Use the warehouse ID from token instead of hardcoded value
     this.vendorOrderService
-      .acceptOrder(orderId, orderToAccept.products, warehouseId)
+      .acceptOrder(orderId, orderToAccept.products, this.warehouseId)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -123,15 +150,11 @@ export class VendorOrdersComponent implements OnInit {
     console.log('Rejecting order:', {
       order_id: orderId,
       status: 'rejected',
+      warehouse_id: this.warehouseId,
     });
 
-    // In a real implementation, we would extract the warehouse ID from the JWT token in localStorage
-    // const token = localStorage.getItem('token');
-    // const decodedToken = jwt_decode(token);
-    // const warehouseId = decodedToken.warehouse_id;
-    const warehouseId = 1; // Hardcoded for now
-
-    this.vendorOrderService.rejectOrder(orderId, warehouseId).subscribe({
+    // Use the warehouse ID from token instead of hardcoded value
+    this.vendorOrderService.rejectOrder(orderId, this.warehouseId).subscribe({
       next: (response) => {
         if (response.success) {
           this.successMessage = response.message;
