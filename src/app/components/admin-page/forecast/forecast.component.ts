@@ -4,6 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChartConfiguration, ChartType, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import {
+  ProductService,
+  Product,
+} from '../../../service/admin/product.service';
 
 // Import needed Chart.js register plugins INCLUDING PieController and LineController
 import {
@@ -36,17 +40,55 @@ Chart.register(
   standalone: true,
   selector: 'app-forecast',
   imports: [CommonModule, FormsModule, HttpClientModule, BaseChartDirective],
+  providers: [ProductService], // Add this for standalone component
   templateUrl: './forecast.component.html',
   styleUrls: ['./forecast.component.css'],
 })
-export class ForecastComponent {
+export class ForecastComponent implements OnInit {
   productSKU = '';
+  selectedProductId: number | null = null;
   days = 30;
   forecastResult: any = null;
   isLoading = false;
   error: string | null = null;
+  products: Product[] = [];
+  isLoadingProducts = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private productService: ProductService
+  ) {}
+
+  ngOnInit() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    this.isLoadingProducts = true;
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.isLoadingProducts = false;
+        console.log('Products loaded:', products);
+      },
+      error: (err) => {
+        console.error('Error loading products:', err);
+        this.isLoadingProducts = false;
+      },
+    });
+  }
+
+  onProductSelected(event: any) {
+    const productId = +event.target.value;
+    const selectedProduct = this.products.find((p) => p.id === productId);
+
+    if (selectedProduct) {
+      this.productSKU = selectedProduct.product_SKU;
+      console.log('Selected product:', selectedProduct);
+    } else {
+      this.productSKU = '';
+    }
+  }
 
   // Pie Chart Configuration
   public pieChartType: ChartType = 'pie';

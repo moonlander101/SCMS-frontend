@@ -26,6 +26,13 @@ export interface WarehouseManagerRegistration {
   role_id: number;
 }
 
+export interface Vehicle {
+  vehicle_id: string;
+  plate_number: string;
+  model: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,15 +41,30 @@ export class RegisterService {
 
   constructor(private http: HttpClient) {}
 
-  registerDriver(data: DriverRegistration): Observable<any> {
-    console.log('Registering driver:', data); // Debugging line
-    return this.http.post(this.apiUrl, data);
-  }
-
   registerWarehouseManager(
     data: WarehouseManagerRegistration
   ): Observable<any> {
     console.log('Registering warehouse manager:', data); // Debugging line
     return this.http.post(this.apiUrl, data);
+  }
+
+  getAvailableVehicles(): Observable<{ vehicles: Vehicle[] }> {
+    return this.http.get<{ vehicles: Vehicle[] }>(
+      'http://localhost:8002/api/fleet/vehicles/?driver_assigned=false'
+    );
+  }
+
+  /**
+   * Updates a vehicle's driver assignment status
+   * @param driverData The driver registration data
+   * @returns Observable of the API response
+   */
+  assignDriverToVehicle(driverData: DriverRegistration): Observable<any> {
+    const vehicleId = driverData.vehicle_id;
+    const url = `http://localhost:8002/api/fleet/vehicles/${vehicleId}/driver_assigned/`;
+
+    console.log(`Assigning driver to vehicle ${vehicleId}:`, driverData);
+
+    return this.http.patch(url, driverData);
   }
 }

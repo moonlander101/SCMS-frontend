@@ -5,7 +5,9 @@
       <h2 class="text-xl md:text-2xl font-light text-black mt-3">
         User Management
       </h2>
-      <h1 class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-[#f19249]/50 pl-3">
+      <h1
+        class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-[#f19249]/50 pl-3"
+      >
         User Registration
       </h1>
       <p class="text-black/90 mt-2 text-lg font-light pl-3">
@@ -260,15 +262,65 @@
           <label
             for="vehicle_id"
             class="block text-sm font-medium text-gray-700"
-            >Vehicle ID</label
           >
-          <input
-            type="text"
-            id="vehicle_id"
-            formControlName="vehicle_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            placeholder="Enter vehicle ID"
-          />
+            Vehicle ID and Plate Number
+          </label>
+          <div class="relative">
+            <select
+              id="vehicle_id"
+              formControlName="vehicle_id"
+              (change)="onVehicleSelected($event)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+            >
+              <option value="" disabled selected>Select a vehicle</option>
+              <option
+                *ngFor="let vehicle of vehicles"
+                [value]="vehicle.vehicle_id"
+              >
+                {{ vehicle.vehicle_id }} ({{ vehicle.plate_number }})
+              </option>
+            </select>
+
+            <!-- Loading spinner for vehicles -->
+            <div
+              *ngIf="isLoadingVehicles"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2"
+            >
+              <svg
+                class="animate-spin h-5 w-5 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Error message for vehicle loading -->
+          <div *ngIf="vehicleLoadError" class="text-red-500 text-xs">
+            {{ vehicleLoadError }}
+            <button
+              (click)="loadAvailableVehicles()"
+              class="underline ml-1 focus:outline-none"
+            >
+              Retry
+            </button>
+          </div>
+
+          <!-- Form validation error -->
           <div
             *ngIf="hasError(driverForm, 'vehicle_id', 'required')"
             class="text-red-500 text-xs"
@@ -304,17 +356,20 @@
           <label
             for="vehicle_type"
             class="block text-sm font-medium text-gray-700"
-            >Vehicle Type</label
           >
-          <select
+            Vehicle Type (Auto-filled)
+          </label>
+          <input
+            type="text"
             id="vehicle_type"
             formControlName="vehicle_type"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="lorry">Lorry</option>
-            <option value="truck">Truck</option>
-            <option value="van">Van</option>
-          </select>
+            readonly
+            [value]="
+              driverForm.get('vehicle_type')?.value ||
+              'Select a vehicle to auto-fill'
+            "
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-100 cursor-not-allowed"
+          />
           <div
             *ngIf="hasError(driverForm, 'vehicle_type', 'required')"
             class="text-red-500 text-xs"
@@ -507,16 +562,60 @@
             class="block text-sm font-medium text-gray-700"
             >Warehouse ID</label
           >
-          <select
-            id="warehouse_id"
-            formControlName="warehouse_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
-          >
-            <option value="" disabled selected>Select warehouse</option>
-            <option value="1">1 - Colombo Central Warehouse</option>
-            <option value="2">2 - Kandy Distribution Center</option>
-            <option value="3">3 - Galle Shipping Hub</option>
-          </select>
+          <div class="relative">
+            <select
+              id="warehouse_id"
+              formControlName="warehouse_id"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+            >
+              <option value="" disabled selected>Select warehouse</option>
+              <option
+                *ngFor="let warehouse of warehouses"
+                [value]="warehouse.id"
+              >
+                {{ warehouse.id }} - {{ warehouse.warehouse_name }}
+              </option>
+            </select>
+
+            <!-- Loading spinner for warehouses -->
+            <div
+              *ngIf="isLoadingWarehouses"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2"
+            >
+              <svg
+                class="animate-spin h-5 w-5 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Error message for warehouse loading -->
+          <div *ngIf="warehouseLoadError" class="text-red-500 text-xs">
+            {{ warehouseLoadError }}
+            <button
+              (click)="loadWarehouses()"
+              class="underline ml-1 focus:outline-none"
+            >
+              Retry
+            </button>
+          </div>
+
           <div
             *ngIf="hasError(warehouseManagerForm, 'warehouse_id', 'required')"
             class="text-red-500 text-xs"
@@ -578,7 +677,7 @@
         <button
           type="submit"
           [disabled]="isSubmitting"
-          class="px-6 py-2  bg-[#f19249] hover:bg-[#fcd9b1] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 transform hover:scale-105 active:scale-95 shadow-md"
+          class="px-6 py-2 bg-[#f19249] hover:bg-[#fcd9b1] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 transform hover:scale-105 active:scale-95 shadow-md"
         >
           <span class="flex items-center">
             <svg
@@ -609,4 +708,3 @@
     </form>
   </div>
 </div>
-

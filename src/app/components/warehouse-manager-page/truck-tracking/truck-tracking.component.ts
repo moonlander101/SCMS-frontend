@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import {
   TruckTrackingService,
   TruckSummary,
@@ -10,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-truck-tracking',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './truck-tracking.component.html',
   styleUrl: './truck-tracking.component.css',
 })
@@ -21,6 +22,16 @@ export class TruckTrackingComponent implements OnInit {
   searchQuery = '';
   filterActive = true; // Default: show only active trucks
   error: string | null = null;
+
+  // Add these properties to your component
+  statusFilter = 'all';
+  statusOptions = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'available', label: 'Available' },
+    { value: 'assigned', label: 'Assigned' },
+    { value: 'maintenance', label: 'Maintenance' },
+    { value: 'out_of_service', label: 'Out of Service' },
+  ];
 
   constructor(private truckTrackingService: TruckTrackingService) {}
 
@@ -76,10 +87,16 @@ export class TruckTrackingComponent implements OnInit {
     return truck?.is_active || false;
   }
 
+  // Update the filteredTrucks getter to include status filtering
   get filteredTrucks(): TruckSummary[] {
     return this.trucks.filter((truck) => {
       // Apply active filter if enabled
       if (this.filterActive && !truck.is_active) {
+        return false;
+      }
+
+      // Apply status filter if not set to 'all'
+      if (this.statusFilter !== 'all' && truck.status !== this.statusFilter) {
         return false;
       }
 
@@ -89,7 +106,8 @@ export class TruckTrackingComponent implements OnInit {
         return (
           truck.plate_number.toLowerCase().includes(query) ||
           truck.truck_id.toLowerCase().includes(query) ||
-          truck.model.toLowerCase().includes(query)
+          truck.model.toLowerCase().includes(query) ||
+          truck.status.toLowerCase().includes(query)
         );
       }
 
@@ -118,14 +136,15 @@ export class TruckTrackingComponent implements OnInit {
   }
 
   // In a real application, this would initialize an actual map
+  // Update your initMap method to use locationData
   initMap(): void {
-    // This is a placeholder for map initialization code
     console.log(
       'Map would be initialized here with coordinates:',
-      this.selectedTruck?.status.current_location.latitude,
-      this.selectedTruck?.status.current_location.longitude
+      this.selectedTruck?.locationData.current_location.latitude,
+      this.selectedTruck?.locationData.current_location.longitude
     );
+  }
 
     // In a real implementation, you would initialize a map library like Google Maps or Leaflet here
   }
-}
+
