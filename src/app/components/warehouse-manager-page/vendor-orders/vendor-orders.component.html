@@ -1,57 +1,68 @@
-<div class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-6">
-  <!-- Page header with modern design -->
-  <div class="mb-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-          <span class="bg-blue-600 p-1.5 rounded-lg text-white mr-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-          </span>
-          Vendor Orders
-        </h1>
-        <p class="mt-1 text-sm text-gray-600">
-          Review and process incoming vendor requests for your warehouse
-        </p>
-      </div>
-      <div class="mt-4 md:mt-0">
-        <span class="inline-flex shadow-sm rounded-md">
-          <button
-            type="button"
-            (click)="loadOrders()"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <svg
-              class="mr-2 -ml-1 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            Refresh
-          </button>
-        </span>
-      </div>
+<div class="min-h-screen bg-gray-50">
+  <!-- Themed Header Section (aligned with driver-manager component style) -->
+  <div class="container mx-auto px-4 py-2 mb-6 relative z-10 bg-gray-100">
+    <div class="max-w-4xl">
+      <h2 class="text-xl md:text-2xl font-light text-black mt-3">
+        Warehouse Management
+      </h2>
+      <h1
+        class="text-3xl md:text-4xl font-bold text-black mt-1 border-l-4 border-[#f19249]/50 pl-3"
+      >
+        Vendor Orders
+      </h1>
+      <p class="text-black/90 mt-2 text-lg font-light pl-3">
+        Review and process incoming vendor requests for your warehouse
+      </p>
     </div>
+    <!-- Move refresh button to header section for better alignment -->
+    <div class="absolute top-1/2 right-4 -translate-y-1/2 hidden md:block">
+      <button
+        type="button"
+        (click)="loadOrders()"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#f19249] hover:bg-[#fcd9b1] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f19249] shadow-md transition-all duration-200"
+      >
+        <svg
+          class="mr-2 -ml-1 h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Responsive version of the refresh button for mobile -->
+  <div class="md:hidden px-6 mb-4">
+    <button
+      type="button"
+      (click)="loadOrders()"
+      class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#f19249] hover:bg-[#fcd9b1] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f19249] shadow-md transition-all duration-200"
+    >
+      <svg
+        class="mr-2 -ml-1 h-5 w-5"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+        />
+      </svg>
+      Refresh Orders
+    </button>
   </div>
 
   <!-- Notification bars with animation -->

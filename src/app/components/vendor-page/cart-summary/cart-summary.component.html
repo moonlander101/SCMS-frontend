@@ -761,12 +761,27 @@
             </div>
 
             <!-- Selected Location Card -->
-                        <!-- Warehouse Selection Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mt-4 p-4">
+            <!-- Warehouse Selection Card -->
+            <div
+              class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mt-4 p-4"
+            >
               <div class="flex items-start gap-3">
-                <div class="bg-[#f19249]/10 rounded-full p-2 flex-shrink-0 mt-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f19249]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <div
+                  class="bg-[#f19249]/10 rounded-full p-2 flex-shrink-0 mt-1"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-[#f19249]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
                   </svg>
                 </div>
                 <div class="flex-1">
@@ -774,38 +789,71 @@
                     Choose Nearest Warehouse
                   </h4>
                   <p class="text-xs text-slate-500 mt-1">
-                    Select the warehouse closest to your location for faster delivery
+                    Select the warehouse closest to your location for faster
+                    delivery
                   </p>
-                  
+
                   <!-- Loading state -->
-                  <div *ngIf="isLoadingWarehouses" class="mt-3 flex items-center">
-                    <div class="animate-spin h-4 w-4 border-2 border-[#f19249] border-t-transparent rounded-full mr-2"></div>
-                    <span class="text-sm text-slate-600">Loading warehouses...</span>
+                  <div
+                    *ngIf="isLoadingWarehouses"
+                    class="mt-3 flex items-center"
+                  >
+                    <div
+                      class="animate-spin h-4 w-4 border-2 border-[#f19249] border-t-transparent rounded-full mr-2"
+                    ></div>
+                    <span class="text-sm text-slate-600"
+                      >Loading warehouses...</span
+                    >
                   </div>
-                  
+
                   <!-- Warehouse options -->
                   <div *ngIf="!isLoadingWarehouses" class="mt-3 space-y-2">
-                    <div *ngFor="let warehouse of warehouses" 
-                         (click)="selectWarehouse(warehouse.id)"
-                         class="p-3 border rounded-md cursor-pointer transition-all"
-                         [ngClass]="{'border-[#f19249] bg-[#f19249]/5': selectedWarehouseId === warehouse.id, 'border-slate-200 hover:border-slate-300': selectedWarehouseId !== warehouse.id}">
+                    <div
+                      *ngFor="let warehouse of warehouses"
+                      (click)="selectWarehouse(warehouse.id)"
+                      class="p-3 border rounded-md cursor-pointer transition-all"
+                      [ngClass]="{
+                        'border-[#f19249] bg-[#f19249]/5':
+                          selectedWarehouseId === warehouse.id,
+                        'border-slate-200 hover:border-slate-300':
+                          selectedWarehouseId !== warehouse.id
+                      }"
+                    >
                       <div class="flex items-start">
                         <div class="mr-3 mt-0.5">
-                          <div class="w-4 h-4 rounded-full border flex items-center justify-center"
-                               [ngClass]="{'border-[#f19249]': selectedWarehouseId === warehouse.id, 'border-slate-400': selectedWarehouseId !== warehouse.id}">
-                            <div *ngIf="selectedWarehouseId === warehouse.id" class="w-2 h-2 rounded-full bg-[#f19249]"></div>
+                          <div
+                            class="w-4 h-4 rounded-full border flex items-center justify-center"
+                            [ngClass]="{
+                              'border-[#f19249]':
+                                selectedWarehouseId === warehouse.id,
+                              'border-slate-400':
+                                selectedWarehouseId !== warehouse.id
+                            }"
+                          >
+                            <div
+                              *ngIf="selectedWarehouseId === warehouse.id"
+                              class="w-2 h-2 rounded-full bg-[#f19249]"
+                            ></div>
                           </div>
                         </div>
                         <div>
-                          <div class="font-medium text-[#003545]">{{ warehouse.warehouse_name }}</div>
-                          <div class="text-xs text-slate-500 mt-1">Location: {{ warehouse.location_x }}, {{ warehouse.location_y }}</div>
+                          <div class="font-medium text-[#003545]">
+                            {{ warehouse.warehouse_name }}
+                          </div>
+                          <div class="text-xs text-slate-500 mt-1">
+                            Location: {{ warehouse.location_x }},
+                            {{ warehouse.location_y }}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Error if no warehouse selected -->
-                  <div *ngIf="showWarehouseError" class="mt-2 text-red-500 text-xs">
+                  <div
+                    *ngIf="showWarehouseError"
+                    class="mt-2 text-red-500 text-xs"
+                  >
                     Please select a warehouse to continue
                   </div>
                 </div>
@@ -823,10 +871,88 @@
 
               <button
                 (click)="proceedToPayment()"
-                class="sm:flex-1 bg-[#f19249] hover:bg-[#fcd9b1] text-white py-3.5 px-6 rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="isProcessingPayment"
+                class="sm:flex-1 bg-[#f19249] hover:bg-[#fcd9b1] text-white py-3.5 px-6 rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                Continue to Payment
+                <svg
+                  *ngIf="isProcessingPayment"
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {{
+                  isProcessingPayment ? "Processing..." : "Continue to Payment"
+                }}
               </button>
+            </div>
+            <!-- Add this right below the Continue to Payment button -->
+            <div class="mt-4">
+              <!-- Loading indicator -->
+              <div
+                *ngIf="isProcessingPayment"
+                class="flex items-center justify-center p-4 bg-blue-50 rounded-lg animate-pulse"
+              >
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-[#f19249]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span class="text-sm font-medium text-[#003545]"
+                  >Processing your order...</span
+                >
+              </div>
+
+              <!-- Error message -->
+              <div
+                *ngIf="paymentError"
+                class="p-4 bg-red-50 rounded-lg border border-red-100 mt-4 animate-fade-in"
+              >
+                <div class="flex">
+                  <svg
+                    class="h-5 w-5 text-red-400 mr-2 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <span class="text-sm text-red-600">{{ paymentError }}</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -951,9 +1077,31 @@
 
               <button
                 (click)="acceptOrder()"
-                class="flex-1 bg-[#f19249] hover:bg-[#fcd9b1] text-white py-2.5 rounded-lg transition font-medium shadow-md transform hover:scale-[1.01] active:scale-[0.99]"
+                [disabled]="isConfirmingOrder"
+                class="flex-1 bg-[#f19249] hover:bg-[#fcd9b1] text-white py-2.5 rounded-lg transition font-medium shadow-md transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center"
               >
-                Confirm Order
+                <svg
+                  *ngIf="isConfirmingOrder"
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {{ isConfirmingOrder ? "Processing..." : "Confirm Order" }}
               </button>
             </div>
           </div>

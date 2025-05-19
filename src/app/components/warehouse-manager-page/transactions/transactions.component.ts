@@ -7,6 +7,7 @@ import {
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-transactions',
@@ -21,9 +22,9 @@ export class TransactionsComponent implements OnInit {
   filteredTransactions: Transaction[] = [];
   loading = true;
   error = '';
-  warehouseId = 1; // Default warehouse ID
   searchTerm = '';
   filterType = 'ALL';
+  warehouseId: number | null = null;
 
   constructor(
     private transactionService: TransactionService,
@@ -36,12 +37,29 @@ export class TransactionsComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.warehouseId = +id;
+      } else {
+        // If not in route, try to get it from the token
+        this.warehouseId = this.getWarehouseIdFromToken();
       }
+
+      if (!this.warehouseId) {
+        this.error =
+          'No warehouse ID available. Please check your permissions.';
+        this.loading = false;
+        return;
+      }
+
       this.loadTransactions();
     });
   }
 
   loadTransactions(): void {
+    if (!this.warehouseId) {
+      this.error = 'No warehouse ID available. Cannot load transactions.';
+      this.loading = false;
+      return;
+    }
+
     this.loading = true;
     this.error = '';
 
@@ -91,5 +109,29 @@ export class TransactionsComponent implements OnInit {
 
   onFilterChange(): void {
     this.applyFilters();
+  }
+
+  private getWarehouseIdFromToken(): number | null {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.warn('No authentication token found');
+        return null;
+      }
+
+      const decodedToken: any = jwtDecode(token);
+      console.log('Decoded token:', decodedToken);
+
+      if (!decodedToken || !decodedToken.warehouse_id) {
+        console.warn('Token does not contain warehouse_id');
+        return null;
+      }
+
+      return decodedToken.warehouse_id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
   }
 }

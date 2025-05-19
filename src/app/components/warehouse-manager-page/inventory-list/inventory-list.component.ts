@@ -28,7 +28,7 @@ interface WarehouseInventory {
   styleUrl: './inventory-list.component.css',
 })
 export class InventoryListComponent implements OnInit {
-  warehouseId = 1;
+
   inventory: WarehouseInventory | null = null;
   loading = true;
   error: string | null = null;
@@ -66,7 +66,7 @@ export class InventoryListComponent implements OnInit {
 
   fetchInventory(): void {
     this.loading = true;
-    this.inventoryService.getWarehouseInventory(this.warehouseId).subscribe({
+    this.inventoryService.getWarehouseInventory().subscribe({
       next: (data) => {
         this.inventory = data;
         this.loading = false;

@@ -122,6 +122,13 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
   isLoadingWarehouses: boolean = false;
   showWarehouseError: boolean = false;
 
+  // Add these properties to your CartSummaryComponent class
+  isProcessingPayment: boolean = false;
+  paymentError: string | null = null;
+
+  // Add this property to your component class
+  isConfirmingOrder: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -487,23 +494,61 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
   // Add this method to handle payment acceptance
   // Modify the proceedToPayment method to ensure the popup appears
   proceedToPayment(): void {
-    if (this.deliveryForm.invalid) {
-      this.deliveryForm.markAllAsTouched();
-      this.showPaymentPopup = true;
-      return;
-    }
+    this.isProcessingPayment = true;
+    this.paymentError = null;
 
-    if (!this.selectedWarehouseId) {
-      this.showWarehouseError = true;
-      return;
-    }
+    // Simulate network delay (remove in production)
+    setTimeout(() => {
+      try {
+        // Validate the delivery form
+        console.log(this.deliveryForm.value);
+        if (this.deliveryForm.invalid) {
+          this.deliveryForm.markAllAsTouched();
+          this.paymentError =
+            'Please complete all required delivery information.';
+          this.isProcessingPayment = false;
+          return;
+        }
 
-    this.showPaymentPopup = true;
+        // Check warehouse selection
+        if (!this.selectedWarehouseId) {
+          this.showWarehouseError = true;
+          this.paymentError = 'Please select a warehouse for delivery.';
+          this.isProcessingPayment = false;
+          return;
+        }
+
+        // Validate coordinates
+        if (!this.selectedLat || !this.selectedLng) {
+          this.paymentError = 'Please select a delivery location on the map.';
+          this.isProcessingPayment = false;
+          return;
+        }
+
+        // Check if cart is empty (shouldn't happen but good to verify)
+        if (this.cartItems.length === 0) {
+          this.paymentError =
+            'Your cart is empty. Please add items before proceeding.';
+          this.isProcessingPayment = false;
+          return;
+        }
+
+        // If all validations pass, show payment popup
+        this.isProcessingPayment = false;
+        this.showPaymentPopup = true;
+      } catch (error) {
+        console.error('Error processing payment request:', error);
+        this.paymentError = 'An unexpected error occurred. Please try again.';
+        this.isProcessingPayment = false;
+      }
+    }, 1000); // Simulated 1-second delay to show loading state
   }
 
   // Enhance the acceptOrder method to handle localStorage updates
   // Modify your acceptOrder method in cart-summary.component.ts
   acceptOrder(): void {
+    this.isConfirmingOrder = true; // Start loading state
+
     try {
       // Save values for confirmation display
       this.confirmedItemsCount = this.getTotalItems();
@@ -562,6 +607,7 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
       this.orderService.createOrder(orderData).subscribe({
         next: (response) => {
           console.log('Order created successfully:', response);
+          this.isConfirmingOrder = false; // End loading state
 
           // Save to localStorage for offline access
           this.saveOrderToLocalStorage(response.order_id || this.orderNumber);
@@ -585,6 +631,7 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           console.error('API order creation failed:', error);
+          this.isConfirmingOrder = false; // End loading state
           // Fall back to localStorage in case of API failure
           this.saveOrderToLocalStorage(this.orderNumber);
         },
@@ -592,6 +639,7 @@ export class CartSummaryComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error('Error processing order:', error);
       alert('There was an error processing your order. Please try again.');
+      this.isConfirmingOrder = false; // End loading state on error
     }
   }
 

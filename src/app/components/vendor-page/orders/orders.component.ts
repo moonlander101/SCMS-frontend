@@ -81,6 +81,10 @@ export class OrdersComponent implements OnInit {
   selectedOrder: Order | null = null;
   showOrderDetails = false;
 
+  // Add these properties inside the OrdersComponent class
+  isLoading = false; // Track API loading state
+  apiError: string | null = null; // Store API error messages
+
   constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
@@ -123,13 +127,16 @@ export class OrdersComponent implements OnInit {
   }
 
   loadOrdersFromServer(vendorId: number): void {
+    this.isLoading = true; // Start loading
+    this.apiError = null; // Clear any previous errors
+
     this.orderService.getOrdersByVendorId(vendorId).subscribe({
       next: (data: OrderResponse[]) => {
         this.orders = data.map((order) => {
           // Map products using the new product_name field
           const products = order.products.map((p) => ({
             id: p.product_id,
-            name: p.product_name, // Use the product_name from API
+            name: p.product_name,
             quantity: p.count,
             unitPrice: p.unit_price,
           }));
@@ -178,9 +185,12 @@ export class OrdersComponent implements OnInit {
 
         this.filterOrders();
         this.calculatePagination();
+        this.isLoading = false; // End loading on success
       },
       error: (err) => {
         console.error('Error fetching orders:', err);
+        this.apiError = 'Unable to load your orders. Please try again later.';
+        this.isLoading = false; // End loading on error
       },
     });
   }
@@ -405,5 +415,10 @@ export class OrdersComponent implements OnInit {
       default:
         return null;
     }
+  }
+
+  retryLoadOrders(): void {
+    const vendorId = this.getVendorIdFromToken();
+    this.loadOrdersFromServer(vendorId);
   }
 }
