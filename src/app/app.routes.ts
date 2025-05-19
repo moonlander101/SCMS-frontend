@@ -28,6 +28,8 @@ import { StockManagementComponent } from './components/admin-page/stock-manageme
 import { ProductSectionComponent } from './components/vendor-page/product-section/product-section.component';
 import { CartSummaryComponent } from './components/vendor-page/cart-summary/cart-summary.component';
 import { OrdersComponent } from './components/vendor-page/orders/orders.component';
+import { TruckAddComponent } from './components/warehouse-manager-page/truck-add/truck-add.component';
+import { TruckAssignComponent } from './components/admin-page/truck-assign/truck-assign.component';
 
 export const routes: Routes = [
   {
@@ -67,6 +69,7 @@ export const routes: Routes = [
             path: 'supplier-request-survey/:id',
             component: SupplierReqSurveyComponent,
           },
+          { path: 'truck-add', component: TruckAddComponent },
           { path: 'profile', component: ProfileComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' },
         ],
@@ -91,6 +94,7 @@ export const routes: Routes = [
           },
           { path: 'register', component: DriverManagerRegisterComponent },
           { path: 'stock-manage', component: StockManagementComponent },
+          { path: 'truck-assign', component: TruckAssignComponent },
           { path: '**', redirectTo: '', pathMatch: 'full' },
         ],
       },
