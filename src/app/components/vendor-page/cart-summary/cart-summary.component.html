@@ -81,7 +81,7 @@
               </h4>
               <div class="flex justify-between items-center mt-1">
                 <span class="text-sm font-semibold text-[#f19249]"
-                  >${{ (item.price * item.quantity).toFixed(2) }}</span
+                  >LKR {{ (item.price * item.quantity).toFixed(2) }}</span
                 >
 
                 <!-- Quantity controls -->
@@ -161,7 +161,7 @@
       <div *ngIf="cartItems.length > 0" class="p-4 bg-slate-50">
         <div class="flex justify-between text-sm mb-3">
           <span class="text-slate-600">Subtotal:</span>
-          <span class="font-medium text-[#003545]">${{ getSubtotal() }}</span>
+          <span class="font-medium text-[#003545]">LKR{{ getSubtotal() }}</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -427,7 +427,7 @@
                           {{ item.name }}
                         </h3>
                         <div class="font-semibold text-[#f19249]">
-                          ${{ (item.price * item.quantity).toFixed(2) }}
+                          LKR{{ (item.price * item.quantity).toFixed(2) }}
                         </div>
                       </div>
 
@@ -538,18 +538,18 @@
                 <div class="space-y-3">
                   <p class="flex justify-between text-slate-600">
                     <span>Subtotal:</span>
-                    <span class="font-medium">${{ getSubtotal() }}</span>
+                    <span class="font-medium">LKR {{ getSubtotal() }}</span>
                   </p>
                   <p class="flex justify-between text-slate-600">
                     <span>Shipping:</span>
                     <span class="font-medium"
-                      >${{ shippingCost.toFixed(2) }}</span
+                      >LKR {{ shippingCost.toFixed(2) }}</span
                     >
                   </p>
                   <p class="flex justify-between text-slate-600">
                     <span>Tax ({{ taxRate }}%):</span>
                     <span class="font-medium"
-                      >${{ calculateTax().toFixed(2) }}</span
+                      >LKR {{ calculateTax().toFixed(2) }}</span
                     >
                   </p>
                 </div>
@@ -559,7 +559,7 @@
                   class="flex justify-between text-lg font-semibold text-[#003545] pt-2 border-t border-slate-100"
                 >
                   <span>Total:</span>
-                  <span class="text-[#f19249]">${{ getTotal() }}</span>
+                  <span class="text-[#f19249]">LKR {{ getTotal() }}</span>
                 </div>
               </div>
             </div>
@@ -905,7 +905,7 @@
               <!-- Loading indicator -->
               <div
                 *ngIf="isProcessingPayment"
-                class="flex items-center justify-center p-4 bg-blue-50 rounded-lg animate-pulse"
+                class="flex items-center justify-center p-4 bg-orange-50 rounded-lg animate-pulse"
               >
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-[#f19249]"
@@ -971,18 +971,18 @@
                 <div class="space-y-3">
                   <p class="flex justify-between text-slate-600">
                     <span>Subtotal:</span>
-                    <span class="font-medium">${{ getSubtotal() }}</span>
+                    <span class="font-medium">LKR {{ getSubtotal() }}</span>
                   </p>
                   <p class="flex justify-between text-slate-600">
                     <span>Shipping:</span>
                     <span class="font-medium"
-                      >${{ shippingCost.toFixed(2) }}</span
+                      >LKR {{ shippingCost.toFixed(2) }}</span
                     >
                   </p>
                   <p class="flex justify-between text-slate-600">
                     <span>Tax ({{ taxRate }}%):</span>
                     <span class="font-medium"
-                      >${{ calculateTax().toFixed(2) }}</span
+                      >LKR {{ calculateTax().toFixed(2) }}</span
                     >
                   </p>
                 </div>
@@ -992,7 +992,7 @@
                   class="flex justify-between text-lg font-semibold text-[#003545] pt-2 border-t border-slate-100"
                 >
                   <span>Total:</span>
-                  <span class="text-[#f19249]">${{ getTotal() }}</span>
+                  <span class="text-[#f19249]">LKR {{ getTotal() }}</span>
                 </div>
               </div>
             </div>
@@ -1057,7 +1057,7 @@
               <div class="flex justify-between text-sm">
                 <span class="text-slate-600">Total Amount:</span>
                 <span class="font-medium text-[#f19249]"
-                  >${{ getTotal() }}</span
+                  >LKR {{ getTotal() }}</span
                 >
               </div>
               <div class="flex justify-between text-sm mt-1">
@@ -1170,22 +1170,22 @@
                 <div class="bg-gray-50 rounded-md p-4">
                   <div class="flex justify-between mb-2 text-sm text-gray-600">
                     <span>{{ confirmedItemsCount }} Items</span>
-                    <span>${{ confirmedSubtotal }}</span>
+                    <span>LKR {{ confirmedSubtotal }}</span>
                   </div>
                   <div class="flex justify-between mb-2 text-sm text-gray-600">
                     <span>Shipping</span>
-                    <span>${{ shippingCost.toFixed(2) }}</span>
+                    <span>LKR {{ shippingCost.toFixed(2) }}</span>
                   </div>
                   <div class="flex justify-between mb-2 text-sm text-gray-600">
                     <span>Tax ({{ taxRate }}%)</span>
-                    <span>${{ calculateConfirmedTax().toFixed(2) }}</span>
+                    <span>LKR {{ calculateConfirmedTax().toFixed(2) }}</span>
                   </div>
                   <div
                     class="flex justify-between pt-2 border-t border-gray-200 font-semibold text-[#003545]"
                   >
                     <span>Total</span>
                     <span class="text-[#f19249]"
-                      >${{ calculateConfirmedTotal().toFixed(2) }}</span
+                      >LKR {{ calculateConfirmedTotal().toFixed(2) }}</span
                     >
                   </div>
                 </div>

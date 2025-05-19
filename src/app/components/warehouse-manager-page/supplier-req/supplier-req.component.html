@@ -177,7 +177,7 @@
               <p class="text-sm font-medium text-gray-500">Total Value</p>
               <div class="flex flex-col items-baseline mt-1">
                 <p class="text-2xl font-bold text-gray-900">
-                  ${{ getTotalOrderValue() }}
+                  LKR {{ getTotalOrderValue() }}
                 </p>
                 <p class="ml-2 text-sm text-gray-600">worth of orders</p>
               </div>
@@ -240,7 +240,7 @@
                 id="filterType"
                 [(ngModel)]="filterType"
                 (change)="onFilterChange()"
-                class="appearance-none block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="appearance-none block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="pending">Pending Requests</option>
                 <option value="all">All Requests</option>
@@ -276,7 +276,7 @@
                 id="supplierFilter"
                 [(ngModel)]="supplierFilter"
                 (change)="onFilterChange()"
-                class="appearance-none block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="appearance-none block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="">All Suppliers</option>
                 <option *ngFor="let supplier of suppliers" [value]="supplier">
@@ -314,7 +314,7 @@
               id="dateFilter"
               [(ngModel)]="dateFilter"
               (change)="onFilterChange()"
-              class="block w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="block w-full pl-3 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
 
@@ -350,7 +350,7 @@
                 [(ngModel)]="searchQuery"
                 (input)="onSearchInput()"
                 placeholder="Search products, suppliers..."
-                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
           </div>
@@ -358,13 +358,13 @@
           <div class="flex justify-start mt-2 space-x-2">
             <button
               (click)="clearFilters()"
-              class="px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              class="px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
             >
               Clear Filters
             </button>
             <button
               (click)="applyAllFilters()"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
             >
               Apply Filters
             </button>
@@ -505,14 +505,14 @@
                 <td
                   class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right"
                 >
-                  ${{ request.unit_price.toFixed(2) }}
+                  LKR {{ request.unit_price.toFixed(2) }}
                 </td>
 
                 <!-- Total Value column -->
                 <td
                   class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-right"
                 >
-                  ${{
+                  LKR {{
                     getTotalPrice(request).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2
@@ -557,7 +557,7 @@
                 >
                   <button
                     (click)="viewOrderDetails(request.request_id, $event)"
-                    class="inline-flex items-center px-3 py-2 border border-transparent text-xs font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-xs font-medium rounded-lg shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

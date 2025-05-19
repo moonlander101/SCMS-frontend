@@ -50,6 +50,7 @@ export class SidebarComponent {
       },
       { label: 'Vendor Orders', route: '/dashboard/warehouse/vendor-orders' },
       { label: 'Truck Tracking', route: '/dashboard/warehouse/truck-tracking' },
+      { label: 'Add Trucks', route: '/dashboard/warehouse/truck-add' },
       { label: 'Profile', route: '/dashboard/profile' },
     ],
     3: [
@@ -72,6 +73,7 @@ export class SidebarComponent {
       { label: 'Demand Forecast', route: '/dashboard/admin/forecast' },
       { label: 'Stock Management', route: '/dashboard/admin/stock-manage' },
       { label: 'Registrations', route: '/dashboard/admin/register' },
+      { label: 'Driver Management', route: '/dashboard/admin/truck-assign' },
       { label: 'Profile', route: '/dashboard/profile' },
     ],
 

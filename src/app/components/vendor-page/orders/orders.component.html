@@ -174,7 +174,7 @@
                   <span class="font-medium">Items:</span> {{ order.itemsCount }}
                 </p>
                 <p class="text-[#003545] font-medium mb-3">
-                  <span>Total:</span> ${{ order.total.toFixed(2) }}
+                  <span>Total:</span> LKR {{ order.total.toFixed(2) }}
                 </p>
                 <div class="flex space-x-3">
                   <button
@@ -198,7 +198,7 @@
                   {{ order.itemsCount }}
                 </div>
                 <div class="col-span-1 text-[#003545] font-medium">
-                  ${{ order.total.toFixed(2) }}
+                  LKR {{ order.total.toFixed(2) }}
                 </div>
                 <div class="col-span-1">
                   <span [ngClass]="getStatusClass(order.status)">
@@ -378,7 +378,7 @@
             <div>
               <p class="text-sm text-gray-500">Total Amount</p>
               <p class="font-medium text-[#003545]">
-                ${{ selectedOrder.total.toFixed(2) }}
+                LKR {{ selectedOrder.total.toFixed(2) }}
               </p>
             </div>
           </div>
@@ -413,13 +413,13 @@
                 <div>
                   <p class="font-medium text-[#003545]">{{ product.name }}</p>
                   <p class="text-sm text-gray-600">
-                    Qty: {{ product.quantity }} × ${{
+                    Qty: {{ product.quantity }} × LKR {{
                       product.unitPrice.toFixed(2)
                     }}
                   </p>
                 </div>
                 <div class="text-[#f19249] font-semibold">
-                  ${{ (product.quantity * product.unitPrice).toFixed(2) }}
+                  LKR {{ (product.quantity * product.unitPrice).toFixed(2) }}
                 </div>
               </div>
             </div>

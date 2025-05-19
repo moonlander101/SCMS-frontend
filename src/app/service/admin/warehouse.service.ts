@@ -16,7 +16,7 @@ export interface Warehouse {
   providedIn: 'root',
 })
 export class WarehouseService {
-  private apiUrl = 'http://localhost:8000/api/warehouse/warehouses/';
+  private apiUrl = 'http://localhost:8001/api/warehouse/warehouses/';
 
   // Mock data for warehouses
   private mockWarehouses: Warehouse[] = [
@@ -50,12 +50,12 @@ export class WarehouseService {
 
   getWarehouses(): Observable<Warehouse[]> {
     // For development, return mock data
-    return of(this.mockWarehouses);
+    // return of(this.mockWarehouses);
 
     // For production, uncomment this line:
-    // return this.http.get<Warehouse[]>(this.apiUrl).pipe(
-    //   catchError(this.handleError<Warehouse[]>('getWarehouses', []))
-    // );
+    return this.http.get<Warehouse[]>(this.apiUrl).pipe(
+      catchError(this.handleError<Warehouse[]>('getWarehouses', []))
+    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
