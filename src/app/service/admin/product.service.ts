@@ -17,7 +17,7 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8000/api/product/products/';
+  private apiUrl = 'http://localhost:8001/api/product/products/';
 
   // Mock data for products
   private mockProducts: Product[] = [
@@ -117,12 +117,12 @@ export class ProductService {
 
   getProducts(): Observable<Product[]> {
     // For development, return mock data
-    return of(this.mockProducts);
+    // return of(this.mockProducts);
 
     // For production, uncomment this line:
-    // return this.http.get<Product[]>(this.apiUrl).pipe(
-    //   catchError(this.handleError<Product[]>('getProducts', []))
-    // );
+    return this.http.get<Product[]>(this.apiUrl).pipe(
+      catchError(this.handleError<Product[]>('getProducts', []))
+    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
