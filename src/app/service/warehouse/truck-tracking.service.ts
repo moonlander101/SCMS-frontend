@@ -55,7 +55,7 @@ export class TruckTrackingService {
           model: vehicle.model,
           status: vehicle.status,
           is_active:
-            vehicle.status === 'available' || vehicle.status === 'assigned',
+            vehicle.status === 'assigned',
         }));
       })
     );

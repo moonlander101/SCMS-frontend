@@ -96,7 +96,7 @@
                   </h4>
                   <div class="flex justify-between items-center mt-1">
                     <span class="text-sm font-semibold text-[#f19249]"
-                      >${{ (item.price * item.quantity).toFixed(2) }}</span
+                      >LKR {{ (item.price * item.quantity).toFixed(2) }}</span
                     >
 
                     <!-- Quantity controls -->
@@ -178,7 +178,7 @@
             <div class="flex justify-between text-sm mb-3">
               <span class="text-slate-600">Subtotal:</span>
               <span class="font-medium text-[#003545]"
-                >${{ getSubtotal() }}</span
+                >LKR {{ getSubtotal() }}</span
               >
             </div>
 
@@ -388,7 +388,7 @@
               </span>
             </div>
             <p class="text-[#f19249] text-base font-semibold mt-2">
-              ${{ product.price.toFixed(2) }}
+              LKR {{ product.price.toFixed(2) }}
             </p>
             <button
               (click)="openProductModal(product); $event.stopPropagation()"
@@ -499,7 +499,7 @@
             <div class="flex justify-between mb-2">
               <span class="text-gray-500">Price:</span>
               <span class="font-medium text-[#f19249]"
-                >${{ selectedProduct.price }}</span
+                >LKR {{ selectedProduct.price }}</span
               >
             </div>
             <div class="flex justify-between">

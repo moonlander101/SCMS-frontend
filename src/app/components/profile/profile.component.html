@@ -21,26 +21,26 @@
     >
       <div class="text-center max-w-md mx-auto">
         <div
-          class="inline-block mb-1 px-3 py-1 rounded-full bg-[#1a759f]/20 text-blue-100 text-sm"
+          class="inline-block mb-1 px-3 py-1 rounded-full bg-[#1a759f]/20 text-orange-100 text-sm"
         >
           Supply Chain Management System
         </div>
         <div *ngIf="isLoading" class="mt-4">
           <div
-            class="animate-pulse h-8 bg-blue-100/30 rounded-md w-48 mx-auto mb-2"
+            class="animate-pulse h-8 bg-orange-100/30 rounded-md w-48 mx-auto mb-2"
           ></div>
           <div
-            class="animate-pulse h-6 bg-blue-100/30 rounded-md w-32 mx-auto"
+            class="animate-pulse h-6 bg-orange-100/30 rounded-md w-32 mx-auto"
           ></div>
         </div>
         <div *ngIf="!isLoading">
-          <h2 class="text-xl md:text-2xl font-medium text-blue-100 mt-2">
+          <h2 class="text-xl md:text-2xl font-medium text-orange-100 mt-2">
             Welcome back,
           </h2>
           <h1 class="text-3xl md:text-4xl font-bold text-white mt-1">
             {{ user.name }}
           </h1>
-          <p class="text-blue-100 mt-2 text-lg">{{ user.role }}</p>
+          <p class="text-orange-100 mt-2 text-lg">{{ user.role }}</p>
         </div>
       </div>
     </div>
