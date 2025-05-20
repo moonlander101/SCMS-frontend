@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -24,7 +24,7 @@ import {
   templateUrl: './stock-management.component.html',
   styleUrl: './stock-management.component.css',
 })
-export class StockManagementComponent implements OnInit {
+export class StockManagementComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   selectedProduct: Product | null = null;
   supplierRankings: SupplierRankingsResponse | null = null;
@@ -43,6 +43,10 @@ export class StockManagementComponent implements OnInit {
   isSubmitting: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+
+  // Progress properties
+  progressValue: number = 0;
+  progressInterval: any;
 
   constructor(
     private productService: ProductService,
@@ -99,18 +103,29 @@ export class StockManagementComponent implements OnInit {
   loadSupplierRankings(productId: number): void {
     this.isLoadingSuppliers = true;
     this.supplierRankings = null;
-    this.supplierRankService.getSupplierRankings(productId).subscribe(
-      (rankings) => {
-        this.supplierRankings = rankings;
+    this.selectedSupplier = null;
+
+    // Start the progress animation
+    this.startProgressAnimation();
+
+    this.supplierRankService.getSupplierRankings(productId).subscribe({
+      next: (response) => {
+        this.supplierRankings = response;
+
+        // Complete the progress animation when data arrives
+        this.completeProgressAnimation();
         this.isLoadingSuppliers = false;
       },
-      (error) => {
-        console.error('Error loading supplier rankings:', error);
+      error: (error) => {
+        console.error('Error fetching supplier rankings:', error);
         this.errorMessage =
           'Failed to load supplier rankings. Please try again.';
+
+        // Stop the progress animation on error
+        this.stopProgressAnimation();
         this.isLoadingSuppliers = false;
-      }
-    );
+      },
+    });
   }
 
   selectSupplier(supplier: SupplierRanking): void {
@@ -200,5 +215,49 @@ export class StockManagementComponent implements OnInit {
     this.selectedWarehouseId = null;
     this.errorMessage = null;
     this.successMessage = null;
+  }
+
+  // Progress animation methods
+  startProgressAnimation(): void {
+    this.progressValue = 0;
+    const duration = 120000; // 2 minutes in milliseconds
+    const steps = 180; // Number of steps to take (one step every 2/3 second)
+    const increment = 90 / steps; // Each step increases progress by this amount, up to 90%
+
+    this.progressInterval = setInterval(() => {
+      if (this.progressValue < 90) {
+        this.progressValue += increment;
+
+        // Ensure we don't exceed 90% due to floating point errors
+        if (this.progressValue > 90) {
+          this.progressValue = 90;
+        }
+      }
+    }, duration / steps);
+  }
+
+  completeProgressAnimation(): void {
+    // Clear the interval first
+    this.stopProgressAnimation();
+
+    // Then animate from current value to 100% quickly
+    const finalAnimation = setInterval(() => {
+      this.progressValue += 2;
+      if (this.progressValue >= 100) {
+        this.progressValue = 100;
+        clearInterval(finalAnimation);
+      }
+    }, 20);
+  }
+
+  stopProgressAnimation(): void {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.stopProgressAnimation();
   }
 }

@@ -371,16 +371,45 @@
         </h2>
 
         <div *ngIf="isLoadingSuppliers" class="text-center py-6">
-          <div
-            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#f19249] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-            role="status"
-          >
-            <span
-              class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-              >Loading...</span
-            >
+          <!-- Progress bar container -->
+          <div class="w-full max-w-md mx-auto bg-gray-200 rounded-full h-2.5 mb-4 overflow-hidden">
+            <!-- Progress bar -->
+            <div
+              class="bg-[#f19249] h-2.5 rounded-full transition-all duration-300 ease-out"
+              [style.width]="progressValue + '%'"
+            ></div>
           </div>
-          <p class="mt-2 text-gray-600">Loading suppliers...</p>
+
+          <!-- Progress text -->
+          <div class="flex items-center justify-center mb-2">
+            <div
+              class="inline-block h-6 w-6 animate-spin rounded-full border-3 border-solid border-[#f19249] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              role="status"
+            >
+              <span
+                class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                >Loading...</span
+              >
+            </div>
+            <p class="ml-2 text-gray-600">
+              {{ progressValue < 100 ? 'Ranking suppliers...' : 'Finalizing rankings...' }}
+              <span class="ml-1 font-medium">{{ progressValue.toFixed(0) }}%</span>
+            </p>
+          </div>
+
+          <!-- Information text -->
+          <p class="text-sm text-gray-500">
+            Finding the best suppliers for {{ selectedProduct.product_name }}...
+          </p>
+
+          <!-- Progress message that changes based on progress percentage -->
+          <p class="text-sm text-gray-500 mt-1">
+            <span *ngIf="progressValue < 30">Searching for qualified suppliers...</span>
+            <span *ngIf="progressValue >= 30 && progressValue < 60">Analyzing supplier metrics and performance history...</span>
+            <span *ngIf="progressValue >= 60 && progressValue < 90">Calculating supplier rankings and compatibility scores...</span>
+            <span *ngIf="progressValue >= 90 && progressValue < 100">Finalizing supplier recommendations...</span>
+            <span *ngIf="progressValue >= 100">Ready to display results!</span>
+          </p>
         </div>
 
         <div
@@ -829,7 +858,3 @@
     </div>
   </div>
 </div>
-
-<style>
-
-</style>

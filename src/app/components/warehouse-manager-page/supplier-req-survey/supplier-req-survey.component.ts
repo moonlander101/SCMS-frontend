@@ -170,7 +170,7 @@ export class SupplierReqSurveyComponent implements OnInit {
           this.submitSuccess = true;
           // Redirect after successful submission
           setTimeout(() => {
-            this.router.navigate(['/dashboard/warehouse/supplier-requests']);
+            this.router.navigate(['/dashboard/warehouse/transactions']);
           }, 2000);
         } else {
           this.submitError = true;
