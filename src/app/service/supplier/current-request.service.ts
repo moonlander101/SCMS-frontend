@@ -52,7 +52,7 @@ export interface JWTPayload {
 })
 export class CurrentRequestService {
   private readonly ORDER_MANAGEMENT_API_BASE_URL =
-    'http://localhost:8000/api/v0/supplier-request';
+    'http://localhost:8006/api/v1/supplier-request';
 
   constructor(private http: HttpClient) {}
 

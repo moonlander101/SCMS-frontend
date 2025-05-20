@@ -9,12 +9,12 @@ export class DriverService {
   constructor(private http: HttpClient) { }
 
   fetchAssignmentsByVehicle(vehicleId: string) {
-    const url = `http://127.0.0.1:8003/api/assignments/by-vehicle/${vehicleId}`;
+    const url = `http://127.0.0.1:8006/api/v1/assignments/by-vehicle/${vehicleId}`;
     return this.http.get(url);
   }
 
   markArrival(assignmentId: number, sequenceNumber: number, total_load : number, status : string) {
-    const url = `http://127.0.0.1:8003/api/assignments/${assignmentId}/arrive/sequence/${sequenceNumber}/`;
+    const url = `http://127.0.0.1:8006/api/v1/assignments/${assignmentId}/arrive/sequence/${sequenceNumber}/`;
     const body = {
       total_load: total_load,
       status: status
@@ -23,7 +23,7 @@ export class DriverService {
   }
 
   markComplete(assignmentId: number, itemId: number, total_load : number, status : string) {
-    const url = `http://127.0.0.1:8003/api/assignments/${assignmentId}/actions/${itemId}/complete/`;
+    const url = `http://127.0.0.1:8006/api/v1/assignments/${assignmentId}/actions/${itemId}/complete/`;
 
     const body = {
       total_load: total_load,

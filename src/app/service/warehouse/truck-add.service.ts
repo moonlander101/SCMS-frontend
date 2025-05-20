@@ -25,7 +25,7 @@ export interface TruckAddRequest {
   providedIn: 'root',
 })
 export class TruckAddService {
-  private apiUrl = 'http://localhost:8002/api/fleet/vehicles/';
+  private apiUrl = 'http://localhost:8006/api/v1/fleet/vehicles/';
 
   constructor(private http: HttpClient) {}
 

@@ -17,7 +17,7 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8001/api/product/products/';
+  private apiUrl = 'http://localhost:8006/api/v1/product/products/';
 
   // Mock data for products
   private mockProducts: Product[] = [

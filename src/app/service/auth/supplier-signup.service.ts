@@ -24,7 +24,7 @@ export interface SupplierSignupRequest {
   providedIn: 'root',
 })
 export class SupplierSignupService {
-  private baseUrl = 'http://localhost:8003/api/v1';
+  private baseUrl = 'http://localhost:8006/api/v1';
 
   constructor(private http: HttpClient) {}
 

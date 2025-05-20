@@ -16,7 +16,7 @@ export interface Warehouse {
   providedIn: 'root',
 })
 export class WarehouseService {
-  private apiUrl = 'http://localhost:8001/api/warehouse/warehouses/';
+  private apiUrl = 'http://localhost:8006/api/v1/warehouse/warehouses/';
 
   // Mock data for warehouses
   private mockWarehouses: Warehouse[] = [

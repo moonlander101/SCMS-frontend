@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 
 export interface SupplierRanking {
   supplier_id: number;
@@ -34,8 +34,8 @@ export interface SupplierAssignmentRequest {
   providedIn: 'root',
 })
 export class SupplierRankService {
-  private apiUrl = 'http://localhost:8004/api/ranking/ranking/suppliers/';
-  private assignmentUrl = 'http://localhost:8000/api/v0/supplier-request/';
+  private apiUrl = 'http://localhost:8006/api/v1/ranking/ranking/suppliers/';
+  private assignmentUrl = 'http://localhost:8006/api/v1/supplier-request/';
 
   // Mock data for supplier rankings
   private mockRankings: SupplierRankingsResponse = {
@@ -81,6 +81,7 @@ export class SupplierRankService {
 
     // For production, uncomment this line:
     return this.http.get<SupplierRankingsResponse>(`${this.apiUrl}?product_id=${productId}`).pipe(
+      timeout(300000),
       catchError(this.handleError<SupplierRankingsResponse>('getSupplierRankings', { product_id: productId.toString(), city: null, suppliers: [], count: 0 }))
     );
   }

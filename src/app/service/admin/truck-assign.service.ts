@@ -33,8 +33,8 @@ export interface VehicleDetails {
   providedIn: 'root',
 })
 export class TruckAssignService {
-  private driversUrl = 'http://localhost:8003/api/v1/drivers/';
-  private vehiclesUrl = 'http://localhost:8002/api/fleet/vehicles/';
+  private driversUrl = 'http://localhost:8006/api/v1/drivers/';
+  private vehiclesUrl = 'http://localhost:8006/api/v1/fleet/vehicles/';
 
   constructor(private http: HttpClient) {}
 

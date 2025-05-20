@@ -8,7 +8,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class InventoryService {
-  private apiUrl = 'http://localhost:8001/api/warehouse/inventory';
+  private apiUrl = 'http://localhost:8006/api/v1/warehouse/inventory';
 
   constructor(private http: HttpClient) {}
 

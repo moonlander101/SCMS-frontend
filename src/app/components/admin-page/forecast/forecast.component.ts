@@ -210,7 +210,7 @@ export class ForecastComponent implements OnInit {
       days: this.days,
     };
 
-    this.http.post('http://localhost:8005/api/forecast/', body).subscribe({
+    this.http.post('http://localhost:8006/api/v1/forecast/', body).subscribe({
       next: (res: any) => {
         console.log('Forecast API response:', res);
         this.forecastResult = res;

@@ -31,7 +31,7 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductService {
-  private apiUrl = 'http://127.0.0.1:8001/api/product/';
+  private apiUrl = 'http://127.0.0.1:8006/api/v1/product/';
 
   constructor(private http: HttpClient) {}
 

@@ -37,7 +37,7 @@ export interface Vehicle {
   providedIn: 'root',
 })
 export class RegisterService {
-  private apiUrl = 'http://localhost:8003/api/v1/register/';
+  private apiUrl = 'http://localhost:8006/api/v1/register/';
 
   constructor(private http: HttpClient) {}
 
@@ -50,7 +50,7 @@ export class RegisterService {
 
   getAvailableVehicles(): Observable<{ vehicles: Vehicle[] }> {
     return this.http.get<{ vehicles: Vehicle[] }>(
-      'http://localhost:8002/api/fleet/vehicles/?driver_assigned=false'
+      'http://localhost:8006/api/v1/fleet/vehicles/?driver_assigned=false'
     );
   }
 
@@ -61,7 +61,7 @@ export class RegisterService {
    */
   assignDriverToVehicle(driverData: DriverRegistration): Observable<any> {
     const vehicleId = driverData.vehicle_id;
-    const url = `http://localhost:8002/api/fleet/vehicles/${vehicleId}/driver_assigned/`;
+    const url = `http://localhost:8006/api/v1/fleet/vehicles/${vehicleId}/driver_assigned/`;
 
     console.log(`Assigning driver to vehicle ${vehicleId}:`, driverData);
 

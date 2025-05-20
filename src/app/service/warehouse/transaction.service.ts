@@ -18,7 +18,7 @@ export interface Transaction {
   providedIn: 'root',
 })
 export class TransactionService {
-  private apiUrl = 'http://localhost:8001/api';
+  private apiUrl = 'http://localhost:8006/api/v1';
 
   constructor(private http: HttpClient) {}
 

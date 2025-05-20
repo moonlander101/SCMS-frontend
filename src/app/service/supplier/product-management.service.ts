@@ -38,9 +38,9 @@ export interface AddPricePayload {
 export class ProductManagementService {
   // API URLs
   private readonly PRODUCT_LIST_API_URL =
-    'http://127.0.0.1:8001/api/warehouse/supplier-product/prices/';
+    'http://127.0.0.1:8006/api/v1/warehouse/supplier-product/prices/';
   private readonly ADD_OR_UPDATE_PRICE_API_URL =
-    'http://127.0.0.1:8001/api/warehouse/supplier-product/add_or_update/';
+    'http://127.0.0.1:8006/api/v1/warehouse/supplier-product/add_or_update/';
 
   constructor(private http: HttpClient) {}
 

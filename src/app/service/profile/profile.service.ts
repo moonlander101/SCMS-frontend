@@ -22,7 +22,7 @@ export interface UserResponse {
   providedIn: 'root',
 })
 export class ProfileService {
-  private apiUrl = 'http://localhost:8003/api/v1/me/';
+  private apiUrl = 'http://localhost:8006/api/v1/me/';
 
   constructor(private http: HttpClient) {}
 

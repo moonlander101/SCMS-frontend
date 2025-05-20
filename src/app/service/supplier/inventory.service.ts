@@ -26,7 +26,7 @@ export interface InventoryItem {
 })
 export class InventoryService {
   private readonly BASE_API_URL =
-    'http://localhost:8001/api/warehouse/supplier-dashboard/';
+    'http://localhost:8006/api/v1/warehouse/supplier-dashboard/';
 
   constructor(private http: HttpClient) {}
 

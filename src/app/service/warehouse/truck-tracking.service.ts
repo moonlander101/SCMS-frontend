@@ -41,7 +41,7 @@ export interface TruckDetails {
   providedIn: 'root',
 })
 export class TruckTrackingService {
-  private apiUrl = 'http://localhost:8002/api/fleet/vehicles';
+  private apiUrl = 'http://localhost:8006/api/v1/fleet/vehicles';
 
   constructor(private http: HttpClient) {}
 

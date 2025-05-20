@@ -31,8 +31,8 @@ export interface WarehouseInventory {
   providedIn: 'root',
 })
 export class WarehouseService {
-  private warehousesUrl = 'http://127.0.0.1:8001/api/warehouse/warehouses/';
-  private inventoryUrl = 'http://127.0.0.1:8001/api/warehouse/inventory/';
+  private warehousesUrl = 'http://127.0.0.1:8006/api/v1/warehouse/warehouses/';
+  private inventoryUrl = 'http://127.0.0.1:8006/api/v1/warehouse/inventory/';
 
   constructor(private http: HttpClient) {}
 

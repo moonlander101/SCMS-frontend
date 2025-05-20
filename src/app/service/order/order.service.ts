@@ -62,7 +62,7 @@ export interface CreateOrderRequest {
 })
 export class OrderService {
   // API URLs - for when the backend is available
-  private baseUrl = 'http://127.0.0.1:8000/api/v0/orders';
+  private baseUrl = 'http://127.0.0.1:8006/api/v1/orders';
 
   // Flag to control using mock data vs real API
   private useMockData = false; // Set to false when your API is ready
