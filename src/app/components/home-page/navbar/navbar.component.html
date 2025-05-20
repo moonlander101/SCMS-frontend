@@ -15,18 +15,17 @@
 
       <!-- Navigation (Desktop) -->
       <nav class="hidden md:flex items-center gap-6">
-        <a
-          [routerLink]="'/products'"
+        <a 
+          href="#products" 
           routerLinkActive="text-yellow-600"
           class="text-base font-medium text-gray-800 hover:text-yellow-600"
-          >Our Products</a
-        >
-        <a
-          [routerLink]="'/about'"
+        >Our Products</a>
+        
+        <a 
+          href="#about"
           routerLinkActive="text-yellow-600"
           class="text-base font-medium text-gray-800 hover:text-yellow-600"
-          >About Us</a
-        >
+        >About Us</a>
 
         <div class="relative group inline-block">
           <button
@@ -46,50 +45,38 @@
             <ul class="space-y-1 text-sm text-gray-700">
               <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
                 <a
-                  [routerLink]="'/products/info'"
-                  routerLinkActive="text-yellow-600"
-                  class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600 "
+                  href="#products"
+                  class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
                 >
                   <b>Product Info</b><br />
-                  <span class="text-gray-500"
-                    >Discover our latest offerings and updates.</span
-                  >
+                  <span class="text-gray-500">Discover our latest offerings and updates.</span>
                 </a>
               </li>
               <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
                 <a
-                  [routerLink]="'/vendors'"
-                  routerLinkActive="text-yellow-600"
+                  href="#partners"
                   class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
                 >
                   <b>Vendor Info</b><br />
-                  <span class="text-gray-500"
-                    >Join our network of trusted vendors today.</span
-                  >
+                  <span class="text-gray-500">Join our network of trusted vendors today.</span>
                 </a>
               </li>
               <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md hover:bg-white">
                 <a
-                  [routerLink]="'/suppliers'"
-                  routerLinkActive="text-yellow-600"
+                  href="#partners"
                   class="block p-3 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
                 >
                   <b>Supplier Info</b><br />
-                  <span class="text-gray-500"
-                    >Become a supplier and grow with us.</span
-                  >
+                  <span class="text-gray-500">Become a supplier and grow with us.</span>
                 </a>
               </li>
               <li class="rounded-lg transition-all duration-200 bg-white/80 hover:shadow-md p-3 hover:bg-white">
                 <a
-                  [routerLink]="'/contact'"
-                  routerLinkActive="text-yellow-600"
+                  href="#contact"
                   class="block p-0 rounded-lg text-base font-medium text-gray-800 hover:text-yellow-600"
                 >
                   <b>Contact Us</b><br />
-                  <span class="text-gray-500"
-                    >Get in touch for inquiries and support.</span
-                  >
+                  <span class="text-gray-500">Get in touch for inquiries and support.</span>
                 </a>
               </li>
             </ul>
@@ -116,12 +103,12 @@
 
     <!-- Mobile Menu -->
     <div *ngIf="isMobileMenuOpen" class="md:hidden pb-4">
-      <a [routerLink]="'/products'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Our Products</a>
-      <a [routerLink]="'/about'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">About Us</a>
-      <a [routerLink]="'/products/info'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Product Info</a>
-      <a [routerLink]="'/vendors'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Vendor Info</a>
-      <a [routerLink]="'/suppliers'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Supplier Info</a>
-      <a [routerLink]="'/contact'" routerLinkActive="text-yellow-600" class="block py-2 font-medium">Contact Us</a>
+      <a [routerLink]="'/home'" fragment="products" class="block py-2 font-medium">Our Products</a>
+      <a [routerLink]="'/home'" fragment="about" class="block py-2 font-medium">About Us</a>
+      <a [routerLink]="'/home'" fragment="products" class="block py-2 font-medium">Product Info</a>
+      <a [routerLink]="'/home'" fragment="partners" class="block py-2 font-medium">Vendor Info</a>
+      <a [routerLink]="'/home'" fragment="partners" class="block py-2 font-medium">Supplier Info</a>
+      <a [routerLink]="'/home'" fragment="contact" class="block py-2 font-medium">Contact Us</a>
       
       <button
       routerLink="/auth"

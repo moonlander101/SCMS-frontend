@@ -1,49 +1,64 @@
-<section class="bg-white px-6 py-20 md:px-16 relative overflow-hidden">
-   <div class="max-w-7xl mx-auto">
-      <!-- Section Header -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
-        <div class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
-          Join Our Network: Become a Supplier or Vendor Today!
-        </div>
-        <p class="text-gray-600 max-w-xl text-base md:text-lg">
-          Unlock new opportunities by partnering with us. As a supplier or vendor, you can showcase your products to a global audience and elevate your business.
-        </p>
+<section id="partners" class="bg-white px-6 py-20 md:px-16 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <!-- Section Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
+      <div class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+        Join Our Network: Become a Partner Today!
       </div>
-  
-      <!-- Supplier & Vendor Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Supplier Box -->
-        <div class="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white ">
-                <img src="assets/images/supplier.svg" alt="supplier" class="w-6 h-6" />
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">Become a Supplier and Expand Your Reach</h3>
-              <p class="text-sm text-gray-600 mb-3">Connect with us to grow your business by supplying authentic, high-quality spices.</p>
-              <a routerLink="/auth/supplier" class="inline-flex items-center text-yellow-700 font-medium hover:cursor-pointer hover:underline">
-                Join <span class="ml-1">→</span>
-              </a>
-            </div>
+      <p class="text-gray-600 max-w-xl text-base md:text-lg">
+        Unlock new opportunities by partnering with us. As a supplier, vendor, or logistics professional, you can be part of our global supply chain network.
+      </p>
+    </div>
+
+    <!-- Supplier, Vendor & Logistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Supplier Box -->
+      <div class="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition">
+        <div class="flex items-start gap-4">
+          <div class="w-18 h-11 bg-yellow-500 rounded-full flex items-center justify-center text-white">
+            <img src="assets/images/supplier.svg" alt="supplier" class="w-6 h-6" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Become a Supplier and Expand Your Reach</h3>
+            <p class="text-sm text-gray-600 mb-3">Connect with us to grow your business by supplying authentic, high-quality spices.</p>
+            <a routerLink="/auth/supplier" class="inline-flex items-center text-yellow-700 font-medium hover:cursor-pointer hover:underline">
+              Join <span class="ml-1">→</span>
+            </a>
           </div>
         </div>
-  
-        <!-- Vendor Box -->
-        <div class="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white">
-                <img src="assets/images/cart.svg" alt="vendor" class="w-6 h-6 " />
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">Partner with Us as a Vendor for Success</h3>
-              <p class="text-sm text-gray-600 mb-3">Join our vendor program and reach more spice enthusiasts and culinary creators.</p>
-              <a routerLink="/auth/vendor" class="inline-flex items-center text-red-600 font-medium hover:cursor-pointer hover:underline">
-                Sign Up <span class="ml-1">→</span>
-              </a>
+      </div>
+
+      <!-- Vendor Box -->
+      <div class="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition">
+        <div class="flex items-start gap-4">
+          <div class="w-18 h-11 bg-red-500 rounded-full flex items-center justify-center text-white">
+            <img src="assets/images/cart.svg" alt="vendor" class="w-6 h-6" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Partner with Us as a Vendor for Success</h3>
+            <p class="text-sm text-gray-600 mb-3">Join our vendor program and reach more spice enthusiasts and culinary creators.</p>
+            <a routerLink="/auth/vendor" class="inline-flex items-center text-red-600 font-medium hover:cursor-pointer hover:underline">
+              Sign Up <span class="ml-1">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warehouse/Driver Box (NEW) -->
+      <div class="p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition">
+        <div class="flex items-start gap-4">
+          <div class="w-20 h-11 bg-blue-500 rounded-full flex items-center justify-center text-white">
+            <img src="assets/images/warehouse.svg" alt="logistics" class="w-6 h-6" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Warehouse Manager & Driver Opportunities</h3>
+            <p class="text-sm text-gray-600 mb-3">Join our logistics team to manage warehouses or deliver quality products to our customers.</p>
+            <div class="inline-flex items-center text-blue-600 font-medium">
+              Contact Us: <span class="ml-1">+94 112 345 678</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
-  
+  </div>
+</section>

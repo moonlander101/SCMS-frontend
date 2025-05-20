@@ -1,3 +1,7 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 body { margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;   /* native smooth-scroll in every modern browser */
+}

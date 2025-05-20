@@ -8,19 +8,27 @@ import { JoinNetworkComponent } from '../../components/home-page/join-network/jo
 import { ProductSectionComponent } from '../../components/home-page/product-section/product-section.component';
 
 @Component({
-    selector: 'app-auth-layout',
-    standalone: true,
-    imports: [RouterOutlet, NavbarComponent, HeroSliderComponent, AboutUsComponent, FooterComponent, JoinNetworkComponent, ProductSectionComponent],
-    template: `
-          <app-navbar></app-navbar>
-          <main class="pt-17">
-          <app-hero-slider></app-hero-slider>
-          <app-about-us></app-about-us>
-          <app-product-section></app-product-section>
-          <app-join-network></app-join-network>
-          <app-footer></app-footer>
-          </main>
-          <router-outlet></router-outlet>
-    `,
-  })
+  selector: 'app-auth-layout',
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    HeroSliderComponent,
+    AboutUsComponent,
+    FooterComponent,
+    JoinNetworkComponent,
+    ProductSectionComponent,
+  ],
+  template: `
+    <app-navbar></app-navbar>
+    <main class="pt-17">
+      <app-hero-slider id="home"></app-hero-slider>
+      <app-about-us id="about"></app-about-us>
+      <app-product-section id="products"></app-product-section>
+      <app-join-network id="partners"></app-join-network>
+      <app-footer id="contact"></app-footer>
+    </main>
+    <router-outlet></router-outlet>
+  `,
+})
 export class MainLayoutComponent {}
