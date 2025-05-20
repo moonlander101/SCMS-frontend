@@ -65,6 +65,6 @@ export class RegisterService {
 
     console.log(`Assigning driver to vehicle ${vehicleId}:`, driverData);
 
-    return this.http.patch(url, driverData);
+    return this.http.post(url, driverData);
   }
 }
